@@ -54,33 +54,31 @@ public class RouterService extends ResourceService {
         String subnetId = subnetRoutingTable.getSubnetId();
         subnetRoutingTableBuilder.setSubnetId(subnetId);
         List<InternalRoutingRule> routingRules = subnetRoutingTable.getRoutingRules();
-        if (routingRules == null || routingRules.size() == 0) {
-            return;
-        }
+        if (routingRules == null && routingRules.size() == 0) {
+            for (InternalRoutingRule routingRule: routingRules) {
+                Router.RouterConfiguration.RoutingRule.Builder routingRuleBuilder = Router.RouterConfiguration.RoutingRule.newBuilder();
+                routingRuleBuilder.setOperationType(getOperationType(routingRule.getOperationType()));
 
-        for (InternalRoutingRule routingRule: routingRules) {
-            Router.RouterConfiguration.RoutingRule.Builder routingRuleBuilder = Router.RouterConfiguration.RoutingRule.newBuilder();
-            routingRuleBuilder.setOperationType(getOperationType(routingRule.getOperationType()));
+                routingRuleBuilder.setId(routingRule.getId());
+                if (routingRule.getName() != null)
+                {
+                    routingRuleBuilder.setName(routingRule.getName());
+                }
+                routingRuleBuilder.setDestination(routingRule.getDestination());
+                routingRuleBuilder.setNextHopIp(routingRule.getNextHopIp());
+                routingRuleBuilder.setPriority(routingRule.getPriority());
 
-            routingRuleBuilder.setId(routingRule.getId());
-            if (routingRule.getName() != null)
-            {
-                routingRuleBuilder.setName(routingRule.getName());
+
+                if (routingRule.getRoutingRuleExtraInfo() != null) {
+                    Router.RouterConfiguration.RoutingRuleExtraInfo.Builder extraInfoBuilder = Router.RouterConfiguration.RoutingRuleExtraInfo.newBuilder();
+                    extraInfoBuilder.setDestinationType(getDestinationType(
+                            routingRule.getRoutingRuleExtraInfo().getDestinationType()));
+
+                    routingRuleBuilder.setRoutingRuleExtraInfo(extraInfoBuilder.build());
+                }
+
+                subnetRoutingTableBuilder.addRoutingRules(routingRuleBuilder.build());
             }
-            routingRuleBuilder.setDestination(routingRule.getDestination());
-            routingRuleBuilder.setNextHopIp(routingRule.getNextHopIp());
-            routingRuleBuilder.setPriority(routingRule.getPriority());
-
-
-            if (routingRule.getRoutingRuleExtraInfo() != null) {
-                Router.RouterConfiguration.RoutingRuleExtraInfo.Builder extraInfoBuilder = Router.RouterConfiguration.RoutingRuleExtraInfo.newBuilder();
-                extraInfoBuilder.setDestinationType(getDestinationType(
-                        routingRule.getRoutingRuleExtraInfo().getDestinationType()));
-
-                routingRuleBuilder.setRoutingRuleExtraInfo(extraInfoBuilder.build());
-            }
-
-            subnetRoutingTableBuilder.addRoutingRules(routingRuleBuilder.build());
         }
 
         List<Router.RouterConfiguration.SubnetRoutingTable> subnetRoutingTablesList = new ArrayList<>();
