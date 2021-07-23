@@ -95,7 +95,7 @@ public class DataPlaneClientImpl implements DataPlaneClient {
             Future<String> future =
                     executor.submit(() -> {
                 try {
-                    LOG.debug(unicastGoalState.getGoalState().toString());
+                    LOG.debug(unicastGoalState.getHostIp() + ": " + unicastGoalState.getGoalState().toString());
                     sendGoalState(unicastGoalState);
                 } catch (InterruptedException e) {
                     LOG.debug("Send message to " + unicastGoalState.getHostIp()+ " get message: " );
