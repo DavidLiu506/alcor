@@ -19,6 +19,7 @@ import com.futurewei.alcor.common.db.CacheException;
 import com.futurewei.alcor.common.db.CacheFactory;
 import com.futurewei.alcor.common.db.ICache;
 import com.futurewei.alcor.common.stats.DurationStatistics;
+import com.futurewei.alcor.dataplane.exception.NextHopNotFound;
 import com.futurewei.alcor.schema.Neighbor;
 import com.futurewei.alcor.web.entity.dataplane.NeighborEntry;
 import com.futurewei.alcor.web.entity.dataplane.NeighborInfo;
@@ -43,7 +44,12 @@ public class NeighborCache {
 
     @DurationStatistics
     public Neighbor.NeighborState getNeiborByIP(String ip) throws Exception {
-        return neighborCache.get(ip);
+        Neighbor.NeighborState neighborState = neighborCache.get(ip);
+        if (neighborState == null)
+        {
+            throw new NextHopNotFound();
+        }
+        return neighborState;
     }
 
     public void setNeighborState(Neighbor.NeighborState neighborState) throws Exception {

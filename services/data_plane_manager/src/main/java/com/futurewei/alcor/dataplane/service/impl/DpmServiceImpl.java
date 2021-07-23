@@ -27,6 +27,7 @@ import com.futurewei.alcor.dataplane.entity.MulticastGoalState;
 import com.futurewei.alcor.dataplane.entity.UnicastGoalState;
 import com.futurewei.alcor.dataplane.entity.ZetaPortGoalState;
 import com.futurewei.alcor.dataplane.exception.NeighborInfoNotFound;
+import com.futurewei.alcor.dataplane.exception.NextHopNotFound;
 import com.futurewei.alcor.dataplane.exception.PortBindingHostIpNotFound;
 import com.futurewei.alcor.dataplane.exception.UnknownResourceType;
 import com.futurewei.alcor.dataplane.service.DpmService;
@@ -497,6 +498,10 @@ public class DpmServiceImpl implements DpmService {
                         continue;
                     }
 
+                    Set<String> ips = new HashSet<>();
+                    subnetRoutingTable.getRoutingRules().forEach(routingRule -> {ips.add(routingRule.getNextHopIp());});
+                    List<Neighbor.NeighborState> neighbors = neighborService.getAllNeighbors(new ArrayList<>(ips));
+
                     for (PortHostInfo portHostInfo : subnetPorts.getPorts()) {
                         String hostIp = portHostInfo.getHostIp();
                         UnicastGoalState unicastGoalState = unicastGoalStateMap.get(hostIp);
@@ -504,29 +509,23 @@ public class DpmServiceImpl implements DpmService {
                             unicastGoalState = new UnicastGoalState();
                             unicastGoalState.setHostIp(hostIp);
                             unicastGoalStateMap.put(hostIp, unicastGoalState);
+                            for (Neighbor.NeighborState neighbor : neighbors)
+                            {
+                                unicastGoalState.getGoalStateBuilder().addNeighborStates(neighbor);
+                                for (Neighbor.NeighborConfiguration.FixedIp fixIp : neighbor.getConfiguration().getFixedIpsList())
+                                {
+                                    subnetService.buildSubnetState(unicastGoalState, fixIp.getSubnetId());
+                                }
+                            }
                         }
 
                         routerService.buildRouterState(routerInfo, subnetRoutingTable, unicastGoalState, multicastGoalState);
                         subnetService.buildSubnetState(unicastGoalState, subnetId);
-                        Set<String> ips = new HashSet<>();
-                        subnetRoutingTables.forEach(routingTable -> routingTable.getRoutingRules().forEach(routingRule -> {ips.add(routingRule.getNextHopIp());System.out.println("test1");}));
-                        List<Neighbor.NeighborState> neighbors = neighborService.getAllNeighbors(new ArrayList<>(ips));
-                        for (String ip : ips) System.out.println(ip);
-                        for (Neighbor.NeighborState neighbor : neighbors)
-                        {
-                            if (neighbor == null) System.out.println("test1");
-                            unicastGoalState.getGoalStateBuilder().addNeighborStates(neighbor);
-                            for (Neighbor.NeighborConfiguration.FixedIp fixIp : neighbor.getConfiguration().getFixedIpsList())
-                            {
-                                subnetService.buildSubnetState(unicastGoalState, fixIp.getSubnetId());
-                            }
 
-                        }
                     }
                 }
             }
         }
-        System.out.println("test");
         if (unicastGoalStateMap.size() == 0) {
             //throw new RouterInfoInvalid();
             return new ArrayList<>();
