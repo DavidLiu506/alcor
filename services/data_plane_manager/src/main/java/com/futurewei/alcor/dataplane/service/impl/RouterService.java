@@ -54,11 +54,12 @@ public class RouterService extends ResourceService {
         String subnetId = subnetRoutingTable.getSubnetId();
         subnetRoutingTableBuilder.setSubnetId(subnetId);
         List<InternalRoutingRule> routingRules = subnetRoutingTable.getRoutingRules();
-        if (routingRules == null && routingRules.size() > 0) {
+        System.out.println("RoutingRules size: " + routingRules.size());
+        if (routingRules != null && routingRules.size() > 0) {
             for (InternalRoutingRule routingRule: routingRules) {
                 Router.RouterConfiguration.RoutingRule.Builder routingRuleBuilder = Router.RouterConfiguration.RoutingRule.newBuilder();
                 routingRuleBuilder.setOperationType(getOperationType(routingRule.getOperationType()));
-
+                System.out.println("routingRule.getDestination(): " + routingRule.getDestination());
                 routingRuleBuilder.setId(routingRule.getId());
                 if (routingRule.getName() != null)
                 {
