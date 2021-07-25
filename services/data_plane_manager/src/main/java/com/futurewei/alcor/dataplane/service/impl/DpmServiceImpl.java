@@ -500,27 +500,25 @@ public class DpmServiceImpl implements DpmService {
 
                     Set<String> ips = new HashSet<>();
                     subnetRoutingTable.getRoutingRules().forEach(routingRule -> {ips.add(routingRule.getNextHopIp());});
-                    String nexthopSubnetId = subnetPorts.getSubnetId();
-                    String nexthopVpcId = subnetPorts.getVpcId();
+                    List<Neighbor.NeighborState> neighbors = neighborService.getAllNeighbors(new ArrayList<>(ips));
+
                     for (PortHostInfo portHostInfo : subnetPorts.getPorts()) {
                         String hostIp = portHostInfo.getHostIp();
-                        NeighborInfo neighborInfo = new NeighborInfo(portHostInfo.getHostIp(), portHostInfo.getHostId(), portHostInfo.getPortId(), portHostInfo.getPortMac(), portHostInfo.getPortIp(), nexthopVpcId, nexthopSubnetId);
-
                         UnicastGoalState unicastGoalState = unicastGoalStateMap.get(hostIp);
                         if (unicastGoalState == null) {
                             unicastGoalState = new UnicastGoalState();
                             unicastGoalState.setHostIp(hostIp);
                             unicastGoalStateMap.put(hostIp, unicastGoalState);
-                        }
-                        Neighbor.NeighborState neighbor = neighborService.buildNeighborState(NeighborEntry.NeighborType.L3, neighborInfo, Common.OperationType.GET);
-                        if (ips.contains(portHostInfo.getPortIp()))
-                        {
-                            unicastGoalState.getGoalStateBuilder().addNeighborStates(neighbor);
-                            for (Neighbor.NeighborConfiguration.FixedIp fixIp : neighbor.getConfiguration().getFixedIpsList())
+                            for (Neighbor.NeighborState neighbor : neighbors)
                             {
-                                subnetService.buildSubnetState(unicastGoalState, fixIp.getSubnetId());
+                                unicastGoalState.getGoalStateBuilder().addNeighborStates(neighbor);
+                                for (Neighbor.NeighborConfiguration.FixedIp fixIp : neighbor.getConfiguration().getFixedIpsList())
+                                {
+                                    subnetService.buildSubnetState(unicastGoalState, fixIp.getSubnetId());
+                                }
                             }
                         }
+
                         routerService.buildRouterState(routerInfo, subnetRoutingTable, unicastGoalState, multicastGoalState);
                         subnetService.buildSubnetState(unicastGoalState, subnetId);
 
