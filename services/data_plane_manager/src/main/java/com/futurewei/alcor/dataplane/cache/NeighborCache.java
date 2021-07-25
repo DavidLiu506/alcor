@@ -34,6 +34,7 @@ import org.springframework.stereotype.Repository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 @ComponentScan(value="com.futurewei.alcor.common.db")
@@ -60,7 +61,12 @@ public class NeighborCache {
             InternalSubnetPorts subnetPorts = subnetPortsCache.getAllSubnetPorts()
                                                                     .values()
                                                                     .stream()
-                                                                    .filter(internalSubnetPorts -> internalSubnetPorts.getPorts().contains(ip))
+                                                                    .filter(internalSubnetPorts -> internalSubnetPorts
+                                                                                                    .getPorts()
+                                                                                                    .stream()
+                                                                                                    .filter(port -> port.getPortIp().equals(ip))
+                                                                                                    .collect(Collectors.toList())
+                                                                                                    .size() > 0)
                                                                     .findFirst().orElse(null);
             if (subnetPorts != null)
             {
