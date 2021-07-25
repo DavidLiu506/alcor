@@ -73,7 +73,7 @@ public class NeighborCache {
                 String nexthopVpcId = subnetPorts.getVpcId();
                 String nexthopSubnetId = subnetPorts.getSubnetId();
                 PortHostInfo portHostInfo = subnetPorts.getPorts().stream().filter(port -> port.getPortIp().equals(ip)).findFirst().orElse(null);
-                if (portHostInfo != null)
+                if (portHostInfo != null && portHostInfo.getHostIp() != null && !portHostInfo.getHostIp().isEmpty())
                 {
                     NeighborInfo neighborInfo = new NeighborInfo(portHostInfo.getHostIp(), portHostInfo.getHostId(), portHostInfo.getPortId(), portHostInfo.getPortMac(), portHostInfo.getPortIp(), nexthopVpcId, nexthopSubnetId);
                     return neighborService.buildNeighborState(NeighborEntry.NeighborType.L3, neighborInfo, Common.OperationType.GET);
