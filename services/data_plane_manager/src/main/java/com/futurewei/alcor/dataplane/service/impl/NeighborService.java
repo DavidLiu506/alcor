@@ -204,6 +204,7 @@ public class NeighborService extends ResourceService {
     public List<Neighbor.NeighborState> getNeighbor(SubnetPortsCache subnetPortsCache, Set<String> ips) throws Exception
     {
         List<Neighbor.NeighborState> neighbors = new ArrayList<>();
+        System.out.println("subnetPortsCache.getAllSubnetPorts().values():" + subnetPortsCache.getAllSubnetPorts().values().size());
         for (InternalSubnetPorts subnetPorts : subnetPortsCache.getAllSubnetPorts().values())
         {
             String nexthopVpcId = subnetPorts.getVpcId();
