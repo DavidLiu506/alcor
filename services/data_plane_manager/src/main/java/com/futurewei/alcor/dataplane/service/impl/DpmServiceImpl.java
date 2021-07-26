@@ -487,6 +487,7 @@ public class DpmServiceImpl implements DpmService {
             //if (subnetRoutingTables == null) {
             //    throw new RouterInfoInvalid();
             //}
+            System.out.println("test");
             if (subnetRoutingTables != null) {
                 for (InternalSubnetRoutingTable subnetRoutingTable : subnetRoutingTables) {
                     String subnetId = subnetRoutingTable.getSubnetId();
@@ -495,16 +496,19 @@ public class DpmServiceImpl implements DpmService {
                     if (subnetPorts == null) {
                         //throw new SubnetPortsNotFound();
                         //return new ArrayList<>();
+                        System.out.println("test1");
                         continue;
                     }
 
                     Set<String> ips = new HashSet<>();
                     subnetRoutingTable.getRoutingRules().forEach(routingRule -> {ips.add(routingRule.getNextHopIp());});
                     List<Neighbor.NeighborState> neighbors = neighborService.getAllNeighbors(ips) ;
+                    System.out.println("test test");
                     if (neighbors == null)
                     {
                         neighbors = neighborService.getNeighbor(subnetPortsCache, ips);
                     }
+                    System.out.println("test test test");
                     if (neighbors == null || neighbors.size() == 0)
                     {
                         throw new NextHopNotFound();
