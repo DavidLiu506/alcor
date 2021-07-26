@@ -491,6 +491,13 @@ public class DpmServiceImpl implements DpmService {
             if (subnetRoutingTables != null) {
                 for (InternalSubnetRoutingTable subnetRoutingTable : subnetRoutingTables) {
                     String subnetId = subnetRoutingTable.getSubnetId();
+                    InternalSubnetPorts subnetPorts = localCache.getSubnetPorts(subnetId);
+                    if (subnetPorts == null) {
+                        //throw new SubnetPortsNotFound();
+                        //return new ArrayList<>();
+                        System.out.println("test1");
+                        continue;
+                    }
                     Set<String> ips = new HashSet<>();
                     subnetRoutingTable.getRoutingRules().forEach(routingRule -> {ips.add(routingRule.getNextHopIp());});
                     List<Neighbor.NeighborState> neighbors = neighborService.getAllNeighbors(ips) ;
@@ -503,13 +510,6 @@ public class DpmServiceImpl implements DpmService {
                     if (neighbors == null || neighbors.size() == 0)
                     {
                         throw new NextHopNotFound();
-                    }
-                    InternalSubnetPorts subnetPorts = localCache.getSubnetPorts(subnetId);
-                    if (subnetPorts == null) {
-                        //throw new SubnetPortsNotFound();
-                        //return new ArrayList<>();
-                        System.out.println("test1");
-                        continue;
                     }
 
                     for (PortHostInfo portHostInfo : subnetPorts.getPorts()) {
