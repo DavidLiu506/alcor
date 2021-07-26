@@ -46,9 +46,6 @@ public class NeighborCache {
     private SubnetPortsCache subnetPortsCache;
 
     @Autowired
-    private NeighborService neighborService;
-
-    @Autowired
     public NeighborCache(CacheFactory cacheFactory) {
         neighborCache = cacheFactory.getCache(Neighbor.NeighborState.class);
     }
@@ -56,35 +53,6 @@ public class NeighborCache {
     @DurationStatistics
     public Neighbor.NeighborState getNeiborByIP(String ip) throws Exception {
         Neighbor.NeighborState neighborState = neighborCache.get(ip);
-        if (neighborState == null)
-        {
-            InternalSubnetPorts subnetPorts = subnetPortsCache.getAllSubnetPorts()
-                                                                    .values()
-                                                                    .stream()
-                                                                    .filter(internalSubnetPorts -> internalSubnetPorts
-                                                                                                    .getPorts()
-                                                                                                    .stream()
-                                                                                                    .filter(port -> port.getPortIp().equals(ip))
-                                                                                                    .collect(Collectors.toList())
-                                                                                                    .size() > 0)
-                                                                    .findFirst().orElse(null);
-            System.out.println("Test get neighbor:");
-            System.out.println("Ip:" + ip);
-            if (subnetPorts != null)
-            {
-                String nexthopVpcId = subnetPorts.getVpcId();
-                String nexthopSubnetId = subnetPorts.getSubnetId();
-                System.out.println("nexthopSubnetId:" + nexthopSubnetId);
-                PortHostInfo portHostInfo = subnetPorts.getPorts().stream().filter(port -> port.getPortIp().equals(ip)).findFirst().orElse(null);
-                if (portHostInfo != null && portHostInfo.getHostIp() != null && !portHostInfo.getHostIp().isEmpty())
-                {
-                    System.out.println("portHostInfo.getHostIp():" + portHostInfo.getHostIp());
-                    NeighborInfo neighborInfo = new NeighborInfo(portHostInfo.getHostIp(), portHostInfo.getHostId(), portHostInfo.getPortId(), portHostInfo.getPortMac(), portHostInfo.getPortIp(), nexthopVpcId, nexthopSubnetId);
-                    return neighborService.buildNeighborState(NeighborEntry.NeighborType.L3, neighborInfo, Common.OperationType.GET);
-                }
-
-            }
-        }
         if (neighborState == null)
         {
             throw new NextHopNotFound();

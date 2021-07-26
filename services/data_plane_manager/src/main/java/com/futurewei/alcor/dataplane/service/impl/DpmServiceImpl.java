@@ -500,7 +500,15 @@ public class DpmServiceImpl implements DpmService {
 
                     Set<String> ips = new HashSet<>();
                     subnetRoutingTable.getRoutingRules().forEach(routingRule -> {ips.add(routingRule.getNextHopIp());});
-                    List<Neighbor.NeighborState> neighbors = neighborService.getAllNeighbors(new ArrayList<>(ips));
+                    List<Neighbor.NeighborState> neighbors = neighborService.getAllNeighbors(ips) ;
+                    if (neighbors == null)
+                    {
+                        neighbors = neighborService.getNeighbor(subnetPortsCache, ips);
+                    }
+                    if (neighbors == null || neighbors.size() == 0)
+                    {
+                        throw new NextHopNotFound();
+                    }
 
                     for (PortHostInfo portHostInfo : subnetPorts.getPorts()) {
                         String hostIp = portHostInfo.getHostIp();
