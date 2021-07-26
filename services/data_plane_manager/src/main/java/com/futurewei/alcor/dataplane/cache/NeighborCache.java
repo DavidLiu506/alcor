@@ -53,10 +53,6 @@ public class NeighborCache {
     @DurationStatistics
     public Neighbor.NeighborState getNeiborByIP(String ip) throws Exception {
         Neighbor.NeighborState neighborState = neighborCache.get(ip);
-        if (neighborState == null)
-        {
-            throw new NextHopNotFound();
-        }
         return neighborState;
     }
 
