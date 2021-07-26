@@ -502,7 +502,7 @@ public class DpmServiceImpl implements DpmService {
                     subnetRoutingTable.getRoutingRules().forEach(routingRule -> {ips.add(routingRule.getNextHopIp());});
                     List<Neighbor.NeighborState> neighbors = neighborService.getAllNeighbors(ips) ;
                     System.out.println("test test");
-                    if (neighbors == null)
+                    if (neighbors == null || neighbors.size() == 0)
                     {
                         neighbors = neighborService.getNeighbor(subnetPortsCache, ips);
                     }
