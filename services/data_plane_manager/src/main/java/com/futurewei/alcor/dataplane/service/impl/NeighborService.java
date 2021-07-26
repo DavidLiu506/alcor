@@ -201,7 +201,12 @@ public class NeighborService extends ResourceService {
         return neighbors;
     }
 
-    public List<Neighbor.NeighborState> getNeighbor(SubnetPortsCache subnetPortsCache, Set<String> ips) throws Exception
+    public Neighbor.NeighborState getNeighbor (String ip) throws Exception
+    {
+        return neighborCache.getNeiborByIP(ip);
+    }
+
+    public List<Neighbor.NeighborState> getAllNeighbors(SubnetPortsCache subnetPortsCache, Set<String> ips) throws Exception
     {
         List<Neighbor.NeighborState> neighbors = new ArrayList<>();
         for (InternalSubnetPorts subnetPorts : subnetPortsCache.getAllSubnetPorts().values())
@@ -220,5 +225,26 @@ public class NeighborService extends ResourceService {
             }
         }
         return neighbors;
+    }
+
+    public Neighbor.NeighborState getNeighbor(SubnetPortsCache subnetPortsCache, String ip) throws Exception
+    {
+        Neighbor.NeighborState neighborState = null;
+        for (InternalSubnetPorts subnetPorts : subnetPortsCache.getAllSubnetPorts().values())
+        {
+            String nexthopVpcId = subnetPorts.getVpcId();
+            String nexthopSubnetId = subnetPorts.getSubnetId();
+            System.out.println("nexthopSubnetId:" + nexthopSubnetId);
+            for (PortHostInfo portHostInfo : subnetPorts.getPorts())
+            {
+                if (portHostInfo != null && portHostInfo.getHostIp() != null && !portHostInfo.getHostIp().isEmpty())
+                {
+                    System.out.println("portHostInfo.getHostIp():" + portHostInfo.getHostIp());
+                    NeighborInfo neighborInfo = new NeighborInfo(portHostInfo.getHostIp(), portHostInfo.getHostId(), portHostInfo.getPortId(), portHostInfo.getPortMac(), portHostInfo.getPortIp(), nexthopVpcId, nexthopSubnetId);
+                    neighborState = buildNeighborState(NeighborEntry.NeighborType.L3, neighborInfo, Common.OperationType.GET);
+                }
+            }
+        }
+        return neighborState;
     }
 }
