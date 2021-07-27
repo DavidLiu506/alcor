@@ -524,7 +524,7 @@ public class DpmServiceImpl implements DpmService {
                                 unicastGoalState.getGoalStateBuilder().addNeighborStates(neighbor);
                                 for (Neighbor.NeighborConfiguration.FixedIp fixIp : neighbor.getConfiguration().getFixedIpsList())
                                 {
-                                    if (ips.contains(fixIp))
+                                    if (ips.contains(fixIp.getIpAddress()))
                                     {
                                         subnetService.buildSubnetState(unicastGoalState, fixIp.getSubnetId());
                                     }
