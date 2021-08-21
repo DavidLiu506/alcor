@@ -196,18 +196,7 @@ public class IpManagerProxy {
                 throw new RangeIdNotFoundException();
             }
 
-            try {
-                ipManagerRestClient.releaseIpAddress(rangeId, fixedIp.getIpAddress());
-            } catch (HttpClientErrorException e)
-            {
-                if (e.getStatusCode() == HttpStatus.NOT_FOUND && e.getMessage().equals("Ip address allocation not found")) {
-                    logger.warn("Not found ip");
-                }
-                else
-                {
-                    throw e;
-                }
-            }
+            ipManagerRestClient.releaseIpAddress(rangeId, fixedIp.getIpAddress());
 
             IpAddrRequest ipAddrRequest = new IpAddrRequest();
             ipAddrRequest.setRangeId(rangeId);
