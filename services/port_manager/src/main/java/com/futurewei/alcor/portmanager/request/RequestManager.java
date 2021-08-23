@@ -89,7 +89,7 @@ public class RequestManager {
                     } catch (ParseException parseException) {
                         parseException.printStackTrace();
                     }
-                    if (e.getStatusCode() == HttpStatus.NOT_FOUND && resp.get("message").equals("Ip address allocation not found")) {
+                    if (e.getStatusCode() == HttpStatus.NOT_FOUND && (resp.get("message").equals("Ip address allocation not found") || resp.get("message").equals("Ip range not found"))) {
                         LOG.warn("Not found ip");
                     }
                     else

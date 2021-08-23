@@ -26,6 +26,9 @@ public class SubnetPortIds {
     @JsonProperty("port_ids")
     private Set<String> portIds;
 
+    private Set<String> gatewayPortIds;
+
+
     public SubnetPortIds() {
 
     }
@@ -47,7 +50,14 @@ public class SubnetPortIds {
         return portIds;
     }
 
+    public Set<String> getGatewayPortIds() {
+        return gatewayPortIds;
+    }
+
     public void setPortIds(Set<String> portIds) {
         this.portIds = portIds;
+    }
+    public void setGatewayPortIds(Set<String> portIds) {
+        this.gatewayPortIds = portIds;
     }
 }
