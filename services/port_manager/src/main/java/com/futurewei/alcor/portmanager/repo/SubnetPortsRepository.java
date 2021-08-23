@@ -68,7 +68,7 @@ public class SubnetPortsRepository {
     }
 
 
-    public void addSubnetPortIds(List<PortEntity> portEntities) throws Exception {
+    public void addSubnetPortIds(String projectId, List<PortEntity> portEntities) throws Exception {
         //Store the mapping between subnet id and port id
         List<SubnetPortIds> subnetPortIdsList = getSubnetPortIds(portEntities);
 
@@ -76,18 +76,18 @@ public class SubnetPortsRepository {
             String subnetId = item.getSubnetId();
             Set<String> portIds = item.getPortIds();
 
-            SubnetPortIds subnetPortIds = subnetPortIdsCache.get(subnetId);
+            SubnetPortIds subnetPortIds = subnetPortIdsCache.get(projectId + "-" + subnetId);
             if (subnetPortIds == null) {
-                subnetPortIds = new SubnetPortIds(subnetId, new HashSet<>(portIds));
+                subnetPortIds = new SubnetPortIds(projectId + "-" + subnetId, new HashSet<>(portIds));
             } else {
                 subnetPortIds.getPortIds().addAll(portIds);
             }
 
-            subnetPortIdsCache.put(subnetId, subnetPortIds);
+            subnetPortIdsCache.put(projectId + "-" + subnetId, subnetPortIds);
         }
     }
 
-    public void updateSubnetPortIds(PortEntity oldPortEntity, PortEntity newPortEntity) throws Exception {
+    public void updateSubnetPortIds(String projectId, PortEntity oldPortEntity, PortEntity newPortEntity) throws Exception {
         //Update Subnet port ids cache
         if (oldPortEntity.getFixedIps() == null || newPortEntity.getFixedIps() == null) {
             LOG.error("Can not find fixed ip in port entity");
@@ -105,16 +105,16 @@ public class SubnetPortsRepository {
         if (!oldSubnetIds.equals(newSubnetIds)) {
             //Delete port ids from subnetPortIdsCache
             for (String subnetId: oldSubnetIds) {
-                SubnetPortIds subnetPortIds = subnetPortIdsCache.get(subnetId);
+                SubnetPortIds subnetPortIds = subnetPortIdsCache.get(projectId + "-" + subnetId);
                 if (subnetPortIds != null) {
                     subnetPortIds.getPortIds().remove(oldPortEntity.getId());
-                    subnetPortIdsCache.put(subnetId, subnetPortIds);
+                    subnetPortIdsCache.put(projectId + "-" + subnetId, subnetPortIds);
                 }
             }
 
             //Add new port ids to subnetPortIdsCache
             for (String subnetId: newSubnetIds) {
-                SubnetPortIds subnetPortIds = subnetPortIdsCache.get(subnetId);
+                SubnetPortIds subnetPortIds = subnetPortIdsCache.get(projectId + "-" + subnetId);
                 if (subnetPortIds != null) {
                     subnetPortIds.getPortIds().add(newPortEntity.getId());
                 } else {
@@ -122,12 +122,12 @@ public class SubnetPortsRepository {
                     portIds.add(newPortEntity.getId());
                     subnetPortIds = new SubnetPortIds(subnetId, portIds);
                 }
-                subnetPortIdsCache.put(subnetId, subnetPortIds);
+                subnetPortIdsCache.put(projectId + "-" + subnetId, subnetPortIds);
             }
         }
     }
 
-    public void deleteSubnetPortIds(PortEntity portEntity) throws Exception {
+    public void deleteSubnetPortIds(String projectId, PortEntity portEntity) throws Exception {
         if (portEntity.getFixedIps() == null) {
             LOG.error("Can not find fixed ip in port entity");
             throw new FixedIpsInvalid();
@@ -139,17 +139,17 @@ public class SubnetPortsRepository {
 
         //Delete port ids from subnetPortIdsCache
         for (String subnetId: subnetIds) {
-            SubnetPortIds subnetPortIds = subnetPortIdsCache.get(subnetId);
+            SubnetPortIds subnetPortIds = subnetPortIdsCache.get(projectId + "-" + subnetId);
             if (subnetPortIds != null) {
                 subnetPortIds.getPortIds().remove(portEntity.getId());
-                subnetPortIdsCache.put(subnetId, subnetPortIds);
+                subnetPortIdsCache.put(projectId + "-" + subnetId, subnetPortIds);
             }
         }
     }
 
     @DurationStatistics
-    public int getSubnetPortNumber(String subnetId) throws CacheException {
-        SubnetPortIds subnetPortIds = subnetPortIdsCache.get(subnetId);
+    public int getSubnetPortNumber(String projectId, String subnetId) throws CacheException {
+        SubnetPortIds subnetPortIds = subnetPortIdsCache.get(projectId+ "-" + subnetId);
         if (subnetPortIds == null) {
             return 0;
         }

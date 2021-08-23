@@ -68,7 +68,7 @@ public class DatabaseProcessor extends AbstractProcessor {
          operation, or wait for CreateNetworkConfig to succeed before writing to the database
          */
         List<PortEntity> portEntities = context.getPortEntities();
-        context.getPortRepository().createPortBulk(portEntities, portNeighbors);
+        context.getPortRepository().createPortBulk(context.getProjectId(), portEntities, portNeighbors);
     }
 
     @Override
@@ -82,14 +82,14 @@ public class DatabaseProcessor extends AbstractProcessor {
         PortEntity oldPortEntity = context.getNewPortEntity();
         PortEntity newPortEntity = context.getNewPortEntity();
 
-        context.getPortRepository().updatePort(oldPortEntity, newPortEntity, neighborInfos);
+        context.getPortRepository().updatePort(context.getProjectId(), oldPortEntity, newPortEntity, neighborInfos);
     }
 
     @Override
     void deleteProcess(PortContext context) throws Exception {
         //TODO: support batch deletion
         for (PortEntity portEntity : context.getPortEntities()) {
-            context.getPortRepository().deletePort(portEntity);
+            context.getPortRepository().deletePort(context.getProjectId(), portEntity);
         }
     }
 }

@@ -307,7 +307,7 @@ public class PortServiceImpl implements PortService {
 
     @Override
     public int getSubnetPortCount(String projectId, String subnetId) throws Exception {
-        return portRepository.getSubnetPortCount(subnetId);
+        return portRepository.getSubnetPortCount(projectId, subnetId);
     }
 
     @DurationStatistics
