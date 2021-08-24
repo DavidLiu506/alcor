@@ -243,7 +243,7 @@ public class PortController {
      */
     @Rbac(resource ="port")
     @FieldFilter(type=PortEntity.class)
-    @GetMapping({"/project/{project_id}/subnet_id/ports", "v4/{project_id}/subnet-port-count/{subnet_id}"})
+    @GetMapping({"/project/{project_id}/subnet/{subnet_id}/ports", "v4/{project_id}/subnet/{subnet_id}/ports"})
     @DurationStatistics
     public List<String> listSubnetPort(@PathVariable("project_id") String projectId,
                                        @PathVariable("subnet_id") String subnetId) throws Exception {

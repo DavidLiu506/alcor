@@ -18,6 +18,7 @@ package com.futurewei.alcor.portmanager.repo;
 import com.futurewei.alcor.common.db.CacheException;
 import com.futurewei.alcor.common.db.CacheFactory;
 import com.futurewei.alcor.common.db.ICache;
+import com.futurewei.alcor.common.db.Transaction;
 import com.futurewei.alcor.common.stats.DurationStatistics;
 import com.futurewei.alcor.portmanager.entity.SubnetPortIds;
 import com.futurewei.alcor.portmanager.exception.FixedIpsInvalid;
@@ -138,13 +139,17 @@ public class SubnetPortsRepository {
                 .collect(Collectors.toList());
 
         //Delete port ids from subnetPortIdsCache
-        for (String subnetId: subnetIds) {
-            SubnetPortIds subnetPortIds = subnetPortIdsCache.get(subnetId);
-            if (subnetPortIds != null) {
-                subnetPortIds.getPortIds().remove(portEntity.getId());
-                subnetPortIdsCache.put(subnetId, subnetPortIds);
+        try (Transaction tx = subnetPortIdsCache.getTransaction().start()) {
+            for (String subnetId: subnetIds) {
+                SubnetPortIds subnetPortIds = subnetPortIdsCache.get(subnetId);
+                if (subnetPortIds != null) {
+                    subnetPortIds.getPortIds().remove(portEntity.getId());
+                    subnetPortIdsCache.put(subnetId, subnetPortIds);
+                }
             }
+            tx.commit();
         }
+
     }
 
     @DurationStatistics
