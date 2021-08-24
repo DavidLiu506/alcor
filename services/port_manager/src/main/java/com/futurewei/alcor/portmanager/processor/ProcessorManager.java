@@ -18,12 +18,14 @@ package com.futurewei.alcor.portmanager.processor;
 import com.futurewei.alcor.portmanager.util.ReflectionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
-
 import javax.annotation.PostConstruct;
 import java.util.*;
 
 @Component
+@Scope(value="prototype", proxyMode=ScopedProxyMode.TARGET_CLASS)
 public class ProcessorManager {
     private static final Logger LOG = LoggerFactory.getLogger(ProcessorManager.class);
 
