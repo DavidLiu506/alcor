@@ -799,6 +799,12 @@ public class PortServiceImpl implements PortService {
         return 0;
     }
 
+
+    @Override
+    public List<String> getSubnetPort(String projectId, String subnetId) throws Exception {
+        return portRepository.getSubnetPort(subnetId);
+    }
+
     @Override
     public void updatePortStatus(IRestRequest request, com.futurewei.alcor.web.entity.dataplane.v2.NetworkConfiguration configuration, String status) throws Exception {
 
