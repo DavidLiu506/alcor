@@ -21,7 +21,7 @@ import com.futurewei.alcor.web.entity.port.PortEntity;
 
 import java.util.*;
 
-@AfterProcessor(PortProcessor.class)
+@AfterProcessor(DataPlaneProcessor.class)
 public class DatabaseProcessor extends AbstractProcessor {
     private List<NeighborInfo> buildNeighborInfos(InternalPortEntity internalPortEntity) {
         List<NeighborInfo> neighborInfos = new ArrayList<>();
