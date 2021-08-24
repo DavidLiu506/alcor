@@ -47,5 +47,7 @@ public interface PortService {
 
     int getSubnetPortCount(String projectId, String subnetId) throws Exception;
 
+    List<String> getSubnetPort(String projectId, String subnetId) throws Exception;
+
     void updatePortStatus(IRestRequest request, NetworkConfiguration configuration, String status) throws Exception;
 }

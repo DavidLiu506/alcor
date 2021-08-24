@@ -310,6 +310,11 @@ public class PortServiceImpl implements PortService {
         return portRepository.getSubnetPortCount(subnetId);
     }
 
+    @Override
+    public List<String> getSubnetPort(String projectId, String subnetId) throws Exception {
+        return portRepository.getSubnetPort(subnetId);
+    }
+
     @DurationStatistics
     @Override
     public void updatePortStatus(IRestRequest request,NetworkConfiguration configuration,String status) throws Exception {

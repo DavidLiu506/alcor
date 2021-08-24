@@ -156,4 +156,14 @@ public class SubnetPortsRepository {
 
         return subnetPortIds.getPortIds().size();
     }
+
+    @DurationStatistics
+    public List<String> getSubnetPort(String subnetId) throws CacheException {
+        SubnetPortIds subnetPortIds = subnetPortIdsCache.get(subnetId);
+        if (subnetPortIds == null) {
+            return new ArrayList<>();
+        }
+
+        return new ArrayList<>(subnetPortIds.getPortIds());
+    }
 }

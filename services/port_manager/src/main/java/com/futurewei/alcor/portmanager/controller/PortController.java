@@ -233,4 +233,24 @@ public class PortController {
 
         return portService.getSubnetPortCount(projectId, subnetId);
     }
+
+
+    /**
+     * Get all subnet port information
+     * @param projectId Project the port belongs to
+     * @return A list of port information
+     * @throws Exception Db operation exception
+     */
+    @Rbac(resource ="port")
+    @FieldFilter(type=PortEntity.class)
+    @GetMapping({"/project/{project_id}/subnet_id/ports", "v4/{project_id}/subnet-port-count/{subnet_id}"})
+    @DurationStatistics
+    public List<String> listSubnetPort(@PathVariable("project_id") String projectId,
+                                       @PathVariable("subnet_id") String subnetId) throws Exception {
+
+        if (StringUtil.isNullOrEmpty(subnetId)) {
+            throw new SubnetIdInvalid();
+        }
+        return portService.getSubnetPort(projectId, subnetId);
+    }
 }
