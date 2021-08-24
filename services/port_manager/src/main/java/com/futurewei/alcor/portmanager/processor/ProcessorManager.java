@@ -27,8 +27,8 @@ import java.util.*;
 public class ProcessorManager {
     private static final Logger LOG = LoggerFactory.getLogger(ProcessorManager.class);
 
-    private static List<IProcessor> processors = new ArrayList<>();
-    private static Map<Class, IProcessor> processorMap = new HashMap<>();
+    private List<IProcessor> processors = new ArrayList<>();
+    private Map<Class, IProcessor> processorMap = new HashMap<>();
 
     public ProcessorManager() throws Exception {
         Set<Class<? extends AbstractProcessor>> subClasses = ReflectionUtil.getSubClassByInterface(
