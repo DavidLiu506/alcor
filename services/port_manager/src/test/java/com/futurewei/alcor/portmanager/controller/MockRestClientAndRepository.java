@@ -158,7 +158,7 @@ public class MockRestClientAndRepository {
                 UnitTestConfig.projectId, UnitTestConfig.vpcId, UnitTestConfig.subnetId))
                 .thenReturn(buildRouterSubnets());
 
-        Mockito.when(portRepository.getSubnetPortCount(UnitTestConfig.projectId, UnitTestConfig.subnetId))
+        Mockito.when(portRepository.getSubnetPortCount(UnitTestConfig.subnetId))
                 .thenReturn(buildSubnetPorts());
     }
 }
