@@ -24,13 +24,24 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.*;
 
-@Component
-@Scope(value="prototype", proxyMode=ScopedProxyMode.TARGET_CLASS)
 public class ProcessorManager {
     private static final Logger LOG = LoggerFactory.getLogger(ProcessorManager.class);
 
     private static List<IProcessor> processors = new ArrayList<>();
     private static Map<Class, IProcessor> processorMap = new HashMap<>();
+
+    public ProcessorManager() throws Exception {
+        Set<Class<? extends AbstractProcessor>> subClasses = ReflectionUtil.getSubClassByInterface(
+                "com.futurewei.alcor.portmanager.processor", AbstractProcessor.class);
+
+        for (Class<? extends IProcessor> subClass: subClasses) {
+            instanceProcessor(subClass);
+        }
+
+        buildProcessChain();
+
+        LOG.info("ProcessorManager init success");
+    }
 
     private void buildProcessChain() {
         LOG.info("Build process chain: ");
@@ -72,7 +83,7 @@ public class ProcessorManager {
             processorMap.put(processorClass, processor);
         }
     }
-
+    /*
     @PostConstruct
     private void init() throws Exception {
         Set<Class<? extends AbstractProcessor>> subClasses = ReflectionUtil.getSubClassByInterface(
@@ -87,15 +98,17 @@ public class ProcessorManager {
         LOG.info("ProcessorManager init success");
     }
 
-    public static IProcessor getProcessChain() {
+     */
+
+    public IProcessor getProcessChain() {
         return processors.isEmpty() ? null : processors.get(0);
     }
 
-    public static IProcessor getProcessor(Class tClass) {
+    public IProcessor getProcessor(Class tClass) {
         return processorMap.get(tClass);
     }
 
-    public static List<IProcessor> getProcessors() {
+    public List<IProcessor> getProcessors() {
         return processors;
     }
 }

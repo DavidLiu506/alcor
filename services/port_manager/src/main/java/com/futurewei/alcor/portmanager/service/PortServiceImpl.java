@@ -51,9 +51,6 @@ public class PortServiceImpl implements PortService {
     @Autowired
     private PortRepository portRepository;
 
-    @Autowired
-    private ProcessorManager processorManager;
-
     private void handleException(PortContext context, Exception e) throws Exception {
         LOG.error("Catch exception: ", e);
         context.getRequestManager().rollbackAllRequests();
@@ -67,6 +64,7 @@ public class PortServiceImpl implements PortService {
         PortContext context = new PortContext(portConfigCache, projectId, portRepository);
         context.setPortEntities(portEntities);
 
+        ProcessorManager processorManager = new ProcessorManager();
         IProcessor processChain = processorManager.getProcessChain();
 
         try {
@@ -116,6 +114,7 @@ public class PortServiceImpl implements PortService {
         context.setOldPortEntity(portEntity);
         context.setNewPortEntity(portWebJson.getPortEntity());
 
+        ProcessorManager processorManager = new ProcessorManager();
         IProcessor processChain = processorManager.getProcessChain();
 
         try {
@@ -149,6 +148,7 @@ public class PortServiceImpl implements PortService {
         PortContext context = new PortContext(null, projectId, portRepository);
         context.setPortEntities(Collections.singletonList(portEntity));
 
+        ProcessorManager processorManager = new ProcessorManager();
         IProcessor processChain = processorManager.getProcessChain();
 
         try {
