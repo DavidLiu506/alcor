@@ -287,10 +287,10 @@ public class PortRepository {
     public synchronized void deletePort(PortEntity portEntity) throws Exception {
         try (Transaction tx = portCache.getTransaction().start()) {
             portCache.remove(portEntity.getId());
-            neighborRepository.deleteNeighbors(portEntity);
-            subnetPortsRepository.deleteSubnetPortIds(portEntity);
             tx.commit();
         }
+        neighborRepository.deleteNeighbors(portEntity);
+        subnetPortsRepository.deleteSubnetPortIds(portEntity);
     }
 
     @DurationStatistics
