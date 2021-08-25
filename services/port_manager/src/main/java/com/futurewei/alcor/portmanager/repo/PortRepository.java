@@ -23,6 +23,9 @@ import com.futurewei.alcor.common.stats.DurationStatistics;
 import com.futurewei.alcor.portmanager.entity.PortNeighbors;
 import com.futurewei.alcor.web.entity.dataplane.NeighborInfo;
 import com.futurewei.alcor.web.entity.port.PortEntity;
+import org.apache.ignite.Ignite;
+import org.apache.ignite.IgniteCache;
+import org.apache.ignite.Ignition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +33,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -349,12 +353,27 @@ public class PortRepository {
                 e.printStackTrace();
             }
         });
-        try (Transaction tx = portCache.getTransaction().start()) {
+        Ignite ignite = Ignition.ignite();
+        IgniteCache<String, Integer> cache = ignite.cache("portCache");
+
+        // Create a lock for the given key
+        Lock lock = cache.lock("keyLock");
+        try {
+            // Acquire the lock
+            lock.lock();
+
+            
             portCache.remove(portEntity.getId());
-            tx.commit();
+            neighborRepository.deleteNeighbors(portEntity);
+            subnetPortsRepository.deleteSubnetPortIds(portEntity);
+
         }
-        neighborRepository.deleteNeighbors(portEntity);
-        subnetPortsRepository.deleteSubnetPortIds(portEntity);
+        finally {
+            // Release the lock
+            lock.unlock();
+        }
+
+
         LOG.info("After update:");
         portEntity.getFixedIps().forEach(item ->
         {

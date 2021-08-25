@@ -143,21 +143,20 @@ public class SubnetPortsRepository {
         subnetIds.forEach(item -> LOG.info(item));
 
         //Delete port ids from subnetPortIdsCache
-        try (Transaction tx = subnetPortIdsCache.getTransaction().start()) {
-            for (String subnetId: subnetIds) {
-                SubnetPortIds subnetPortIds = subnetPortIdsCache.get(subnetId);
-                LOG.info("Get subnetPortIds: " + subnetPortIds.getSubnetId());
-                LOG.info("Before delete");
-                subnetPortIds.getPortIds().forEach(item -> LOG.info(item));
-                if (subnetPortIds != null) {
-                    subnetPortIds.getPortIds().remove(portEntity.getId());
-                    subnetPortIdsCache.put(subnetId, subnetPortIds);
-                }
-                LOG.info("After delete");
-                subnetPortIds.getPortIds().forEach(item -> LOG.info(item));
+
+        for (String subnetId: subnetIds) {
+            SubnetPortIds subnetPortIds = subnetPortIdsCache.get(subnetId);
+            LOG.info("Get subnetPortIds: " + subnetPortIds.getSubnetId());
+            LOG.info("Before delete");
+            subnetPortIds.getPortIds().forEach(item -> LOG.info(item));
+            if (subnetPortIds != null) {
+                subnetPortIds.getPortIds().remove(portEntity.getId());
+                subnetPortIdsCache.put(subnetId, subnetPortIds);
             }
-            tx.commit();
+            LOG.info("After delete");
+            subnetPortIds.getPortIds().forEach(item -> LOG.info(item));
         }
+
 
     }
 
