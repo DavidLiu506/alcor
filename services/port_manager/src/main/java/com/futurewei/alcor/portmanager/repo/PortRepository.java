@@ -351,10 +351,10 @@ public class PortRepository {
         });
         try (Transaction tx = portCache.getTransaction().start()) {
             portCache.remove(portEntity.getId());
-            neighborRepository.deleteNeighbors(portEntity);
-            subnetPortsRepository.deleteSubnetPortIds(portEntity);
             tx.commit();
         }
+        neighborRepository.deleteNeighbors(portEntity);
+        subnetPortsRepository.deleteSubnetPortIds(portEntity);
         LOG.info("After update:");
         portEntity.getFixedIps().forEach(item ->
         {
