@@ -18,6 +18,7 @@ package com.futurewei.alcor.portmanager.repo;
 import com.futurewei.alcor.common.db.CacheException;
 import com.futurewei.alcor.common.db.CacheFactory;
 import com.futurewei.alcor.common.db.ICache;
+import com.futurewei.alcor.common.db.Transaction;
 import com.futurewei.alcor.common.stats.DurationStatistics;
 import com.futurewei.alcor.portmanager.entity.SubnetPortIds;
 import com.futurewei.alcor.portmanager.exception.FixedIpsInvalid;
@@ -142,18 +143,21 @@ public class SubnetPortsRepository {
         subnetIds.forEach(item -> LOG.info(item));
 
         //Delete port ids from subnetPortIdsCache
-        for (String subnetId: subnetIds) {
-            SubnetPortIds subnetPortIds = subnetPortIdsCache.get(subnetId);
-            LOG.info("Get subnetPortIds: " + subnetPortIds.getSubnetId());
-            LOG.info("Before delete");
-            subnetPortIds.getPortIds().forEach(item -> LOG.info(item));
-            if (subnetPortIds != null) {
-                subnetPortIds.getPortIds().remove(portEntity.getId());
-                subnetPortIdsCache.put(subnetId, subnetPortIds);
+        try (Transaction tx = subnetPortIdsCache.getTransaction().start()) {
+            for (String subnetId: subnetIds) {
+                SubnetPortIds subnetPortIds = subnetPortIdsCache.get(subnetId);
+                LOG.info("Get subnetPortIds: " + subnetPortIds.getSubnetId());
+                LOG.info("Before delete");
+                subnetPortIds.getPortIds().forEach(item -> LOG.info(item));
+                if (subnetPortIds != null) {
+                    subnetPortIds.getPortIds().remove(portEntity.getId());
+                    subnetPortIdsCache.put(subnetId, subnetPortIds);
+                }
+                LOG.info("After delete");
+                subnetPortIds.getPortIds().forEach(item -> LOG.info(item));
             }
-            LOG.info("After delete");
-            subnetPortIds.getPortIds().forEach(item -> LOG.info(item));
         }
+
     }
 
     @DurationStatistics
