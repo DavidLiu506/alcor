@@ -143,6 +143,9 @@ public class PortServiceImpl implements PortService {
             throw new PortEntityNotFound();
         }
 
+        LOG.info("Found portId: " + portId);
+
+
         PortContext context = new PortContext(null, projectId, portRepository);
         context.setPortEntities(Collections.singletonList(portEntity));
 
