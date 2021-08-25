@@ -156,6 +156,7 @@ public class SubnetPortsRepository {
                 LOG.info("After delete");
                 subnetPortIds.getPortIds().forEach(item -> LOG.info(item));
             }
+            tx.commit();
         }
 
     }
