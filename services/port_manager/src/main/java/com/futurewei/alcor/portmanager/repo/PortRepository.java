@@ -303,7 +303,7 @@ public class PortRepository {
 
     @DurationStatistics
     public synchronized void updatePort(PortEntity oldPortEntity, PortEntity newPortEntity, List<NeighborInfo> neighborInfos) throws Exception {
-        LOG.info("Test update port");=
+        LOG.info("Test update port");
         LOG.info(oldPortEntity.getId());
         LOG.info(newPortEntity.getId());
         LOG.info("Before update:");
