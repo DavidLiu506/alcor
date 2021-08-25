@@ -285,6 +285,7 @@ public class PortRepository {
 
     @DurationStatistics
     public synchronized void deletePort(PortEntity portEntity) throws Exception {
+        System.out.println("Test delete port");
         System.out.println(portEntity.getId());
         portEntity.getFixedIps().forEach(item ->
         {
