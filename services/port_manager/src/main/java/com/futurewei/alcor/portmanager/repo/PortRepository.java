@@ -285,12 +285,31 @@ public class PortRepository {
 
     @DurationStatistics
     public synchronized void deletePort(PortEntity portEntity) throws Exception {
+        System.out.println(portEntity.getId());
+        portEntity.getFixedIps().forEach(item ->
+        {
+            System.out.println(item.getSubnetId());
+            try {
+                System.out.println(subnetPortsRepository.getSubnetPort(item.getSubnetId()));
+            } catch (CacheException e) {
+                e.printStackTrace();
+            }
+        });
         try (Transaction tx = portCache.getTransaction().start()) {
             portCache.remove(portEntity.getId());
             neighborRepository.deleteNeighbors(portEntity);
             subnetPortsRepository.deleteSubnetPortIds(portEntity);
             tx.commit();
         }
+        portEntity.getFixedIps().forEach(item ->
+        {
+            System.out.println(item.getSubnetId());
+            try {
+                System.out.println(subnetPortsRepository.getSubnetPort(item.getSubnetId()));
+            } catch (CacheException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @DurationStatistics
