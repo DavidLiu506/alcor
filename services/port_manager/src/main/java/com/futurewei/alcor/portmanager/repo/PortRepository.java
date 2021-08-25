@@ -262,6 +262,20 @@ public class PortRepository {
 
     @DurationStatistics
     public synchronized void createPortBulk(List<PortEntity> portEntities, Map<String, List<NeighborInfo>> neighbors) throws Exception {
+        LOG.info("Test create port");
+        for (PortEntity portEntity : portEntities) {
+            LOG.info(portEntity.getId());
+            portEntity.getFixedIps().forEach(item ->
+            {
+                LOG.info(item.getSubnetId());
+                try {
+                    subnetPortsRepository.getSubnetPort(item.getSubnetId()).forEach(portId -> LOG.info(portId));
+                } catch (CacheException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+
         try (Transaction tx = portCache.getTransaction().start()) {
             Map<String, PortEntity> portEntityMap = portEntities
                     .stream()
@@ -270,6 +284,19 @@ public class PortRepository {
             neighborRepository.createNeighbors(neighbors);
             subnetPortsRepository.addSubnetPortIds(portEntities);
             tx.commit();
+        }
+
+        for (PortEntity portEntity : portEntities) {
+            LOG.info(portEntity.getId());
+            portEntity.getFixedIps().forEach(item ->
+            {
+                LOG.info(item.getSubnetId());
+                try {
+                    subnetPortsRepository.getSubnetPort(item.getSubnetId()).forEach(portId -> LOG.info(portId));
+                } catch (CacheException e) {
+                    e.printStackTrace();
+                }
+            });
         }
     }
 
@@ -285,13 +312,13 @@ public class PortRepository {
 
     @DurationStatistics
     public synchronized void deletePort(PortEntity portEntity) throws Exception {
-        System.out.println("Test delete port");
-        System.out.println(portEntity.getId());
+        LOG.info("Test delete port");
+        LOG.info(portEntity.getId());
         portEntity.getFixedIps().forEach(item ->
         {
-            System.out.println(item.getSubnetId());
+            LOG.info(item.getSubnetId());
             try {
-                System.out.println(subnetPortsRepository.getSubnetPort(item.getSubnetId()));
+                subnetPortsRepository.getSubnetPort(item.getSubnetId()).forEach(portId -> LOG.info(portId));
             } catch (CacheException e) {
                 e.printStackTrace();
             }
@@ -306,7 +333,7 @@ public class PortRepository {
         {
             System.out.println(item.getSubnetId());
             try {
-                System.out.println(subnetPortsRepository.getSubnetPort(item.getSubnetId()));
+                subnetPortsRepository.getSubnetPort(item.getSubnetId()).forEach(portId -> LOG.info(portId));
             } catch (CacheException e) {
                 e.printStackTrace();
             }
