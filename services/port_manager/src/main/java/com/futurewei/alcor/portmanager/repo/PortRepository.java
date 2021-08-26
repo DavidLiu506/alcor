@@ -353,26 +353,15 @@ public class PortRepository {
                 e.printStackTrace();
             }
         });
-        Ignite ignite = Ignition.ignite();
-        IgniteCache<String, Integer> cache = ignite.cache("portCache");
 
-        // Create a lock for the given key
-        Lock lock = cache.lock("keyLock");
-        try {
-            // Acquire the lock
-            lock.lock();
-
-            
+        try (Transaction tx = portCache.getTransaction().start()) {
+            LOG.info("Delete port start");
             portCache.remove(portEntity.getId());
             neighborRepository.deleteNeighbors(portEntity);
             subnetPortsRepository.deleteSubnetPortIds(portEntity);
-
+            tx.commit();
+            LOG.info("Delete port done");
         }
-        finally {
-            // Release the lock
-            lock.unlock();
-        }
-
 
         LOG.info("After update:");
         portEntity.getFixedIps().forEach(item ->

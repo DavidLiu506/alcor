@@ -144,7 +144,7 @@ public class SubnetPortsRepository {
 
         //Delete port ids from subnetPortIdsCache
 
-        for (String subnetId: subnetIds) {
+        for (String subnetId : subnetIds) {
             SubnetPortIds subnetPortIds = subnetPortIdsCache.get(subnetId);
             LOG.info("Get subnetPortIds: " + subnetPortIds.getSubnetId());
             LOG.info("Before delete");
@@ -156,6 +156,7 @@ public class SubnetPortsRepository {
             LOG.info("After delete");
             subnetPortIds.getPortIds().forEach(item -> LOG.info(item));
         }
+
 
 
     }
