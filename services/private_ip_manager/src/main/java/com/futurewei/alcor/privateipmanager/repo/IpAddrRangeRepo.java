@@ -172,8 +172,11 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
             }
 
             try {
+                CacheConfiguration cfg = new CacheConfiguration();
+                cfg.setName(getIpAddrCacheName(rangeId));
+                cfg.setAtomicityMode(CacheAtomicityMode.TRANSACTIONAL);
                 ICache<String, IpAddrAlloc> ipAddrCache =
-                        cacheFactory.getCache(IpAddrAlloc.class, getIpAddrCacheName(rangeId));
+                        cacheFactory.getCache(IpAddrAlloc.class, cfg);
                 ipAddrAlloc = ipAddrRange.allocate(ipAddrCache, ipAddr);
             } catch (Exception e) {
                 LOG.warn("Allocate ip address from {} failed", ipAddrRange.getId());
