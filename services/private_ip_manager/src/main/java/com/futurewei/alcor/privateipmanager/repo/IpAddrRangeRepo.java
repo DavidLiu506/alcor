@@ -29,6 +29,8 @@ import com.futurewei.alcor.web.entity.ip.IpAddrRangeRequest;
 import com.futurewei.alcor.web.entity.ip.IpAddrRequest;
 import com.futurewei.alcor.web.entity.ip.IpAddrUpdateRequest;
 import com.futurewei.alcor.web.entity.ip.IpVersion;
+import org.apache.ignite.cache.CacheAtomicityMode;
+import org.apache.ignite.configuration.CacheConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -143,7 +145,10 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
     }
 
     private IpAddrAlloc doAllocateIpAddr(String vpcId, int ipVersion, String ipAddr) throws Exception {
-        VpcIpRange vpcIpRange = vpcIpRangeCache.get(vpcId);
+        VpcIpRange vpcIpRange = null;
+        try (Transaction tx = ipAddrRangeCache.getTransaction().start()){
+            vpcIpRange = vpcIpRangeCache.get(vpcId);
+        }
         if (vpcIpRange == null) {
             throw new NotFoundIpRangeFromVpc();
         }
@@ -153,8 +158,11 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
             if (ipAddrAlloc != null) {
                 break;
             }
+            IpAddrRange ipAddrRange = null;
+            try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
+                ipAddrRange = ipAddrRangeCache.get(rangeId);
+            }
 
-            IpAddrRange ipAddrRange = ipAddrRangeCache.get(rangeId);
             if (ipAddrRange == null) {
                 throw new IpRangeNotFoundException();
             }
@@ -164,15 +172,20 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
             }
 
             try {
+                CacheConfiguration cfg = new CacheConfiguration();
+                cfg.setName(getIpAddrCacheName(rangeId));
+                cfg.setAtomicityMode(CacheAtomicityMode.TRANSACTIONAL);
                 ICache<String, IpAddrAlloc> ipAddrCache =
-                        cacheFactory.getCache(IpAddrAlloc.class, getIpAddrCacheName(rangeId));
+                        cacheFactory.getCache(IpAddrAlloc.class, cfg);
                 ipAddrAlloc = ipAddrRange.allocate(ipAddrCache, ipAddr);
             } catch (Exception e) {
                 LOG.warn("Allocate ip address from {} failed", ipAddrRange.getId());
                 continue;
             }
-
-            ipAddrRangeCache.put(ipAddrRange.getId(), ipAddrRange);
+            try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
+                ipAddrRangeCache.put(ipAddrRange.getId(), ipAddrRange);
+                tx.commit();
+            }
         }
 
         if (ipAddrAlloc == null) {
@@ -190,11 +203,8 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
      */
     @DurationStatistics
     public synchronized IpAddrAlloc allocateIpAddr(IpAddrRequest request) throws Exception {
-        try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
-            IpAddrAlloc ipAddrAlloc = allocateIpAddrMethod(request);
-            tx.commit();
-            return ipAddrAlloc;
-        }
+        IpAddrAlloc ipAddrAlloc = allocateIpAddrMethod(request);
+        return ipAddrAlloc;
     }
 
     /**
@@ -208,30 +218,38 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
     public synchronized Map<String, List<IpAddrAlloc>> allocateIpAddrBulk(Map<String, Integer> requests) throws Exception {
         Map<String, List<IpAddrAlloc>> result = new HashMap<>();
 
-        try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
-            for (Map.Entry<String, Integer> entry: requests.entrySet()) {
-                IpAddrRange ipAddrRange = ipAddrRangeCache.get(entry.getKey());
-                if (ipAddrRange == null) {
-                    throw new IpRangeNotFoundException();
-                }
 
-                ICache<String, IpAddrAlloc> ipAddrCache =
-                        cacheFactory.getCache(IpAddrAlloc.class, getIpAddrCacheName(ipAddrRange.getId()));
-
-                List<IpAddrAlloc> ipAddrAllocs = ipAddrRange.allocateBulk(ipAddrCache, entry.getValue());
-                ipAddrRangeCache.put(ipAddrRange.getId(), ipAddrRange);
-
-                result.put(entry.getKey(), ipAddrAllocs);
+        for (Map.Entry<String, Integer> entry: requests.entrySet()) {
+            IpAddrRange ipAddrRange = null;
+            try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
+                ipAddrRange = ipAddrRangeCache.get(entry.getKey());
             }
 
-            tx.commit();
+            if (ipAddrRange == null) {
+                throw new IpRangeNotFoundException();
+            }
+
+            ICache<String, IpAddrAlloc> ipAddrCache =
+                    cacheFactory.getCache(IpAddrAlloc.class, getIpAddrCacheName(ipAddrRange.getId()));
+
+            List<IpAddrAlloc> ipAddrAllocs = ipAddrRange.allocateBulk(ipAddrCache, entry.getValue());
+            try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
+                ipAddrRangeCache.put(ipAddrRange.getId(), ipAddrRange);
+                tx.commit();
+            }
+
+            result.put(entry.getKey(), ipAddrAllocs);
         }
+
 
         return result;
     }
 
     private List<IpAddrAlloc> doAllocateIpAddr(String rangeId, List<IpAddrRequest> ipRequests) throws Exception {
-        IpAddrRange ipAddrRange = ipAddrRangeCache.get(rangeId);
+        IpAddrRange ipAddrRange = null;
+        try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
+            ipAddrRange = ipAddrRangeCache.get(rangeId);
+        }
         if (ipAddrRange == null) {
             throw new IpRangeNotFoundException();
         }
@@ -244,15 +262,20 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
                 .collect(Collectors.toList());
 
         List<IpAddrAlloc> result = ipAddrRange.allocateBulk(ipAddrCache, ips);
-        ipAddrRangeCache.put(ipAddrRange.getId(), ipAddrRange);
+        try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
+            ipAddrRangeCache.put(ipAddrRange.getId(), ipAddrRange);
+            tx.commit();
+        }
 
         return result;
     }
 
     private List<IpAddrAlloc> doAllocateIpAddr(String vpcId, int ipVersion, List<String> ips) throws Exception {
         List<IpAddrAlloc> result = new ArrayList<>();
-
-        VpcIpRange vpcIpRange = vpcIpRangeCache.get(vpcId);
+        VpcIpRange vpcIpRange = null;
+        try (Transaction tx = vpcIpRangeCache.getTransaction().start()) {
+            vpcIpRange = vpcIpRangeCache.get(vpcId);
+        }
         if (vpcIpRange == null) {
             throw new NotFoundIpRangeFromVpc();
         }
@@ -263,7 +286,11 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
                 break;
             }
 
-            IpAddrRange ipAddrRange = ipAddrRangeCache.get(rangeId);
+            IpAddrRange ipAddrRange = null;
+            try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
+                ipAddrRange = ipAddrRangeCache.get(rangeId);
+            }
+
             if (ipAddrRange == null) {
                 throw new IpRangeNotFoundException();
             }
@@ -281,7 +308,11 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
             if (ipAddrAllocs.size() > 0) {
                 result.addAll(ipAddrAllocs);
                 requestIps = ips.subList(result.size(), ips.size());
-                ipAddrRangeCache.put(ipAddrRange.getId(), ipAddrRange);
+                try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
+                    ipAddrRangeCache.put(ipAddrRange.getId(), ipAddrRange);
+                    tx.commit();
+                }
+
             }
         }
 
@@ -297,10 +328,8 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
                                                              Map<String, List<IpAddrRequest>> vpcIpv4Requests,
                                                              Map<String, List<IpAddrRequest>> vpcIpv6Requests) throws Exception {
         List<IpAddrAlloc> result = new ArrayList<>();
-        try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
-            allocateIpAddrBulkMethod(rangeRequests,vpcIpv4Requests,vpcIpv6Requests,result);
-            tx.commit();
-        }
+
+        allocateIpAddrBulkMethod(rangeRequests,vpcIpv4Requests,vpcIpv6Requests,result);
 
         return result;
     }
@@ -438,7 +467,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
 
     @DurationStatistics
     public synchronized List<IpAddrAlloc> updateIpAddr(IpAddrUpdateRequest request,Map<String, List<String>> rangeToIpAddrList,Map<String, List<IpAddrRequest>> rangeRequests,
-                             Map<String, List<IpAddrRequest>> vpcIpv4Requests,Map<String, List<IpAddrRequest>> vpcIpv6Requests) throws Exception {
+                                                       Map<String, List<IpAddrRequest>> vpcIpv4Requests,Map<String, List<IpAddrRequest>> vpcIpv6Requests) throws Exception {
         List<IpAddrAlloc> result = null;
 
         try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
@@ -521,7 +550,11 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
         if (request.getRangeId() == null) {
             ipAddrAlloc = doAllocateIpAddr(request.getVpcId(), request.getIpVersion(), request.getIp());
         } else {
-            IpAddrRange ipAddrRange = ipAddrRangeCache.get(request.getRangeId());
+            IpAddrRange ipAddrRange = null;
+            try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
+                ipAddrRange = ipAddrRangeCache.get(request.getRangeId());
+            }
+
             if (ipAddrRange == null) {
                 throw new IpRangeNotFoundException();
             }
@@ -529,7 +562,11 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
                     cacheFactory.getCache(IpAddrAlloc.class, getIpAddrCacheName(request.getRangeId()));
 
             ipAddrAlloc = ipAddrRange.allocate(ipAddrCache, request.getIp());
-            ipAddrRangeCache.put(ipAddrRange.getId(), ipAddrRange);
+            try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
+                ipAddrRangeCache.put(ipAddrRange.getId(), ipAddrRange);
+                tx.commit();
+            }
+
         }
         return ipAddrAlloc;
     }
