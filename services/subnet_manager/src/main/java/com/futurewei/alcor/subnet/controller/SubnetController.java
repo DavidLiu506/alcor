@@ -384,7 +384,11 @@ public class SubnetController {
 
                 // delete old gateway port
                 if (oldGatewayIp != null) {
-                    this.subnetToPortManagerService.deleteGatewayPort(projectId, oldPortId);
+                    try {
+                        this.subnetToPortManagerService.deleteGatewayPort(projectId, oldPortId);
+                    } catch (Exception e) {
+                        logger.warn(e.getMessage());
+                    }
                 }
 
             } else if (!newGatewayIp.equals(oldGatewayIp)) {
@@ -410,7 +414,11 @@ public class SubnetController {
 
                     // delete port with old gateway port IP & port Id
                     if (oldGatewayIp != null) {
-                        this.subnetToPortManagerService.deleteGatewayPort(projectId, oldPortId);
+                        try {
+                            this.subnetToPortManagerService.deleteGatewayPort(projectId, oldPortId);
+                        } catch (Exception e) {
+                            logger.warn(e.getMessage());
+                        }
                     }
                 } else {
                     throw new GatewayIpUnsupported();
