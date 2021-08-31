@@ -469,8 +469,6 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
     public synchronized List<IpAddrAlloc> updateIpAddr(IpAddrUpdateRequest request,Map<String, List<String>> rangeToIpAddrList,Map<String, List<IpAddrRequest>> rangeRequests,
                                                        Map<String, List<IpAddrRequest>> vpcIpv4Requests,Map<String, List<IpAddrRequest>> vpcIpv6Requests) throws Exception {
         List<IpAddrAlloc> result = null;
-
-        try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
             if (request.getOldIpAddrRequests().size() > 0) {
                 if (request.getOldIpAddrRequests().size() > 1) {
                     releaseIpAddrBulkMethod(rangeToIpAddrList);
@@ -487,8 +485,6 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
                     result.add(ipAddrAlloc);
                 }
             }
-            tx.commit();
-        }
         return result;
     }
 
