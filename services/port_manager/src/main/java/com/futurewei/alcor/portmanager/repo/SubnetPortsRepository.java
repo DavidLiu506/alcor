@@ -129,7 +129,7 @@ public class SubnetPortsRepository {
     }
 
     public void deleteSubnetPortIds(PortEntity portEntity) throws Exception {
-        LOG.info("Delete subnet portId:");
+        //LOG.info("Delete subnet portId:");
         if (portEntity.getFixedIps() == null) {
             LOG.error("Can not find fixed ip in port entity");
             throw new FixedIpsInvalid();
@@ -139,22 +139,22 @@ public class SubnetPortsRepository {
                 .map(PortEntity.FixedIp::getSubnetId)
                 .collect(Collectors.toList());
 
-        LOG.info("SubnetId list:");
-        subnetIds.forEach(item -> LOG.info(item));
+        //LOG.info("SubnetId list:");
+        //subnetIds.forEach(item -> LOG.info(item));
 
         //Delete port ids from subnetPortIdsCache
 
         for (String subnetId : subnetIds) {
             SubnetPortIds subnetPortIds = subnetPortIdsCache.get(subnetId);
-            LOG.info("Get subnetPortIds: " + subnetPortIds.getSubnetId());
-            LOG.info("Before delete");
-            subnetPortIds.getPortIds().forEach(item -> LOG.info(item));
+            //LOG.info("Get subnetPortIds: " + subnetPortIds.getSubnetId());
+            //LOG.info("Before delete");
+            //subnetPortIds.getPortIds().forEach(item -> LOG.info(item));
             if (subnetPortIds != null) {
                 subnetPortIds.getPortIds().remove(portEntity.getId());
                 subnetPortIdsCache.put(subnetId, subnetPortIds);
             }
-            LOG.info("After delete");
-            subnetPortIds.getPortIds().forEach(item -> LOG.info(item));
+            //LOG.info("After delete");
+            //subnetPortIds.getPortIds().forEach(item -> LOG.info(item));
         }
 
 

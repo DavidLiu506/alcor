@@ -266,6 +266,7 @@ public class PortRepository {
 
     @DurationStatistics
     public synchronized void createPortBulk(List<PortEntity> portEntities, Map<String, List<NeighborInfo>> neighbors) throws Exception {
+        /*
         LOG.info("Test create port");
         LOG.info("Before update:");
         for (PortEntity portEntity : portEntities) {
@@ -281,6 +282,8 @@ public class PortRepository {
             });
         }
 
+         */
+
         try (Transaction tx = portCache.getTransaction().start()) {
             Map<String, PortEntity> portEntityMap = portEntities
                     .stream()
@@ -290,6 +293,7 @@ public class PortRepository {
             subnetPortsRepository.addSubnetPortIds(portEntities);
             tx.commit();
         }
+        /*
         LOG.info("After update:");
         for (PortEntity portEntity : portEntities) {
             LOG.info(portEntity.getId());
@@ -303,10 +307,13 @@ public class PortRepository {
                 }
             });
         }
+        
+         */
     }
 
     @DurationStatistics
     public synchronized void updatePort(PortEntity oldPortEntity, PortEntity newPortEntity, List<NeighborInfo> neighborInfos) throws Exception {
+        /*
         LOG.info("Test update port");
         LOG.info(oldPortEntity.getId());
         LOG.info(newPortEntity.getId());
@@ -321,12 +328,15 @@ public class PortRepository {
             }
         });
 
+         */
+
         try (Transaction tx = portCache.getTransaction().start()) {
             portCache.put(newPortEntity.getId(), newPortEntity);
             neighborRepository.updateNeighbors(oldPortEntity, neighborInfos);
             subnetPortsRepository.updateSubnetPortIds(oldPortEntity, newPortEntity);
             tx.commit();
         }
+        /*
         LOG.info("After update");
         newPortEntity.getFixedIps().forEach(item ->
         {
@@ -337,10 +347,13 @@ public class PortRepository {
                 e.printStackTrace();
             }
         });
+
+         */
     }
 
     @DurationStatistics
     public synchronized void deletePort(PortEntity portEntity) throws Exception {
+        /*
         LOG.info("Test delete port");
         LOG.info(portEntity.getId());
         LOG.info("Before update:");
@@ -353,7 +366,7 @@ public class PortRepository {
                 e.printStackTrace();
             }
         });
-
+        */
         try (Transaction tx = portCache.getTransaction().start()) {
             LOG.info("Delete port start");
             portCache.remove(portEntity.getId());
@@ -362,7 +375,7 @@ public class PortRepository {
             tx.commit();
             LOG.info("Delete port done");
         }
-
+        /*
         LOG.info("After update:");
         portEntity.getFixedIps().forEach(item ->
         {
@@ -373,6 +386,8 @@ public class PortRepository {
                 e.printStackTrace();
             }
         });
+
+         */
     }
 
     @DurationStatistics
