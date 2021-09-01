@@ -173,6 +173,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
                         cacheFactory.getCache(IpAddrAlloc.class, cfg);
                 ipAddrAlloc = ipAddrRange.allocate(ipAddrCache, ipAddr);
             } catch (Exception e) {
+                LOG.warn(e.getMessage());
                 LOG.warn("Allocate ip address from {} failed", ipAddrRange.getId());
                 continue;
             }
