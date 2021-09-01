@@ -189,7 +189,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
      * @throws Exception Db operation or ip address assignment exception
      */
     @DurationStatistics
-    public synchronized IpAddrAlloc allocateIpAddr(IpAddrRequest request) throws Exception {
+    public IpAddrAlloc allocateIpAddr(IpAddrRequest request) throws Exception {
         IpAddrAlloc ipAddrAlloc = null;
         try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
             ipAddrRangeCache.get("test");
@@ -390,7 +390,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
     }
 
     @DurationStatistics
-    public synchronized void createIpAddrRange(IpAddrRangeRequest request) throws Exception {
+    public void createIpAddrRange(IpAddrRangeRequest request) throws Exception {
         try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
             if (ipAddrRangeCache.get(request.getId()) != null) {
                 LOG.warn("Create ip address range failed: IpAddressRange already exists");
