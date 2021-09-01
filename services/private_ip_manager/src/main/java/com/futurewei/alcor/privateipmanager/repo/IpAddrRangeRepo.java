@@ -377,8 +377,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
 
         return ipAddrRange.getIpAddrBulk(ipAddrCache);
     }
-
-    @DurationStatistics
+    
     public synchronized void createIpAddrRange(IpAddrRangeRequest request) throws Exception {
             LOG.info("createIpAddrRange enter: ");
             if (ipAddrRangeCache.get(request.getId()) != null) {
