@@ -190,12 +190,17 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
      */
     @DurationStatistics
     public synchronized IpAddrAlloc allocateIpAddr(IpAddrRequest request) throws Exception {
+        IpAddrAlloc ipAddrAlloc = null;
         try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
             ipAddrRangeCache.get("test");
-            IpAddrAlloc ipAddrAlloc = allocateIpAddrMethod(request);
+            ipAddrAlloc = allocateIpAddrMethod(request);
             tx.commit();
             return ipAddrAlloc;
+        } catch (Exception e) {
+            LOG.warn("Transaction exception: ");
+            LOG.warn(e.getMessage());
         }
+        return ipAddrAlloc;
     }
 
     /**
@@ -226,6 +231,9 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
             }
 
             tx.commit();
+        } catch (Exception e) {
+            LOG.warn("Transaction exception: ");
+            LOG.warn(e.getMessage());
         }
 
         return result;
@@ -302,6 +310,9 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
             ipAddrRangeCache.get("test");
             allocateIpAddrBulkMethod(rangeRequests,vpcIpv4Requests,vpcIpv6Requests,result);
             tx.commit();
+        } catch (Exception e) {
+            LOG.warn("Transaction exception: ");
+            LOG.warn(e.getMessage());
         }
 
         return result;
@@ -322,6 +333,9 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
             ipAddrRangeCache.put(ipAddrRange.getId(), ipAddrRange);
 
             tx.commit();
+        } catch (Exception e) {
+            LOG.warn("Transaction exception: ");
+            LOG.warn(e.getMessage());
         }
     }
 
@@ -331,6 +345,9 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
             ipAddrRangeCache.get("test");
             releaseIpAddrMethod(rangeId,ipAddr);
             tx.commit();
+        } catch (Exception e) {
+            LOG.warn("Transaction exception: ");
+            LOG.warn(e.getMessage());
         }
     }
 
@@ -340,6 +357,9 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
             ipAddrRangeCache.get("test");
             releaseIpAddrBulkMethod(requests);
             tx.commit();
+        } catch (Exception e) {
+            LOG.warn("Transaction exception: ");
+            LOG.warn(e.getMessage());
         }
     }
 
@@ -400,14 +420,18 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
             request.setTotalIps(ipAddrRange.getTotalIps());
 
             tx.commit();
+        } catch (Exception e) {
+            LOG.warn("Transaction exception: ");
+            LOG.warn(e.getMessage());
         }
         cacheFactory.getCache(IpAddrAlloc.class, getIpAddrCacheName(request.getId()));
     }
 
     @DurationStatistics
     public synchronized IpAddrRange deleteIpAddrRange(String rangeId) throws Exception {
+        IpAddrRange ipAddrRange = null;
         try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
-            IpAddrRange ipAddrRange = ipAddrRangeCache.get(rangeId);
+            ipAddrRange = ipAddrRangeCache.get(rangeId);
             if (ipAddrRange == null) {
                 LOG.warn("Delete ip address range failed: Ip address range not found");
                 throw new IpAddrRangeNotFoundException();
@@ -429,9 +453,11 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
             }
 
             tx.commit();
-
-            return ipAddrRange;
+        } catch (Exception e) {
+            LOG.warn("Transaction exception: ");
+            LOG.warn(e.getMessage());
         }
+        return  ipAddrRange;
     }
 
     @DurationStatistics
@@ -463,6 +489,9 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
                 }
             }
             tx.commit();
+        } catch (Exception e) {
+            LOG.warn("Transaction exception: ");
+            LOG.warn(e.getMessage());
         }
         return result;
     }
