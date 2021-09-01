@@ -191,7 +191,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
     @DurationStatistics
     public synchronized IpAddrAlloc allocateIpAddr(IpAddrRequest request) throws Exception {
         try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
-            ipAddrRangeCache.get(request.getRangeId());
+            ipAddrRangeCache.get("test");
             IpAddrAlloc ipAddrAlloc = allocateIpAddrMethod(request);
             tx.commit();
             return ipAddrAlloc;
@@ -299,6 +299,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
                                                              Map<String, List<IpAddrRequest>> vpcIpv6Requests) throws Exception {
         List<IpAddrAlloc> result = new ArrayList<>();
         try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
+            ipAddrRangeCache.get("test");
             allocateIpAddrBulkMethod(rangeRequests,vpcIpv4Requests,vpcIpv6Requests,result);
             tx.commit();
         }
@@ -327,7 +328,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
     @DurationStatistics
     public synchronized void releaseIpAddr(String rangeId, String ipAddr) throws Exception {
         try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
-            ipAddrRangeCache.get(rangeId);
+            ipAddrRangeCache.get("test");
             releaseIpAddrMethod(rangeId,ipAddr);
             tx.commit();
         }
@@ -336,6 +337,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
     @DurationStatistics
     public synchronized void releaseIpAddrBulk(Map<String, List<String>> requests) throws Exception {
         try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
+            ipAddrRangeCache.get("test");
             releaseIpAddrBulkMethod(requests);
             tx.commit();
         }
@@ -443,9 +445,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
         List<IpAddrAlloc> result = null;
 
         try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
-            if (request.getNewIpAddrRequests().size() > 0) {
-                ipAddrRangeCache.get(request.getNewIpAddrRequests().get(0).getRangeId());
-            }
+            ipAddrRangeCache.get("test");
             if (request.getOldIpAddrRequests().size() > 0) {
                 if (request.getOldIpAddrRequests().size() > 1) {
                     releaseIpAddrBulkMethod(rangeToIpAddrList);
