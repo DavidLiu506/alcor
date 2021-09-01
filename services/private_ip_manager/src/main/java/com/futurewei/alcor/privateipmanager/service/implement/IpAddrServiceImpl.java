@@ -213,16 +213,14 @@ public class IpAddrServiceImpl implements IpAddrService {
     }
 
     @Override
-    @DurationStatistics
     public IpAddrRangeRequest createIpAddrRange(IpAddrRangeRequest request) throws Exception {
         LOG.debug("Create ip address range, request: {}", request);
 
         if (request.getId() == null) {
             request.setId(UUID.randomUUID().toString());
         }
-
+        LOG.debug("ipAddrRangeRepo.createIpAddrRange(request)");
         ipAddrRangeRepo.createIpAddrRange(request);
-
         LOG.info("Create ip address range success, request: {}", request);
 
         return request;
