@@ -378,8 +378,6 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
 
             ipAddrRangeCache.put(request.getId(), ipAddrRange);
 
-            //cacheFactory.getCache(IpAddrAlloc.class, getIpAddrCacheName(request.getId()));
-
             VpcIpRange vpcIpRange = vpcIpRangeCache.get(request.getVpcId());
             if (vpcIpRange == null) {
                 vpcIpRange = new VpcIpRange();
@@ -399,6 +397,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
 
             tx.commit();
         }
+        cacheFactory.getCache(IpAddrAlloc.class, getIpAddrCacheName(request.getId()));
     }
 
     @DurationStatistics
