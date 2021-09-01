@@ -175,6 +175,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
 
                 ipAddrRangeCache.put(ipAddrRange.getId(), ipAddrRange);
             }
+            tx.commit();
 
             if (ipAddrAlloc == null) {
                 throw new IpAddrNotEnoughException();
@@ -530,6 +531,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
 
                 ipAddrAlloc = ipAddrRange.allocate(ipAddrCache, request.getIp());
                 ipAddrRangeCache.put(ipAddrRange.getId(), ipAddrRange);
+                tx.commit();
             }
         }
         return ipAddrAlloc;
