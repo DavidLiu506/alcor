@@ -379,7 +379,6 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
 
     @DurationStatistics
     public synchronized void createIpAddrRange(IpAddrRangeRequest request) throws Exception {
-        try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
             if (ipAddrRangeCache.get(request.getId()) != null) {
                 LOG.warn("Create ip address range failed: IpAddressRange already exists");
                 throw new IpAddrRangeExistException();
@@ -408,9 +407,6 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
 
             request.setUsedIps(ipAddrRange.getUsedIps());
             request.setTotalIps(ipAddrRange.getTotalIps());
-
-            tx.commit();
-        }
     }
 
     @DurationStatistics
