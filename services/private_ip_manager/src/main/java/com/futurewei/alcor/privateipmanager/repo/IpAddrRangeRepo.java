@@ -379,6 +379,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
 
     @DurationStatistics
     public synchronized void createIpAddrRange(IpAddrRangeRequest request) throws Exception {
+            LOG.info("createIpAddrRange enter: ");
             if (ipAddrRangeCache.get(request.getId()) != null) {
                 LOG.warn("Create ip address range failed: IpAddressRange already exists");
                 throw new IpAddrRangeExistException();
@@ -386,11 +387,11 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
 
             IpAddrRange ipAddrRange = new IpAddrRange(request.getId(), request.getVpcId(), request.getSubnetId(),
                     request.getIpVersion(), request.getFirstIp(), request.getLastIp());
-
+            LOG.info("ipAddrRangeCache.put(request.getId(), ipAddrRange)");
             ipAddrRangeCache.put(request.getId(), ipAddrRange);
 
             //cacheFactory.getCache(IpAddrAlloc.class, getIpAddrCacheName(request.getId()));
-
+            LOG.info("VpcIpRange vpcIpRange = vpcIpRangeCache.get(request.getVpcId())");
             VpcIpRange vpcIpRange = vpcIpRangeCache.get(request.getVpcId());
             if (vpcIpRange == null) {
                 vpcIpRange = new VpcIpRange();
@@ -402,7 +403,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
             } else {
                 vpcIpRange.getRanges().add(ipAddrRange.getId());
             }
-
+            LOG.info("vpcIpRangeCache.put(vpcIpRange.getVpcId(), vpcIpRange);");
             vpcIpRangeCache.put(vpcIpRange.getVpcId(), vpcIpRange);
 
             request.setUsedIps(ipAddrRange.getUsedIps());
