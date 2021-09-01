@@ -30,15 +30,21 @@ Copyright(c) 2020 Futurewei Cloud
       <property name="peerClassLoadingEnabled" value="true" />
 
       <!-- Enabling Apache Ignite Persistent Store. -->
-      <property name="dataStorageConfiguration">
-         <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
-            <property name="defaultDataRegionConfiguration">
-               <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
-                  <property name="persistenceEnabled" value="true"/>
-               </bean>
-            </property>
-            <property name="storagePath" value="/opt/ip"/>
-         </bean>
+      <property name="cacheConfiguration">
+         <list>
+            <bean class="org.apache.ignite.configuration.CacheConfiguration">
+               <property name="name" value="com.futurewei.alcor.privateipmanager.entity.IpAddrAlloc"/>
+               <property name="atomicityMode" value="TRANSACTIONAL"/>
+            </bean>
+            <bean class="org.apache.ignite.configuration.CacheConfiguration">
+               <property name="name" value="com.futurewei.alcor.privateipmanager.entity.IpAddrRange"/>
+               <property name="atomicityMode" value="TRANSACTIONAL"/>
+            </bean>
+            <bean class="org.apache.ignite.configuration.CacheConfiguration">
+               <property name="name" value="com.futurewei.alcor.privateipmanager.entity.VpcIpRange"/>
+               <property name="atomicityMode" value="TRANSACTIONAL"/>
+            </bean>
+         </list>
       </property>
 
       <!-- Explicitly configure TCP discovery SPI to provide list of initial nodes. -->
