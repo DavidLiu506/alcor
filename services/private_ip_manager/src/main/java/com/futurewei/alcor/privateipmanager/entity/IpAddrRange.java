@@ -85,15 +85,6 @@ public class IpAddrRange {
         return ipAddrAlloc;
     }
 
-    public boolean allocate(String ip) throws Exception {
-        try {
-            String ipAddr = allocator.allocate(ip);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
     @Deprecated
     public List<IpAddrAlloc> allocateBulk(ICache<String, IpAddrAlloc> ipAddrCache, int num) throws Exception {
         List<String> ipAddrList = allocator.allocateBulk(num);
