@@ -144,7 +144,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
         }
     }
 
-    private synchronized IpAddrAlloc doAllocateIpAddr(String vpcId, int ipVersion, String ipAddr) throws Exception {
+    private IpAddrAlloc doAllocateIpAddr(String vpcId, int ipVersion, String ipAddr) throws Exception {
         VpcIpRange vpcIpRange = vpcIpRangeCache.get(vpcId);
         if (vpcIpRange == null) {
             throw new NotFoundIpRangeFromVpc();
@@ -555,7 +555,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
 
     }
 
-    private synchronized IpAddrAlloc allocateIpAddrMethod(IpAddrRequest request) throws Exception {
+    private IpAddrAlloc allocateIpAddrMethod(IpAddrRequest request) throws Exception {
         IpAddrAlloc ipAddrAlloc;
         if (request.getRangeId() == null) {
             ipAddrAlloc = doAllocateIpAddr(request.getVpcId(), request.getIpVersion(), request.getIp());
