@@ -151,27 +151,34 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
         }
 
         IpAddrAlloc ipAddrAlloc = null;
+        String ipAddrRangeId = null;
+        IpAddrRange ipAddrRange1 = null;
         for (String rangeId: vpcIpRange.getRanges()) {
             if (ipAddrAlloc != null) {
                 break;
             }
-            try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
-                IpAddrRange ipAddrRange = ipAddrRangeCache.get(rangeId);
-                if (ipAddrRange == null) {
-                    throw new IpRangeNotFoundException();
-                }
+            IpAddrRange ipAddrRange = ipAddrRangeCache.get(rangeId);
+            if (ipAddrRange == null) {
+                throw new IpRangeNotFoundException();
+            }
 
-                if (ipAddrRange.getIpVersion() != ipVersion) {
-                    continue;
-                }
-                ipAddrRangeCache.put(ipAddrRange.getId(), ipAddrRange);
+            if (ipAddrRange.getIpVersion() != ipVersion) {
+                continue;
+            }
+            if (ipAddrRange.allocate(ipAddr)) {
+                ipAddrRangeId = rangeId;
+            }
+            ipAddrRangeCache.put(ipAddrRange.getId(), ipAddrRange);
+            ipAddrRange1 = ipAddrRange;
+        }
+        if (ipAddrRangeId != null && !ipAddrRangeId.isEmpty() && ipAddrRange1 != null) {
+            try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
                 try {
                     ICache<String, IpAddrAlloc> ipAddrCache =
-                            cacheFactory.getCache(IpAddrAlloc.class, getIpAddrCacheName(rangeId));
-                    ipAddrAlloc = ipAddrRange.allocate(ipAddrCache, ipAddr);
+                            cacheFactory.getCache(IpAddrAlloc.class, getIpAddrCacheName(ipAddrRangeId));
+                    ipAddrAlloc = ipAddrRange1.allocate(ipAddrCache, ipAddr);
                 } catch (Exception e) {
-                    LOG.warn("Allocate ip address from {} failed", ipAddrRange.getId());
-                    continue;
+                    LOG.warn("Allocate ip address from {} failed", ipAddrRange1.getId());
                 }
                 tx.commit();
             }
