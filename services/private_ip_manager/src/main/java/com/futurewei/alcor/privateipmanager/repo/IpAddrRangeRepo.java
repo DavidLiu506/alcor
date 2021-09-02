@@ -393,6 +393,10 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
 
     @DurationStatistics
     public synchronized void createIpAddrRange(IpAddrRangeRequest request) throws Exception {
+        CacheConfiguration cfg = new CacheConfiguration();
+        cfg.setName(getIpAddrCacheName(request.getId()));
+        cfg.setAtomicityMode(CacheAtomicityMode.TRANSACTIONAL);
+        cacheFactory.getCache(IpAddrAlloc.class, cfg);
         try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
             if (ipAddrRangeCache.get(request.getId()) != null) {
                 LOG.warn("Create ip address range failed: IpAddressRange already exists");
@@ -426,10 +430,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
             LOG.warn("Transaction exception: ");
             LOG.warn(e.getMessage());
         }
-        CacheConfiguration cfg = new CacheConfiguration();
-        cfg.setName(getIpAddrCacheName(request.getId()));
-        cfg.setAtomicityMode(CacheAtomicityMode.TRANSACTIONAL);
-        cacheFactory.getCache(IpAddrAlloc.class, cfg);
+
     }
 
     @DurationStatistics
