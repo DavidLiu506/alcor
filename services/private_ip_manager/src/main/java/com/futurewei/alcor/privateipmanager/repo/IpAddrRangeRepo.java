@@ -325,11 +325,11 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
                 throw new IpRangeNotFoundException();
             }
 
+            ipAddrRangeCache.put(ipAddrRange.getId(), ipAddrRange);
             ICache<String, IpAddrAlloc> ipAddrCache =
                     cacheFactory.getCache(IpAddrAlloc.class, getIpAddrCacheName(ipAddrRange.getId()));
 
             ipAddrRange.modifyIpAddrState(ipAddrCache, ipAddr, state);
-            ipAddrRangeCache.put(ipAddrRange.getId(), ipAddrRange);
 
             tx.commit();
         } catch (Exception e) {
@@ -341,7 +341,6 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
     @DurationStatistics
     public synchronized void releaseIpAddr(String rangeId, String ipAddr) throws Exception {
         try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
-            ipAddrRangeCache.get("test");
             releaseIpAddrMethod(rangeId,ipAddr);
             tx.commit();
         } catch (Exception e) {
@@ -517,11 +516,11 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
             throw new IpRangeNotFoundException();
         }
 
+        ipAddrRangeCache.put(ipAddrRange.getId(), ipAddrRange);
         ICache<String, IpAddrAlloc> ipAddrCache =
                 cacheFactory.getCache(IpAddrAlloc.class, getIpAddrCacheName(ipAddrRange.getId()));
 
         ipAddrRange.release(ipAddrCache, ipAddr);
-        ipAddrRangeCache.put(ipAddrRange.getId(), ipAddrRange);
     }
 
     private void allocateIpAddrBulkMethod(Map<String, List<IpAddrRequest>> rangeRequests,
