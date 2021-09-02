@@ -29,6 +29,8 @@ import com.futurewei.alcor.web.entity.ip.IpAddrRangeRequest;
 import com.futurewei.alcor.web.entity.ip.IpAddrRequest;
 import com.futurewei.alcor.web.entity.ip.IpAddrUpdateRequest;
 import com.futurewei.alcor.web.entity.ip.IpVersion;
+import org.apache.ignite.cache.CacheAtomicityMode;
+import org.apache.ignite.configuration.CacheConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -189,7 +191,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
      * @throws Exception Db operation or ip address assignment exception
      */
     @DurationStatistics
-    public IpAddrAlloc allocateIpAddr(IpAddrRequest request) throws Exception {
+    public synchronized IpAddrAlloc allocateIpAddr(IpAddrRequest request) throws Exception {
         IpAddrAlloc ipAddrAlloc = null;
         try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
             ipAddrRangeCache.get("test");
@@ -390,7 +392,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
     }
 
     @DurationStatistics
-    public void createIpAddrRange(IpAddrRangeRequest request) throws Exception {
+    public synchronized void createIpAddrRange(IpAddrRangeRequest request) throws Exception {
         try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
             if (ipAddrRangeCache.get(request.getId()) != null) {
                 LOG.warn("Create ip address range failed: IpAddressRange already exists");
@@ -424,7 +426,10 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
             LOG.warn("Transaction exception: ");
             LOG.warn(e.getMessage());
         }
-        cacheFactory.getCache(IpAddrAlloc.class, getIpAddrCacheName(request.getId()));
+        CacheConfiguration cfg = new CacheConfiguration();
+        cfg.setName(getIpAddrCacheName(request.getId()));
+        cfg.setAtomicityMode(CacheAtomicityMode.TRANSACTIONAL);
+        cacheFactory.getCache(IpAddrAlloc.class, cfg);
     }
 
     @DurationStatistics
