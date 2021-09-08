@@ -78,9 +78,46 @@ public class VpcController {
     @FieldFilter(type = VpcEntity.class)
     @RequestMapping(
             method = GET,
-            value = {"/project/{projectid}/vpcs/{vpcid}"})
+            value = {"/project/{projectid}/vpcs/{vpcid}/state"})
     @DurationStatistics
     public VpcWebJson getVpcStateByVpcId(@PathVariable String projectid, @PathVariable String vpcid) throws Exception {
+
+        VpcEntity vpcState = null;
+
+        try {
+            RestPreconditionsUtil.verifyParameterNotNullorEmpty(projectid);
+            RestPreconditionsUtil.verifyParameterNotNullorEmpty(vpcid);
+            RestPreconditionsUtil.verifyResourceFound(projectid);
+            vpcState = this.vpcDatabaseService.getByVpcId(vpcid);
+
+        } catch (ParameterNullOrEmptyException e) {
+            //TODO: REST error code
+            throw new Exception(e);
+        }
+
+        if (vpcState == null) {
+            //TODO: REST error code
+            return new VpcWebJson();
+        }
+
+        return new VpcWebJson(vpcState);
+    }
+
+    /**
+     * hows details for a network
+     *
+     * @param projectid
+     * @param vpcid
+     * @return vpc state
+     * @throws Exception
+     */
+    @Rbac(resource ="vpc")
+    @FieldFilter(type = VpcEntity.class)
+    @RequestMapping(
+            method = GET,
+            value = {"/project/{projectid}/vpcs/{vpcid}"})
+    @DurationStatistics
+    public VpcWebJson getVpcStateWithSubnetByVpcId(@PathVariable String projectid, @PathVariable String vpcid) throws Exception {
 
         VpcEntity vpcState = null;
 

@@ -132,7 +132,7 @@ public class SubnetServiceImp implements SubnetService {
     @Override
     @DurationStatistics
     public VpcWebJson verifyVpcId(String projectId, String vpcId) throws FallbackException {
-        String vpcManagerServiceUrl = vpcUrl + projectId + "/vpcs/" + vpcId;
+        String vpcManagerServiceUrl = vpcUrl + projectId + "/vpcs/" + vpcId + "/state";
         VpcWebJson vpcResponse = restTemplate.getForObject(vpcManagerServiceUrl, VpcWebJson.class);
         if (vpcResponse.getNetwork() == null) {
             throw new FallbackException("fallback request");
