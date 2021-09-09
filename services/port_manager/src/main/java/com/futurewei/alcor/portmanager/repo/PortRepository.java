@@ -270,7 +270,7 @@ public class PortRepository {
             subnetPortsRepository.addSubnetPortIds(portEntities);
             tx.commit();
         }
-        neighborRepository.createNeighbors(neighbors);ß
+        neighborRepository.createNeighbors(neighbors);
     }
 
     @DurationStatistics
