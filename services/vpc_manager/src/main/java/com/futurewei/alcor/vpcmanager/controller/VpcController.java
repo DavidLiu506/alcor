@@ -372,6 +372,41 @@ public class VpcController {
     }
 
     /**
+     * Lists networks to which the project has access
+     *
+     * @param projectId
+     * @return Map<String, VpcWebResponseObject>
+     * @throws Exception
+     */
+    @Rbac(resource ="vpc")
+    @FieldFilter(type = VpcEntity.class)
+    @RequestMapping(
+            method = GET,
+            value = "/project/{projectId}/vpcs/state")
+    @DurationStatistics
+    public VpcsWebJson getVpcByProjectId(@PathVariable String projectId) throws Exception {
+        Map<String, VpcEntity> vpcStates = null;
+        Map<String, String[]> requestParams = (Map<String, String[]>)request.getAttribute(QUERY_ATTR_HEADER);
+        requestParams = requestParams == null ? request.getParameterMap():requestParams;
+        Map<String, Object[]> queryParams =
+                ControllerUtil.transformUrlPathParams(requestParams, VpcEntity.class);
+
+        try {
+            RestPreconditionsUtil.verifyParameterNotNullorEmpty(projectId);
+            RestPreconditionsUtil.verifyResourceFound(projectId);
+
+            vpcStates = this.vpcDatabaseService.getAllVpcs(queryParams);
+
+        } catch (ParameterNullOrEmptyException e) {
+            throw new Exception(e);
+        } catch (ResourceNotFoundException e) {
+            throw new Exception(e);
+        }
+
+        return new VpcsWebJson(new ArrayList<>(vpcStates.values()));
+    }
+
+    /**
      * List and count all networks
      *
      * @return
