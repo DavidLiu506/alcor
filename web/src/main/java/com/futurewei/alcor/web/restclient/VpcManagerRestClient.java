@@ -50,7 +50,7 @@ public class VpcManagerRestClient extends AbstractRestClient {
     @DurationStatistics
     public VpcsWebJson getVpcBulk(String projectId, List<String> vpcIds) throws Exception {
         String queryParameter = buildQueryParameter("id", vpcIds);
-        String url = vpcManagerUrl + "/project/" + projectId + "/vpcs/state?" + queryParameter;
+        String url = vpcManagerUrl + "/project/" + projectId + "/vpcs?" + queryParameter;
 
         VpcsWebJson vpcsWebJson = restTemplate.getForObject(url, VpcsWebJson.class);
         if (vpcsWebJson == null) {
