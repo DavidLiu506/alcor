@@ -59,7 +59,7 @@ public class FetchSubnetRequest extends AbstractRequest {
             if (subnetWebJson == null || subnetWebJson.getSubnet() == null) {
                 throw new GetSubnetEntityException();
             }
-
+            System.out.println("getSubnet");
             subnetEntities.add(subnetWebJson.getSubnet());
         } else {
             SubnetsWebJson subnetsWebJson = subnetManagerRestClient.getSubnetBulk(projectId, subnetIds);
@@ -68,7 +68,7 @@ public class FetchSubnetRequest extends AbstractRequest {
                     subnetsWebJson.getSubnets().size() != subnetIds.size()) {
                 throw new GetSubnetEntityException();
             }
-
+            System.out.println("getSubnetBulk");
             subnetEntities.addAll(subnetsWebJson.getSubnets());
         }
     }
