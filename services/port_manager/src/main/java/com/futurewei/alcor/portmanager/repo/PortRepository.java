@@ -267,30 +267,30 @@ public class PortRepository {
                     .stream()
                     .collect(Collectors.toMap(PortEntity::getId, Function.identity()));
             portCache.putAll(portEntityMap);
+            neighborRepository.createNeighbors(neighbors);
             subnetPortsRepository.addSubnetPortIds(portEntities);
             tx.commit();
         }
-        neighborRepository.createNeighbors(neighbors);
     }
 
     @DurationStatistics
     public synchronized void updatePort(PortEntity oldPortEntity, PortEntity newPortEntity, List<NeighborInfo> neighborInfos) throws Exception {
         try (Transaction tx = portCache.getTransaction().start()) {
             portCache.put(newPortEntity.getId(), newPortEntity);
+            neighborRepository.updateNeighbors(oldPortEntity, neighborInfos);
             subnetPortsRepository.updateSubnetPortIds(oldPortEntity, newPortEntity);
             tx.commit();
         }
-        neighborRepository.updateNeighbors(oldPortEntity, neighborInfos);
     }
 
     @DurationStatistics
     public synchronized void deletePort(PortEntity portEntity) throws Exception {
         try (Transaction tx = portCache.getTransaction().start()) {
             portCache.remove(portEntity.getId());
+            neighborRepository.deleteNeighbors(portEntity);
             subnetPortsRepository.deleteSubnetPortIds(portEntity);
             tx.commit();
         }
-        neighborRepository.deleteNeighbors(portEntity);
     }
 
     @DurationStatistics
