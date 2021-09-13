@@ -199,8 +199,8 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
         } catch (Exception e) {
             LOG.warn("Transaction exception: ");
             LOG.warn(e.getMessage());
+            throw e;
         }
-        return ipAddrAlloc;
     }
 
     /**
@@ -231,6 +231,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
         } catch (Exception e) {
             LOG.warn("Transaction exception: ");
             LOG.warn(e.getMessage());
+            throw e;
         }
 
         return result;
@@ -303,6 +304,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
         } catch (Exception e) {
             LOG.warn("Transaction exception: ");
             LOG.warn(e.getMessage());
+            throw e;
         }
 
         return result;
@@ -323,6 +325,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
         } catch (Exception e) {
             LOG.warn("Transaction exception: ");
             LOG.warn(e.getMessage());
+            throw e;
         }
     }
 
@@ -334,6 +337,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
         } catch (Exception e) {
             LOG.warn("Transaction exception: ");
             LOG.warn(e.getMessage());
+            throw e;
         }
     }
 
@@ -345,6 +349,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
         } catch (Exception e) {
             LOG.warn("Transaction exception: ");
             LOG.warn(e.getMessage());
+            throw e;
         }
     }
 
@@ -401,6 +406,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
         } catch (Exception e) {
             LOG.warn("Transaction exception: ");
             LOG.warn(e.getMessage());
+            throw e;
         }
 
     }
@@ -434,6 +440,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
         } catch (Exception e) {
             LOG.warn("Transaction exception: ");
             LOG.warn(e.getMessage());
+            throw e;
         }
         return  ipAddrRange;
     }
@@ -469,6 +476,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
         } catch (Exception e) {
             LOG.warn("Transaction exception: ");
             LOG.warn(e.getMessage());
+            throw e;
         }
         return result;
     }
