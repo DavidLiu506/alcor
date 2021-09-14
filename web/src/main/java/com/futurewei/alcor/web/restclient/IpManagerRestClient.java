@@ -20,6 +20,7 @@ import com.futurewei.alcor.common.stats.DurationStatistics;
 import com.futurewei.alcor.web.entity.ip.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +29,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 
 import java.util.List;
+import java.util.UUID;
 
 @Configuration
 @Import(RestTemplateConfig.class)
@@ -35,6 +37,7 @@ public class IpManagerRestClient extends AbstractRestClient {
     @Value("${microservices.ip.service.url:#{\"\"}}")
     private String ipManagerUrl;
     private static final Logger LOG = LoggerFactory.getLogger(IpManagerRestClient.class);
+
 
     public IpManagerRestClient(RestTemplateBuilder restTemplateBuilder) {
         super(restTemplateBuilder);
@@ -102,9 +105,10 @@ public class IpManagerRestClient extends AbstractRestClient {
             LOG.error("allocateIpAddress error: ipAddrRequest.getIp().isEmpty()");
         }
         IpAddrRequest result = null;
+        ipAddrRequest.setId(UUID.randomUUID().toString());
         try {
             HttpEntity<IpAddrRequest> request = new HttpEntity<>(ipAddrRequest);
-            result = restTemplate.postForObject(ipManagerUrl, request, IpAddrRequest.class);
+            result = restTemplate.postForObject(ipManagerUrl + "?id=" + UUID.randomUUID(), request, IpAddrRequest.class);
 
             verifyAllocatedIpAddr(result);
         } catch (Exception e) {

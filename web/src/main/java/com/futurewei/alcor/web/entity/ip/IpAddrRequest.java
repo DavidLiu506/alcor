@@ -19,6 +19,9 @@ package com.futurewei.alcor.web.entity.ip;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class IpAddrRequest {
+    @JsonProperty
+    private String id;
+
     @JsonProperty("ip_version")
     private int ipVersion;
 
@@ -47,6 +50,14 @@ public class IpAddrRequest {
         this.rangeId = rangeId;
         this.ip = ip;
         this.state = state;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return this.id;
     }
 
     public int getIpVersion() {

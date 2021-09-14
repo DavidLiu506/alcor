@@ -21,6 +21,8 @@ import com.futurewei.alcor.privateipmanager.service.implement.IpAddrServiceImpl;
 import com.futurewei.alcor.privateipmanager.utils.Ipv4AddrUtil;
 import com.futurewei.alcor.privateipmanager.utils.Ipv6AddrUtil;
 import com.futurewei.alcor.web.entity.ip.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
@@ -36,6 +38,8 @@ import java.util.Map;
 public class IpAddrController {
     @Autowired
     IpAddrServiceImpl ipAddrService;
+
+    private static final Logger LOG = LoggerFactory.getLogger(IpAddrController.class);
 
     private void checkVpcId(String vpcId) throws VpcIdInvalidException {
         if (vpcId == null || "".equals(vpcId)) {
@@ -105,8 +109,10 @@ public class IpAddrController {
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
     @DurationStatistics
-    public IpAddrRequest allocateIpAddr(@RequestBody IpAddrRequest request) throws Exception {
+    public IpAddrRequest allocateIpAddr(@RequestBody IpAddrRequest request, @RequestParam String id) throws Exception {
         checkIpRequest(request);
+        LOG.info("Request id: " + id);
+        LOG.info("Request id: " + request.getId());
         return ipAddrService.allocateIpAddr(request);
     }
 
