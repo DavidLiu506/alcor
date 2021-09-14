@@ -101,10 +101,17 @@ public class IpManagerRestClient extends AbstractRestClient {
         } else if (ipAddrRequest.getIp().isEmpty()) {
             LOG.error("allocateIpAddress error: ipAddrRequest.getIp().isEmpty()");
         }
-        HttpEntity<IpAddrRequest> request = new HttpEntity<>(ipAddrRequest);
-        IpAddrRequest result = restTemplate.postForObject(ipManagerUrl, request, IpAddrRequest.class);
+        IpAddrRequest result = null;
+        try {
+            HttpEntity<IpAddrRequest> request = new HttpEntity<>(ipAddrRequest);
+            result = restTemplate.postForObject(ipManagerUrl, request, IpAddrRequest.class);
 
-        verifyAllocatedIpAddr(result);
+            verifyAllocatedIpAddr(result);
+        } catch (Exception e) {
+            LOG.error("Port manager allocateIpAddress error: " + e.getMessage());
+            throw e;
+        }
+
 
         return result;
     }
