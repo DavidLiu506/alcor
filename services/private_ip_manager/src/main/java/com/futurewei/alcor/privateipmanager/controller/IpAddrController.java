@@ -220,6 +220,7 @@ public class IpAddrController {
     @ResponseBody
     @DurationStatistics
     public void deleteIpAddrRange(@PathVariable("range_id") String rangeId, @RequestParam String  vpcId) throws Exception {
+        System.out.println("params: " + vpcId);
         ipAddrService.deleteIpAddrRange(rangeId, vpcId);
     }
 

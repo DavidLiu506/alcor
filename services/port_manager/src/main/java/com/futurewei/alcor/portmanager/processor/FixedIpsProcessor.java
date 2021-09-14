@@ -27,12 +27,16 @@ import com.futurewei.alcor.web.entity.ip.IpAddrUpdateRequest;
 import com.futurewei.alcor.web.entity.ip.IpVersion;
 import com.futurewei.alcor.web.entity.port.PortEntity;
 import com.futurewei.alcor.web.entity.subnet.SubnetEntity;
+import com.futurewei.alcor.web.restclient.IpManagerRestClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @AfterProcessor(PortProcessor.class)
 public class FixedIpsProcessor extends AbstractProcessor {
+    private static final Logger LOG = LoggerFactory.getLogger(IpManagerRestClient.class);
     private boolean fixedIpsContainSubnet(List<PortEntity.FixedIp> fixedIps, String subnetId) {
         if (fixedIps == null) {
             return false;
@@ -475,6 +479,7 @@ public class FixedIpsProcessor extends AbstractProcessor {
                     }
                 }
             } else {
+                LOG.info("Random allocate ip address:");
                 randomIpAddresses.add(new IpAddrRequest(IpVersion.IPV4.getVersion(),
                         portEntity.getVpcId(),
                         null,

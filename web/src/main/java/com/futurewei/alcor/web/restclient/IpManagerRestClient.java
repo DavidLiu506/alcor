@@ -96,12 +96,9 @@ public class IpManagerRestClient extends AbstractRestClient {
     public IpAddrRequest allocateIpAddress(IpAddrRequest ipAddrRequest) throws Exception {
         if (ipAddrRequest == null) {
             LOG.error("allocateIpAddress error: ipAddrRequst is null");
-        }
-        if (ipAddrRequest.getIp() == null) {
+        } else if (ipAddrRequest.getIp() == null) {
             LOG.error("allocateIpAddress error: ipAddrRequest.getIp() is null");
-        }
-
-        if (ipAddrRequest.getIp().isEmpty()) {
+        } else if (ipAddrRequest.getIp().isEmpty()) {
             LOG.error("allocateIpAddress error: ipAddrRequest.getIp().isEmpty()");
         }
         HttpEntity<IpAddrRequest> request = new HttpEntity<>(ipAddrRequest);
