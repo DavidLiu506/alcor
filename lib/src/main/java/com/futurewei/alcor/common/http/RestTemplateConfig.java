@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
 @Configuration
-public class RestTemplateConfig {
+public class  RestTemplateConfig {
     @Bean
     public CustomRestTemplateCustomizer customRestTemplateCustomizer()
     {
