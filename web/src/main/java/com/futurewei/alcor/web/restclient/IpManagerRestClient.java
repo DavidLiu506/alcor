@@ -18,6 +18,8 @@ package com.futurewei.alcor.web.restclient;
 import com.futurewei.alcor.common.http.RestTemplateConfig;
 import com.futurewei.alcor.common.stats.DurationStatistics;
 import com.futurewei.alcor.web.entity.ip.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +34,7 @@ import java.util.List;
 public class IpManagerRestClient extends AbstractRestClient {
     @Value("${microservices.ip.service.url:#{\"\"}}")
     private String ipManagerUrl;
+    private static final Logger LOG = LoggerFactory.getLogger(IpManagerRestClient.class);
 
     public IpManagerRestClient(RestTemplateBuilder restTemplateBuilder) {
         super(restTemplateBuilder);
@@ -73,10 +76,18 @@ public class IpManagerRestClient extends AbstractRestClient {
             ipAddrRequest.setIp(ipAddr);
         }
 
-        HttpEntity<IpAddrRequest> request = new HttpEntity<>(ipAddrRequest);
-        IpAddrRequest result = restTemplate.postForObject(ipManagerUrl, request, IpAddrRequest.class);
+        IpAddrRequest result = null;
 
-        verifyAllocatedIpAddr(result);
+        try {
+            HttpEntity<IpAddrRequest> request = new HttpEntity<>(ipAddrRequest);
+            result = restTemplate.postForObject(ipManagerUrl, request, IpAddrRequest.class);
+
+            verifyAllocatedIpAddr(result);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            throw e;
+        }
+
 
         return result;
     }
