@@ -92,6 +92,8 @@ public class IgniteConfiguration {
     }
 
     private IgniteClient getThinIgniteClient() {
+        TcpDiscoveryMulticastIpFinder ipFinder = new TcpDiscoveryMulticastIpFinder();
+        ipFinder.setAddresses(Collections.singletonList(host + ":" + port));
         ClientConfiguration cfg = new ClientConfiguration();
 
         cfg.setAddresses(host + ":" + port)

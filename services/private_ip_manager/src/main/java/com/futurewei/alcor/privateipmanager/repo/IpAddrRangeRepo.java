@@ -350,22 +350,34 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
 
     @DurationStatistics
     public synchronized IpAddrAlloc getIpAddr(String rangeId, String ipAddr) throws Exception {
-        IpAddrRange ipAddrRange = ipAddrRangeCache.get(rangeId);
-        if (ipAddrRange == null) {
-            throw new IpRangeNotFoundException();
+        try(Transaction tx = ipAddrRangeCache.getTransaction().start()){
+            LOG.info("Enter getIpAddr");
+            IpAddrRange ipAddrRange = ipAddrRangeCache.get(rangeId);
+            if (ipAddrRange == null) {
+                throw new IpRangeNotFoundException();
+            }
+            tx.commit();
+            return ipAddrRange.getIpAddr(ipAddr);
+        } catch (Exception e) {
+            throw e;
         }
 
-        return ipAddrRange.getIpAddr(ipAddr);
     }
 
     @DurationStatistics
     public synchronized Collection<IpAddrAlloc> getIpAddrBulk(String rangeId) throws Exception {
-        IpAddrRange ipAddrRange = ipAddrRangeCache.get(rangeId);
-        if (ipAddrRange == null) {
-            throw new IpRangeNotFoundException();
+        try (Transaction tx = ipAddrRangeCache.getTransaction().start()){
+            LOG.info("Enter getIpAddrBulk");
+            IpAddrRange ipAddrRange = ipAddrRangeCache.get(rangeId);
+            if (ipAddrRange == null) {
+                throw new IpRangeNotFoundException();
+            }
+            tx.commit();
+            return ipAddrRange.getIpAddrBulk();
+        } catch (Exception e) {
+            throw e;
         }
 
-        return ipAddrRange.getIpAddrBulk();
     }
 
     @DurationStatistics
