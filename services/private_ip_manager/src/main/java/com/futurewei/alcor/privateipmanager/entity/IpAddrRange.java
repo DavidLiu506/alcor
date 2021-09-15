@@ -79,7 +79,7 @@ public class IpAddrRange {
         }
 
         String ipAddr = allocator.allocate(ip);
-        IpAddrAlloc ipAddrAlloc = new IpAddrAlloc(ipVersion, subnetId, id, ipAddr, IpAddrState.ACTIVATED.getState());
+        IpAddrAlloc ipAddrAlloc = new IpAddrAlloc(this, Ipv4AddrUtil.ipv4ToLong(ipAddr), IpAddrState.ACTIVATED.getState());
 
         ips.put(ipAddr, ipAddrAlloc);
         updateUsedIps();
@@ -94,7 +94,7 @@ public class IpAddrRange {
         Map<String, IpAddrAlloc> ipAddrAllocMap = new HashMap<>();
 
         for (String ipAddr: ipAddrList) {
-            IpAddrAlloc ipAddrAlloc = new IpAddrAlloc(ipVersion, subnetId, id, ipAddr, IpAddrState.ACTIVATED.getState());
+            IpAddrAlloc ipAddrAlloc = new IpAddrAlloc(this, Ipv4AddrUtil.ipv4ToLong(ipAddr), IpAddrState.ACTIVATED.getState());
 
             ipAddrAllocs.add(ipAddrAlloc);
             ipAddrAllocMap.put(ipAddr, ipAddrAlloc);
@@ -118,8 +118,8 @@ public class IpAddrRange {
                 break;
             }
 
-            IpAddrAlloc ipAddrAlloc = new IpAddrAlloc(ipVersion, subnetId, id,
-                    ipAddr, IpAddrState.ACTIVATED.getState());
+            IpAddrAlloc ipAddrAlloc = new IpAddrAlloc(this,
+                    Ipv4AddrUtil.ipv4ToLong(ipAddr), IpAddrState.ACTIVATED.getState());
 
             ipAddrAllocList.add(ipAddrAlloc);
             ipAddrAllocMap.put(ipAddr, ipAddrAlloc);
@@ -176,7 +176,7 @@ public class IpAddrRange {
         }
 
         if (allocator.validate(ipAddr)) {
-            return new IpAddrAlloc(ipVersion, subnetId, id, ipAddr, IpAddrState.FREE.getState());
+            return new IpAddrAlloc(this, Ipv4AddrUtil.ipv4ToLong(ipAddr), IpAddrState.FREE.getState());
         }
 
         throw new IpAddrInvalidException();

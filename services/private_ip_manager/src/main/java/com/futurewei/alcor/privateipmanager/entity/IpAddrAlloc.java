@@ -14,56 +14,36 @@ Copyright(c) 2020 Futurewei Cloud
     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 package com.futurewei.alcor.privateipmanager.entity;
-
+import com.futurewei.alcor.privateipmanager.utils.Ipv4AddrUtil;
 
 public class IpAddrAlloc {
-    private int ipVersion;
-    private String subnetId;
-    private String rangeId;
-    private String ipAddr;
+    IpAddrRange ipAddrRange;
+    private long ipAddr;
     private String state;
 
     public IpAddrAlloc() {
     }
 
-    public IpAddrAlloc(int ipVersion, String subnetId, String rangeId, String ipAddr, String state) {
-        this.ipVersion = ipVersion;
-        this.subnetId = subnetId;
-        this.rangeId = rangeId;
+    public IpAddrAlloc(IpAddrRange ipAddrRange, long ipAddr, String state) {
+        this.ipAddrRange = ipAddrRange;
         this.ipAddr = ipAddr;
         this.state = state;
     }
 
-    public int getIpVersion() {
-        return ipVersion;
+    public IpAddrRange getIpAddrRange() {
+        return ipAddrRange;
     }
 
-    public void setIpVersion(int ipVersion) {
-        this.ipVersion = ipVersion;
-    }
-
-    public String getSubnetId() {
-        return subnetId;
-    }
-
-    public void setSubnetId(String subnetId) {
-        this.subnetId = subnetId;
-    }
-
-    public String getRangeId() {
-        return rangeId;
-    }
-
-    public void setRangeId(String rangeId) {
-        this.rangeId = rangeId;
+    public void setIpAddrRange (IpAddrRange ipAddrRange) {
+        this.ipAddrRange = ipAddrRange;
     }
 
     public String getIpAddr() {
-        return ipAddr;
+        return Ipv4AddrUtil.longToIpv4(ipAddr);
     }
 
     public void setIpAddr(String ipAddr) {
-        this.ipAddr = ipAddr;
+        this.ipAddr = Ipv4AddrUtil.ipv4ToLong(ipAddr);
     }
 
     public String getState() {
@@ -77,9 +57,6 @@ public class IpAddrAlloc {
     @Override
     public String toString() {
         return "IpAddrAlloc{" +
-                "ipVersion=" + ipVersion +
-                ", subnetId='" + subnetId + '\'' +
-                ", rangeId='" + rangeId + '\'' +
                 ", ipAddr='" + ipAddr + '\'' +
                 ", state='" + state + '\'' +
                 '}';

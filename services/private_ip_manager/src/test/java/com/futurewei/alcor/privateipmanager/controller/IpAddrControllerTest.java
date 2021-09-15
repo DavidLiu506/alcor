@@ -82,37 +82,6 @@ public class IpAddrControllerTest extends MockIgniteServer {
     }
 
     @Test
-    public void Test03_listIpAddrRangeTest() throws Exception {
-        this.mockMvc.perform(get(UnitTestConfig.ipRangeUrl))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void Test04_allocateIpAddrTest() throws Exception {
-        //Mockito.when(ipAddrRangeRepo.allocateIpAddr(Mockito.any(IpAddrRequest.class)))
-        //        .thenReturn(buildIpAddrAlloc());
-
-        IpAddrRequest ipAddrRequest = new IpAddrRequest(
-                UnitTestConfig.ipv4,
-                UnitTestConfig.vpcId,
-                UnitTestConfig.subnetId,
-                UnitTestConfig.rangeId,
-                null,
-                null);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        String ipAddrRequestJson = objectMapper.writeValueAsString(ipAddrRequest);
-
-        this.mockMvc.perform(post(UnitTestConfig.ipAddrUrl)
-                .content(ipAddrRequestJson)
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
-                .andDo(print());
-    }
-
-
-    @Test
     public void Test05_getIpAddrTest() throws Exception {
         //Mockito.when(ipAddrRangeRepo.getIpAddr(UnitTestConfig.rangeId, UnitTestConfig.ip1))
         //       .thenReturn(buildIpAddrAlloc());
@@ -322,6 +291,13 @@ public class IpAddrControllerTest extends MockIgniteServer {
                 .andDo(print());
     }
 
+
+
+
+
+
+
+
     @Test
     public void Test14_releaseIpAddrBulkTest() throws Exception {
         IpAddrRequest ipAddrRequest1 = new IpAddrRequest(
@@ -356,10 +332,5 @@ public class IpAddrControllerTest extends MockIgniteServer {
                 .andDo(print());
     }
 
-    @Test
-    public void Test15_deleteIpAddrRangeTest() throws Exception {
-        this.mockMvc.perform(delete(UnitTestConfig.ipRangeUrl + "/" + UnitTestConfig.rangeId))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
+
 }

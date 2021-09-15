@@ -42,9 +42,9 @@ public class IpAddrServiceImpl implements IpAddrService {
 
         IpAddrAlloc ipAddrAlloc = ipAddrRangeRepo.allocateIpAddr(request);
 
-        request.setIpVersion(ipAddrAlloc.getIpVersion());
-        request.setSubnetId(ipAddrAlloc.getSubnetId());
-        request.setRangeId(ipAddrAlloc.getRangeId());
+        request.setIpVersion(ipAddrAlloc.getIpAddrRange().getIpVersion());
+        request.setSubnetId(ipAddrAlloc.getIpAddrRange().getSubnetId());
+        request.setRangeId(ipAddrAlloc.getIpAddrRange().getId());
         request.setIp(ipAddrAlloc.getIpAddr());
         request.setState(ipAddrAlloc.getState());
 
@@ -92,9 +92,9 @@ public class IpAddrServiceImpl implements IpAddrService {
         List<IpAddrRequest> result = new ArrayList<>();
         for (IpAddrAlloc ipAddrAlloc: ipAddrAllocList) {
             IpAddrRequest ipAddrRequest = new IpAddrRequest();
-            ipAddrRequest.setIpVersion(ipAddrAlloc.getIpVersion());
-            ipAddrRequest.setSubnetId(ipAddrAlloc.getSubnetId());
-            ipAddrRequest.setRangeId(ipAddrAlloc.getRangeId());
+            ipAddrRequest.setIpVersion(ipAddrAlloc.getIpAddrRange().getIpVersion());
+            ipAddrRequest.setSubnetId(ipAddrAlloc.getIpAddrRange().getSubnetId());
+            ipAddrRequest.setRangeId(ipAddrAlloc.getIpAddrRange().getId());
             ipAddrRequest.setIp(ipAddrAlloc.getIpAddr());
             ipAddrRequest.setState(ipAddrAlloc.getState());
             result.add(ipAddrRequest);
@@ -178,9 +178,9 @@ public class IpAddrServiceImpl implements IpAddrService {
         IpAddrAlloc ipAddrAlloc = ipAddrRangeRepo.getIpAddr(rangeId, ipAddr);
 
         IpAddrRequest result = new IpAddrRequest();
-        result.setIpVersion(ipAddrAlloc.getIpVersion());
-        result.setSubnetId(ipAddrAlloc.getSubnetId());
-        result.setRangeId(ipAddrAlloc.getRangeId());
+        result.setIpVersion(ipAddrAlloc.getIpAddrRange().getIpVersion());
+        result.setSubnetId(ipAddrAlloc.getIpAddrRange().getSubnetId());
+        result.setRangeId(ipAddrAlloc.getIpAddrRange().getId());
         result.setIp(ipAddrAlloc.getIpAddr());
         result.setState(ipAddrAlloc.getState());
 
@@ -199,8 +199,8 @@ public class IpAddrServiceImpl implements IpAddrService {
         Collection<IpAddrAlloc>  ipAddrAllocCollection = ipAddrRangeRepo.getIpAddrBulk(rangeId);
         for (IpAddrAlloc ipAddrAlloc: ipAddrAllocCollection) {
             IpAddrRequest ipAddr = new IpAddrRequest();
-            ipAddr.setIpVersion(ipAddrAlloc.getIpVersion());
-            ipAddr.setRangeId(ipAddrAlloc.getRangeId());
+            ipAddr.setIpVersion(ipAddrAlloc.getIpAddrRange().getIpVersion());
+            ipAddr.setRangeId(ipAddrAlloc.getIpAddrRange().getId());
             ipAddr.setIp(ipAddrAlloc.getIpAddr());
             ipAddr.setState(ipAddrAlloc.getState());
 
@@ -351,9 +351,9 @@ public class IpAddrServiceImpl implements IpAddrService {
         if(ipAddrAllocList!=null){
             for (IpAddrAlloc ipAddrAlloc: ipAddrAllocList) {
                 IpAddrRequest ipAddrRequest = new IpAddrRequest();
-                ipAddrRequest.setIpVersion(ipAddrAlloc.getIpVersion());
-                ipAddrRequest.setSubnetId(ipAddrAlloc.getSubnetId());
-                ipAddrRequest.setRangeId(ipAddrAlloc.getRangeId());
+                ipAddrRequest.setIpVersion(ipAddrAlloc.getIpAddrRange().getIpVersion());
+                ipAddrRequest.setSubnetId(ipAddrAlloc.getIpAddrRange().getSubnetId());
+                ipAddrRequest.setRangeId(ipAddrAlloc.getIpAddrRange().getId());
                 ipAddrRequest.setIp(ipAddrAlloc.getIpAddr());
                 ipAddrRequest.setState(ipAddrAlloc.getState());
                 ipAddrRequests.add(ipAddrRequest);

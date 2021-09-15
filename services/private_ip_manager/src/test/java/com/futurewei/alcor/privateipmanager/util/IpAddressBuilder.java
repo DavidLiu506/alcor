@@ -24,10 +24,7 @@ import com.futurewei.alcor.web.entity.ip.IpAddrRequest;
 public class IpAddressBuilder {
     public static IpAddrAlloc buildIpAddrAlloc() {
         IpAddrAlloc ipAddrAlloc = new IpAddrAlloc();
-        ipAddrAlloc.setIpVersion(UnitTestConfig.ipv4);
         ipAddrAlloc.setState(UnitTestConfig.activated);
-        ipAddrAlloc.setRangeId(UnitTestConfig.rangeId);
-        ipAddrAlloc.setSubnetId(UnitTestConfig.subnetId);
 
         return ipAddrAlloc;
     }
