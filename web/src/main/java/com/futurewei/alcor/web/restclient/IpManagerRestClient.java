@@ -106,6 +106,7 @@ public class IpManagerRestClient extends AbstractRestClient {
         }
         IpAddrRequest result = null;
         ipAddrRequest.setId(UUID.randomUUID().toString());
+        
         try {
             HttpEntity<IpAddrRequest> request = new HttpEntity<>(ipAddrRequest);
             result = restTemplate.postForObject(ipManagerUrl + "?id=" + UUID.randomUUID(), request, IpAddrRequest.class);
