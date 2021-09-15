@@ -39,7 +39,9 @@ public class SubnetToPortManagerServiceImpl implements SubnetToPortManagerServic
     private final RestTemplate restTemplate;
 
     public SubnetToPortManagerServiceImpl(RestTemplateBuilder restTemplateBuilder) {
-        this.restTemplate = restTemplateBuilder.build();
+        this.restTemplate = restTemplateBuilder
+                            .setConnectTimeout(Duration.ofSeconds(500))
+                            .setReadTimeout(Duration.ofSeconds(500)).build();
     }
 
     @Override
