@@ -35,7 +35,7 @@ public class Ipv4AddrAllocator implements IpAddrAllocator {
     }
 
     @Override
-    public String allocate(String ipAddr) throws Exception {
+    public int allocate(String ipAddr) throws Exception {
         int freeBit;
 
         if (ipAddr != null) {
@@ -55,7 +55,19 @@ public class Ipv4AddrAllocator implements IpAddrAllocator {
 
         bitSet.set(freeBit);
 
+        return freeBit;
+    }
+
+    @Override
+    public String getIp(int freeBit) throws Exception {
         return Ipv4AddrUtil.longToIpv4(firstIp + freeBit);
+    }
+
+    @Override
+    public int getIp(String ipAddr) throws Exception {
+        long ipLong = Ipv4AddrUtil.ipv4ToLong(ipAddr);
+        int freeBit = (int)(ipLong - firstIp);
+        return freeBit;
     }
 
     @Override

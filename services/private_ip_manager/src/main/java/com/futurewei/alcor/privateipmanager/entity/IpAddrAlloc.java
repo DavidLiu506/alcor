@@ -18,13 +18,13 @@ import com.futurewei.alcor.privateipmanager.utils.Ipv4AddrUtil;
 
 public class IpAddrAlloc {
     IpAddrRange ipAddrRange;
-    private long ipAddr;
+    private int ipAddr;
     private String state;
 
     public IpAddrAlloc() {
     }
 
-    public IpAddrAlloc(IpAddrRange ipAddrRange, long ipAddr, String state) {
+    public IpAddrAlloc(IpAddrRange ipAddrRange, int ipAddr, String state) {
         this.ipAddrRange = ipAddrRange;
         this.ipAddr = ipAddr;
         this.state = state;
@@ -38,12 +38,12 @@ public class IpAddrAlloc {
         this.ipAddrRange = ipAddrRange;
     }
 
-    public String getIpAddr() {
-        return Ipv4AddrUtil.longToIpv4(ipAddr);
+    public String getIpAddr() throws Exception {
+        return this.ipAddrRange.getAllocator().getIp(ipAddr);
     }
 
-    public void setIpAddr(String ipAddr) {
-        this.ipAddr = Ipv4AddrUtil.ipv4ToLong(ipAddr);
+    public void setIpAddr(int ipAddr) {
+        this.ipAddr = ipAddr;
     }
 
     public String getState() {

@@ -17,6 +17,7 @@ package com.futurewei.alcor.privateipmanager.allocator;
 
 import com.futurewei.alcor.privateipmanager.exception.IpAddrInvalidException;
 import com.futurewei.alcor.privateipmanager.exception.IpAddrNotEnoughException;
+import com.futurewei.alcor.privateipmanager.utils.Ipv4AddrUtil;
 import com.futurewei.alcor.privateipmanager.utils.Ipv6AddrUtil;
 
 import java.math.BigInteger;
@@ -39,7 +40,7 @@ public class Ipv6AddrAllocator implements IpAddrAllocator {
 
 
     @Override
-    public String allocate(String ipAddr) throws Exception {
+    public int allocate(String ipAddr) throws Exception {
         int freeBit;
 
         if (ipAddr != null) {
@@ -59,7 +60,19 @@ public class Ipv6AddrAllocator implements IpAddrAllocator {
 
         bitSet.set(freeBit);
 
+        return freeBit;
+    }
+
+    @Override
+    public String getIp(int freeBit) throws Exception {
         return Ipv6AddrUtil.bigIntToIpv6(firstIp.add(BigInteger.valueOf(freeBit)));
+    }
+
+    @Override
+    public int getIp(String ipAddr) throws Exception {
+        BigInteger bigInt = Ipv6AddrUtil.ipv6ToBitInt(ipAddr);
+        int freeBit = (int)(bigInt.subtract(firstIp).longValue());
+        return freeBit;
     }
 
     @Override

@@ -19,13 +19,17 @@ import java.util.List;
 
 public interface IpAddrAllocator {
 
-    String allocate(String ipAddr) throws Exception;
+    int allocate(String ipAddr) throws Exception;
 
     List<String> allocateBulk(int num) throws Exception;
+
+    String getIp(int freeBit) throws Exception;
 
     void release(String ipAddr) throws Exception;
 
     void releaseBulk(List<String> ipAddrList) throws Exception;
 
     boolean validate(String ipAddr);
+
+    int getIp(String ipAddr) throws Exception;
 }

@@ -78,10 +78,10 @@ public class IpAddrRange {
             throw new IpAddrConflictException();
         }
 
-        String ipAddr = allocator.allocate(ip);
-        IpAddrAlloc ipAddrAlloc = new IpAddrAlloc(this, Ipv4AddrUtil.ipv4ToLong(ipAddr), IpAddrState.ACTIVATED.getState());
+        int ipAddr = allocator.allocate(ip);
+        IpAddrAlloc ipAddrAlloc = new IpAddrAlloc(this, ipAddr, IpAddrState.ACTIVATED.getState());
 
-        ips.put(ipAddr, ipAddrAlloc);
+        ips.put(allocator.getIp(ipAddr), ipAddrAlloc);
         updateUsedIps();
 
         return ipAddrAlloc;
@@ -94,7 +94,7 @@ public class IpAddrRange {
         Map<String, IpAddrAlloc> ipAddrAllocMap = new HashMap<>();
 
         for (String ipAddr: ipAddrList) {
-            IpAddrAlloc ipAddrAlloc = new IpAddrAlloc(this, Ipv4AddrUtil.ipv4ToLong(ipAddr), IpAddrState.ACTIVATED.getState());
+            IpAddrAlloc ipAddrAlloc = new IpAddrAlloc(this, allocator.getIp(ipAddr), IpAddrState.ACTIVATED.getState());
 
             ipAddrAllocs.add(ipAddrAlloc);
             ipAddrAllocMap.put(ipAddr, ipAddrAlloc);
@@ -111,16 +111,16 @@ public class IpAddrRange {
         Map<String, IpAddrAlloc> ipAddrAllocMap = new HashMap<>();
 
         for (String ip: ipAddrList) {
-            String ipAddr;
+            int freeBit;
             try {
-                ipAddr = allocator.allocate(ip);
+                freeBit = allocator.allocate(ip);
             } catch (Exception e) {
                 break;
             }
 
             IpAddrAlloc ipAddrAlloc = new IpAddrAlloc(this,
-                    Ipv4AddrUtil.ipv4ToLong(ipAddr), IpAddrState.ACTIVATED.getState());
-
+                    freeBit, IpAddrState.ACTIVATED.getState());
+            String ipAddr = allocator.getIp(freeBit);
             ipAddrAllocList.add(ipAddrAlloc);
             ipAddrAllocMap.put(ipAddr, ipAddrAlloc);
         }
@@ -176,7 +176,7 @@ public class IpAddrRange {
         }
 
         if (allocator.validate(ipAddr)) {
-            return new IpAddrAlloc(this, Ipv4AddrUtil.ipv4ToLong(ipAddr), IpAddrState.FREE.getState());
+            return new IpAddrAlloc(this, allocator.getIp(ipAddr), IpAddrState.FREE.getState());
         }
 
         throw new IpAddrInvalidException();
