@@ -89,41 +89,6 @@ public class IpAddrControllerTest extends MockIgniteServer {
     }
 
     @Test
-    public void Test04_allocateIpAddrTest() throws Exception {
-        //Mockito.when(ipAddrRangeRepo.allocateIpAddr(Mockito.any(IpAddrRequest.class)))
-        //        .thenReturn(buildIpAddrAlloc());
-
-        IpAddrRequest ipAddrRequest = new IpAddrRequest(
-                UnitTestConfig.ipv4,
-                UnitTestConfig.vpcId,
-                UnitTestConfig.subnetId,
-                UnitTestConfig.rangeId,
-                null,
-                null);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        String ipAddrRequestJson = objectMapper.writeValueAsString(ipAddrRequest);
-
-        this.mockMvc.perform(post(UnitTestConfig.ipAddrUrl)
-                .content(ipAddrRequestJson)
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
-                .andDo(print());
-    }
-
-
-    @Test
-    public void Test05_getIpAddrTest() throws Exception {
-        //Mockito.when(ipAddrRangeRepo.getIpAddr(UnitTestConfig.rangeId, UnitTestConfig.ip1))
-        //       .thenReturn(buildIpAddrAlloc());
-
-        this.mockMvc.perform(get(UnitTestConfig.ipAddrUrl + "/" +
-                UnitTestConfig.rangeId + "/" + UnitTestConfig.ip1))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
-
-    @Test
     public void Test06_deactivateIpAddrStateTest() throws Exception {
         IpAddrRequest ipAddrRequest = new IpAddrRequest(
                 UnitTestConfig.ipv4,
@@ -248,13 +213,6 @@ public class IpAddrControllerTest extends MockIgniteServer {
     }
 
     @Test
-    public void Test11_listIpAddrTest() throws Exception {
-        this.mockMvc.perform(get(UnitTestConfig.ipAddrUrl + "/" + UnitTestConfig.rangeId))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
-
-    @Test
     public void Test12_deactivateIpAddrStateBulkTest() throws Exception {
         IpAddrRequest ipAddrRequest1 = new IpAddrRequest(
                 UnitTestConfig.ipv4,
@@ -354,12 +312,5 @@ public class IpAddrControllerTest extends MockIgniteServer {
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print());
-    }
-
-    @Test
-    public void Test15_deleteIpAddrRangeTest() throws Exception {
-        this.mockMvc.perform(delete(UnitTestConfig.ipRangeUrl + "/" + UnitTestConfig.rangeId))
-                .andDo(print())
-                .andExpect(status().isOk());
     }
 }
