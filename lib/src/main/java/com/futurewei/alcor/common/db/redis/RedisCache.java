@@ -22,10 +22,13 @@ import com.futurewei.alcor.common.db.Transaction;
 import com.futurewei.alcor.common.db.CacheException;
 import com.futurewei.alcor.common.logging.Logger;
 import com.futurewei.alcor.common.logging.LoggerFactory;
+import org.apache.ignite.cache.query.Query;
+import org.apache.ignite.cache.query.ScanQuery;
 import org.apache.ignite.lang.IgniteBiPredicate;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 
+import javax.cache.Cache;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -92,6 +95,11 @@ public class RedisCache<K, V> implements ICache<K, V> {
             map.put(it.next(), value);
         }
         return map;
+    }
+
+    @Override
+    public List<K> query(ScanQuery<K, V> query) throws CacheException {
+        return new ArrayList<>();
     }
 
     @Override

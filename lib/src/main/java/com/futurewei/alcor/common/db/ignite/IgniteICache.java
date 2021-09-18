@@ -18,8 +18,11 @@ package com.futurewei.alcor.common.db.ignite;
 
 import com.futurewei.alcor.common.db.CacheException;
 import com.futurewei.alcor.common.db.ICache;
+import org.apache.ignite.cache.query.Query;
 import org.apache.ignite.lang.IgniteBiPredicate;
 
+import javax.cache.Cache;
+import java.util.List;
 import java.util.Map;
 
 public interface IgniteICache<K, V> extends ICache<K, V> {

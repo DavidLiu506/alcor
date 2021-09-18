@@ -16,6 +16,11 @@ Copyright(c) 2020 Futurewei Cloud
 
 package com.futurewei.alcor.common.db;
 
+import org.apache.ignite.cache.query.Query;
+import org.apache.ignite.cache.query.ScanQuery;
+
+import javax.cache.Cache;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -64,6 +69,8 @@ public interface ICache<K, V> {
      * @throws CacheException if any exception
      */
     <E1, E2> Map<K, V> getAll(Map<String, Object[]> filterParams) throws CacheException;
+
+    List<K> query(ScanQuery<K, V> query) throws CacheException;
 
     void putAll(Map<? extends K, ? extends V> var1) throws CacheException;
 

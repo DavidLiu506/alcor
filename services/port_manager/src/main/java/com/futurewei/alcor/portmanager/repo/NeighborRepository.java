@@ -50,6 +50,12 @@ public class NeighborRepository {
     }
 
     public void createNeighbors(Map<String, List<NeighborInfo>> neighbors) throws Exception {
+        for (List<NeighborInfo> neighborList : neighbors.values()) {
+            for (NeighborInfo neighborInfo : neighborList) {
+                System.out.println("NeighborInfo: ");
+                System.out.println(neighborInfo);
+            }
+        }
         if (neighbors != null) {
             for (Map.Entry<String, List<NeighborInfo>> entry : neighbors.entrySet()) {
                 Map<String, NeighborInfo> neighborMap = entry.getValue()

@@ -26,14 +26,23 @@ public class SubnetPortIds {
     @JsonProperty("port_ids")
     private Set<String> portIds;
 
+    @JsonProperty("device_owner")
+    private String deviceOwner;
+
     public SubnetPortIds() {
 
+    }
+
+    public SubnetPortIds(String subnetId, String deviceOwner) {
+        this.subnetId = subnetId;
+        this.deviceOwner = deviceOwner;
     }
 
     public SubnetPortIds(String subnetId, Set<String> portIds) {
         this.subnetId = subnetId;
         this.portIds = portIds;
     }
+
 
     public String getSubnetId() {
         return subnetId;
@@ -49,5 +58,13 @@ public class SubnetPortIds {
 
     public void setPortIds(Set<String> portIds) {
         this.portIds = portIds;
+    }
+
+    public String getDeviceOwner() {
+        return deviceOwner;
+    }
+
+    public void setDeviceOwner (String deviceOwner) {
+        this.deviceOwner = deviceOwner;
     }
 }

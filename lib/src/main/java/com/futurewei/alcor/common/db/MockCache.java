@@ -17,6 +17,7 @@ package com.futurewei.alcor.common.db;
 
 import com.futurewei.alcor.common.db.ignite.IgniteTransaction;
 import com.futurewei.alcor.common.entity.CustomerResource;
+import org.apache.ignite.cache.query.ScanQuery;
 import org.apache.ignite.lang.IgniteBiPredicate;
 import org.springframework.util.ReflectionUtils;
 
@@ -77,6 +78,11 @@ public class MockCache<K, V> implements ICache<K, V> {
             filterMap.put(k, cache.getOrDefault(k, null));
         }
         return filterMap;
+    }
+
+    @Override
+    public List<K> query(ScanQuery<K, V> query) throws CacheException {
+        return new ArrayList<>();
     }
 
     @Override

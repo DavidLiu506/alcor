@@ -33,6 +33,7 @@ import org.apache.ignite.cache.query.QueryCursor;
 import org.apache.ignite.cache.query.ScanQuery;
 import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.lang.IgniteBiPredicate;
+import org.apache.ignite.lang.IgniteClosure;
 import org.apache.ignite.transactions.TransactionException;
 import org.springframework.util.Assert;
 
@@ -199,6 +200,12 @@ public class IgniteDbCache<K, V> implements IgniteICache<K, V> {
     public <E1, E2> Map<K, V> getAll(Map<String, Object[]> filterParams) throws CacheException {
         IgniteBiPredicate<String, BinaryObject> predicate = MapPredicate.getInstance(filterParams);
         return getAll(predicate);
+    }
+
+    @Override
+    public List<K> query(ScanQuery<K, V> query) throws CacheException {
+        List<K> keys = cache.query(query, (IgniteClosure<Cache.Entry<K, V>, K>) Cache.Entry::getKey).getAll();
+        return keys;
     }
 
     @Override

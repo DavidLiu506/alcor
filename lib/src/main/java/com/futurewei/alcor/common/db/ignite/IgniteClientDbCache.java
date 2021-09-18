@@ -33,14 +33,12 @@ import org.apache.ignite.client.ClientException;
 import org.apache.ignite.client.IgniteClient;
 import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.lang.IgniteBiPredicate;
+import org.apache.ignite.lang.IgniteClosure;
 import org.springframework.util.Assert;
 
 import javax.cache.Cache;
 import javax.cache.expiry.ExpiryPolicy;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -137,6 +135,15 @@ public class IgniteClientDbCache<K, V> implements IgniteICache<K, V> {
         QueryCursor<Cache.Entry<K, V>> cur = cache.query(qry);
         return cur.getAll().stream().collect(Collectors
                 .toMap(Cache.Entry::getKey, Cache.Entry::getValue));
+    }
+
+    @Override
+    public List<K> query(ScanQuery<K, V> query) throws CacheException {
+        List<K> keys = new ArrayList<>();
+        QueryCursor<Cache.Entry<K, V>> qryCursor = cache.query(query);
+        qryCursor.forEach(
+                entry -> System.out.println(entry.getKey()));
+        return keys;
     }
 
     @Override
