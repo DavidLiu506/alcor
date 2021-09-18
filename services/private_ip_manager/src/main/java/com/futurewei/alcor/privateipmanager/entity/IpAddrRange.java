@@ -41,7 +41,7 @@ public class IpAddrRange {
     private long usedIps;
     private long totalIps;
     private IpAddrAllocator allocator;
-    private Map<Long, Integer> ips;
+    private Map<Long, Byte> ips;
 
     public IpAddrRange(String id, String vpcId, String subnetId, int ipVersion, String firstIp, String lastIp) {
         this.id = id;
@@ -81,7 +81,7 @@ public class IpAddrRange {
         String ipAddr = allocator.allocate(ip);
         IpAddrAlloc ipAddrAlloc = new IpAddrAlloc(ipVersion, subnetId, id, ipAddr, IpAddrState.ACTIVATED.getState());
 
-        ips.put(Ipv4AddrUtil.ipv4ToLong(ipAddr), IpAddrState.ACTIVATED.ordinal());
+        ips.put(Ipv4AddrUtil.ipv4ToLong(ipAddr), (byte)IpAddrState.ACTIVATED.ordinal());
         updateUsedIps();
 
         return ipAddrAlloc;
@@ -108,7 +108,7 @@ public class IpAddrRange {
 
     public List<IpAddrAlloc> allocateBulk(List<String> ipAddrList) throws Exception {
         List<IpAddrAlloc> ipAddrAllocList = new ArrayList<>();
-        Map<Long, Integer> ipAddrAllocMap = new HashMap<>();
+        Map<Long, Byte> ipAddrAllocMap = new HashMap<>();
 
         for (String ip: ipAddrList) {
             String ipAddr;
@@ -122,7 +122,7 @@ public class IpAddrRange {
                     ipAddr, IpAddrState.ACTIVATED.getState());
 
             ipAddrAllocList.add(ipAddrAlloc);
-            ipAddrAllocMap.put(Ipv4AddrUtil.ipv4ToLong(ipAddr), IpAddrState.ACTIVATED.ordinal());
+            ipAddrAllocMap.put(Ipv4AddrUtil.ipv4ToLong(ipAddr), (byte)IpAddrState.ACTIVATED.ordinal());
         }
 
         if (ipAddrAllocMap.size() > 0) {
@@ -138,7 +138,7 @@ public class IpAddrRange {
         if (!ips.containsKey(ip)) {
             throw new IpAddrAllocNotFoundException();
         }
-        ips.put(ip, IpAddrState.valueOf(state).ordinal());
+        ips.put(ip, (byte)IpAddrState.valueOf(state).ordinal());
     }
 
     public void release(String ipAddr) throws Exception {
@@ -182,7 +182,7 @@ public class IpAddrRange {
 
     public Collection<IpAddrAlloc> getIpAddrBulk() throws CacheException {
         List<IpAddrAlloc> ipAddrs = new ArrayList<>();
-        for (Map.Entry<Long, Integer> entry : ips.entrySet()) {
+        for (Map.Entry<Long, Byte> entry : ips.entrySet()) {
             String ip = Ipv4AddrUtil.longToIpv4(entry.getKey());
             IpAddrState state = IpAddrState.values()[ips.get(ip)];
             IpAddrAlloc ipAddrAlloc = new IpAddrAlloc(ipVersion, subnetId, id, ip, state.toString());
