@@ -20,9 +20,11 @@ import com.futurewei.alcor.common.db.CacheFactory;
 import com.futurewei.alcor.common.db.ICache;
 import com.futurewei.alcor.common.db.Transaction;
 import com.futurewei.alcor.common.stats.DurationStatistics;
+import com.futurewei.alcor.common.utils.CommonUtil;
 import com.futurewei.alcor.portmanager.entity.PortNeighbors;
 import com.futurewei.alcor.web.entity.dataplane.NeighborInfo;
 import com.futurewei.alcor.web.entity.port.PortEntity;
+import org.apache.ignite.configuration.CacheConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -262,12 +264,22 @@ public class PortRepository {
 
     @DurationStatistics
     public synchronized void createPortBulk(List<PortEntity> portEntities, Map<String, List<NeighborInfo>> neighbors) throws Exception {
+        Map<String, Map<String, NeighborInfo>> neighborMap = null;
+        if (neighbors != null) {
+            neighborMap = new HashMap<>();
+            for (Map.Entry<String, List<NeighborInfo>> entry : neighbors.entrySet()) {
+                Map<String, NeighborInfo> neighborInfoMap = entry.getValue()
+                        .stream()
+                        .collect(Collectors.toMap(NeighborInfo::getPortIp, Function.identity()));
+                neighborMap.put(entry.getKey(), neighborInfoMap);
+            }
+        }
+        Map<String, PortEntity> portEntityMap = portEntities
+                .stream()
+                .collect(Collectors.toMap(PortEntity::getId, Function.identity()));
         try (Transaction tx = portCache.getTransaction().start()) {
-            Map<String, PortEntity> portEntityMap = portEntities
-                    .stream()
-                    .collect(Collectors.toMap(PortEntity::getId, Function.identity()));
             portCache.putAll(portEntityMap);
-            neighborRepository.createNeighbors(neighbors);
+            neighborRepository.createNeighbors(neighborMap);
             subnetPortsRepository.addSubnetPortIds(portEntities);
             tx.commit();
         }

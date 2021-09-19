@@ -49,22 +49,12 @@ public class NeighborRepository {
         return NEIGHBOR_CACHE_NAME_PREFIX + suffix;
     }
 
-    public void createNeighbors(Map<String, List<NeighborInfo>> neighbors) throws Exception {
-        for (List<NeighborInfo> neighborList : neighbors.values()) {
-            for (NeighborInfo neighborInfo : neighborList) {
-                System.out.println("NeighborInfo: ");
-                System.out.println(neighborInfo);
-            }
-        }
-        if (neighbors != null) {
-            for (Map.Entry<String, List<NeighborInfo>> entry : neighbors.entrySet()) {
-                Map<String, NeighborInfo> neighborMap = entry.getValue()
-                        .stream()
-                        .collect(Collectors.toMap(NeighborInfo::getPortIp, Function.identity()));
-
+    public void createNeighbors(Map<String, Map<String, NeighborInfo>> neighborMap) throws Exception {
+        if (neighborMap != null) {
+            for (Map.Entry<String, Map<String, NeighborInfo>> entry : neighborMap.entrySet()) {
                 CacheConfiguration cfg = CommonUtil.getCacheConfiguration(getNeighborCacheName(entry.getKey()));
                 ICache<String, NeighborInfo> neighborCache = cacheFactory.getCache(NeighborInfo.class, cfg);
-                neighborCache.putAll(neighborMap);
+                neighborCache.putAll(neighborMap.get(entry.getKey()));
             }
         }
     }
