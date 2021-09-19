@@ -93,7 +93,7 @@ public class SubnetPortsRepository {
                 String subnetId = fixedIp.getSubnetId();
                 CacheConfiguration cfg = CommonUtil.getCacheConfiguration(subnetId);
                 ICache<String, String> cache = cacheFactory.getCache(String.class, cfg);
-                cache.put(portEntity.getId(), portEntity.getDeviceOwner());
+                cache.put(portEntity.getId(), "1");
                 System.out.println("SubnetId: " + subnetId);
             }
         }
@@ -124,7 +124,7 @@ public class SubnetPortsRepository {
             try {
                 CacheConfiguration cfg = CommonUtil.getCacheConfiguration(item.getSubnetId());
                 ICache<String, String> cache = cacheFactory.getCache(String.class, cfg);
-                cache.put(newPortEntity.getId(), newPortEntity.getDeviceOwner());
+                cache.put(newPortEntity.getId(), "1");
             } catch (CacheException e) {
                 e.printStackTrace();
             }
