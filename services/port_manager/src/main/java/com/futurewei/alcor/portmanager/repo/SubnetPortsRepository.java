@@ -94,7 +94,6 @@ public class SubnetPortsRepository {
                 CacheConfiguration cfg = CommonUtil.getCacheConfiguration(subnetId);
                 ICache<String, String> cache = cacheFactory.getCache(String.class, cfg);
                 cache.put(portEntity.getId(), "1");
-                System.out.println("SubnetId: " + subnetId);
             }
         }
     }
