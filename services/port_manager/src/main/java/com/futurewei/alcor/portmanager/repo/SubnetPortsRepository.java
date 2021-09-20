@@ -77,7 +77,7 @@ public class SubnetPortsRepository {
     public void addSubnetPortIds(List<PortEntity> portEntities) throws Exception {
         //Store the mapping between subnet id and port id
         //List<SubnetPortIds> subnetPortIdsList = getSubnetPortIds(portEntities);
-
+        Map<String, Map<String, String>> subnetPortIds = new HashMap<>();
         for (PortEntity portEntity: portEntities) {
             if (GATEWAY_PORT_DEVICE_OWNER.equals(portEntity.getDeviceOwner())) {
                 continue;
@@ -91,12 +91,18 @@ public class SubnetPortsRepository {
 
             for (PortEntity.FixedIp fixedIp: fixedIps) {
                 String subnetId = fixedIp.getSubnetId();
-                CacheConfiguration cfg = CommonUtil.getCacheConfiguration(subnetId);
-                ICache<String, String> cache = cacheFactory.getCache(String.class, cfg);
-                cache.put(portEntity.getId(), "1");
-                System.out.println("SubnetId: " + subnetId);
+                Map<String, String> portIds = new HashMap<>();
+                portIds.put(subnetId, "1");
+                subnetPortIds.put(subnetId, portIds);
+
             }
         }
+        for (Map.Entry<String, Map<String, String>> subnetPortId : subnetPortIds.entrySet()) {
+            CacheConfiguration cfg = CommonUtil.getCacheConfiguration(subnetPortId.getKey());
+            ICache<String, String> cache = cacheFactory.getCache(String.class, cfg);
+            cache.putAll(subnetPortId.getValue());
+        }
+
     }
 
     public void updateSubnetPortIds(PortEntity oldPortEntity, PortEntity newPortEntity) throws Exception {
