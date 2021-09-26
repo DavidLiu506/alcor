@@ -49,7 +49,7 @@ public class DatabaseProcessor extends AbstractProcessor {
 
     @Override
     void createProcess(PortContext context) throws Exception {
-        Map<String, List<NeighborInfo>> portNeighbors = new HashMap<>();
+        SortedMap<String, List<NeighborInfo>> portNeighbors = new TreeMap<>();
 
         NetworkConfig networkConfig = context.getNetworkConfig();
         List<InternalPortEntity> internalPortEntities = networkConfig.getPortEntities();
