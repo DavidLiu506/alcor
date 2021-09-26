@@ -81,7 +81,7 @@ public class DatabaseProcessor extends AbstractProcessor {
                     return null;
                 }, AsyncExecutor.executor);
 
-        future.get();
+        future.join();
     }
 
     @Override
