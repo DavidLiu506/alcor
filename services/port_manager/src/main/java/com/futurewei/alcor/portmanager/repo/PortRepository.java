@@ -275,7 +275,7 @@ public class PortRepository {
     }
 
     @DurationStatistics
-    public void updatePort(PortEntity oldPortEntity, PortEntity newPortEntity, List<NeighborInfo> neighborInfos) throws Exception {
+    public synchronized void updatePort(PortEntity oldPortEntity, PortEntity newPortEntity, List<NeighborInfo> neighborInfos) throws Exception {
         try (Transaction tx = portCache.getTransaction().start()) {
             subnetPortsRepository.updateSubnetPortIds(oldPortEntity, newPortEntity);
             neighborRepository.updateNeighbors(oldPortEntity, neighborInfos);
@@ -285,7 +285,7 @@ public class PortRepository {
     }
 
     @DurationStatistics
-    public void deletePort(PortEntity portEntity) throws Exception {
+    public synchronized void deletePort(PortEntity portEntity) throws Exception {
         try (Transaction tx = portCache.getTransaction().start()) {
             subnetPortsRepository.deleteSubnetPortIds(portEntity);
             neighborRepository.deleteNeighbors(portEntity);

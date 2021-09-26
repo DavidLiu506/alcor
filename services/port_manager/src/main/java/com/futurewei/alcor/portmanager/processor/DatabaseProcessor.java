@@ -15,6 +15,7 @@ Copyright(c) 2020 Futurewei Cloud
 */
 package com.futurewei.alcor.portmanager.processor;
 
+import com.futurewei.alcor.common.executor.AsyncExecutor;
 import com.futurewei.alcor.web.entity.dataplane.InternalPortEntity;
 import com.futurewei.alcor.web.entity.dataplane.NeighborInfo;
 import com.futurewei.alcor.web.entity.port.PortEntity;
@@ -78,7 +79,7 @@ public class DatabaseProcessor extends AbstractProcessor {
                         e.printStackTrace();
                     }
                     return null;
-                });
+                }, AsyncExecutor.executor);
 
         future.get();
     }
@@ -93,7 +94,6 @@ public class DatabaseProcessor extends AbstractProcessor {
 
         PortEntity oldPortEntity = context.getNewPortEntity();
         PortEntity newPortEntity = context.getNewPortEntity();
-
         context.getPortRepository().updatePort(oldPortEntity, newPortEntity, neighborInfos);
     }
 
