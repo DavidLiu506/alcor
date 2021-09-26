@@ -15,6 +15,7 @@ Copyright(c) 2020 Futurewei Cloud
 */
 package com.futurewei.alcor.portmanager.processor;
 
+import com.futurewei.alcor.common.entity.Resource;
 import com.futurewei.alcor.common.executor.AsyncExecutor;
 import com.futurewei.alcor.web.entity.dataplane.InternalPortEntity;
 import com.futurewei.alcor.web.entity.dataplane.NeighborInfo;
@@ -71,6 +72,7 @@ public class DatabaseProcessor extends AbstractProcessor {
          operation, or wait for CreateNetworkConfig to succeed before writing to the database
          */
         List<PortEntity> portEntities = context.getPortEntities();
+        portEntities.sort(Comparator.comparing(Resource::getId));
         CompletableFuture<Integer> future = CompletableFuture
                 .supplyAsync(() -> {
                     try {
@@ -100,7 +102,9 @@ public class DatabaseProcessor extends AbstractProcessor {
     @Override
     void deleteProcess(PortContext context) throws Exception {
         //TODO: support batch deletion
-        for (PortEntity portEntity : context.getPortEntities()) {
+        List<PortEntity> portEntities = context.getPortEntities();
+        portEntities.sort(Comparator.comparing(Resource::getId));
+        for (PortEntity portEntity : portEntities) {
             context.getPortRepository().deletePort(portEntity);
         }
     }
