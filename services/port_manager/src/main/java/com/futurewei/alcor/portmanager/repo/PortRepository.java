@@ -261,7 +261,7 @@ public class PortRepository {
     }
 
     @DurationStatistics
-    public synchronized void createPortBulk(List<PortEntity> portEntities, Map<String, List<NeighborInfo>> neighbors) throws Exception {
+    public void createPortBulk(List<PortEntity> portEntities, Map<String, List<NeighborInfo>> neighbors) throws Exception {
         Map<String, PortEntity> portEntityMap = portEntities
                 .stream()
                 .collect(Collectors.toMap(PortEntity::getId, Function.identity()));
@@ -275,7 +275,7 @@ public class PortRepository {
     }
 
     @DurationStatistics
-    public synchronized void updatePort(PortEntity oldPortEntity, PortEntity newPortEntity, List<NeighborInfo> neighborInfos) throws Exception {
+    public void updatePort(PortEntity oldPortEntity, PortEntity newPortEntity, List<NeighborInfo> neighborInfos) throws Exception {
         try (Transaction tx = portCache.getTransaction().start()) {
             subnetPortsRepository.updateSubnetPortIds(oldPortEntity, newPortEntity);
             neighborRepository.updateNeighbors(oldPortEntity, neighborInfos);
@@ -285,7 +285,7 @@ public class PortRepository {
     }
 
     @DurationStatistics
-    public synchronized void deletePort(PortEntity portEntity) throws Exception {
+    public void deletePort(PortEntity portEntity) throws Exception {
         try (Transaction tx = portCache.getTransaction().start()) {
             subnetPortsRepository.deleteSubnetPortIds(portEntity);
             neighborRepository.deleteNeighbors(portEntity);
