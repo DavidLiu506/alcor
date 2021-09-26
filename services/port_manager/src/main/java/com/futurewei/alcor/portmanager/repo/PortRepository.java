@@ -20,9 +20,11 @@ import com.futurewei.alcor.common.db.CacheFactory;
 import com.futurewei.alcor.common.db.ICache;
 import com.futurewei.alcor.common.db.Transaction;
 import com.futurewei.alcor.common.stats.DurationStatistics;
+import com.futurewei.alcor.common.utils.CommonUtil;
 import com.futurewei.alcor.portmanager.entity.PortNeighbors;
 import com.futurewei.alcor.web.entity.dataplane.NeighborInfo;
 import com.futurewei.alcor.web.entity.port.PortEntity;
+import org.apache.ignite.configuration.CacheConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -262,14 +264,25 @@ public class PortRepository {
 
     @DurationStatistics
     public synchronized void createPortBulk(List<PortEntity> portEntities, Map<String, List<NeighborInfo>> neighbors) throws Exception {
-        Map<String, PortEntity> portEntityMap = portEntities
+        Map<String, List<PortEntity>> portEntityMap = portEntities
                 .stream()
-                .collect(Collectors.toMap(PortEntity::getId, Function.identity()));
+                .collect(Collectors.groupingBy(PortEntity::getVpcId));
+        for (String key : portEntityMap.keySet()) {
+            CacheConfiguration cfg = CommonUtil.getCacheConfiguration(key);
+            cacheFactory.getCache(PortEntity.class, cfg);
+        }
 
         try (Transaction tx = portCache.getTransaction().start()) {
             subnetPortsRepository.addSubnetPortIds(portEntities);
             neighborRepository.createNeighbors(neighbors);
-            portCache.putAll(portEntityMap);
+            for (Map.Entry<String, List<PortEntity>> entry: portEntityMap.entrySet()) {
+                Map<String, PortEntity> portEntityMap1 = entry.getValue()
+                        .stream()
+                        .collect(Collectors.toMap(PortEntity::getId, Function.identity()));
+                CacheConfiguration cfg = CommonUtil.getCacheConfiguration(entry.getKey());
+                ICache<String, PortEntity> cache = cacheFactory.getCache(PortEntity.class, cfg);
+                cache.putAll(portEntityMap1);
+            }
             tx.commit();
         }
     }
@@ -279,7 +292,9 @@ public class PortRepository {
         try (Transaction tx = portCache.getTransaction().start()) {
             subnetPortsRepository.updateSubnetPortIds(oldPortEntity, newPortEntity);
             neighborRepository.updateNeighbors(oldPortEntity, neighborInfos);
-            portCache.put(newPortEntity.getId(), newPortEntity);
+            CacheConfiguration cfg = CommonUtil.getCacheConfiguration(newPortEntity.getVpcId());
+            ICache<String, PortEntity> cache = cacheFactory.getCache(PortEntity.class, cfg);
+            cache.put(newPortEntity.getId(), newPortEntity);
             tx.commit();
         }
     }
@@ -289,7 +304,9 @@ public class PortRepository {
         try (Transaction tx = portCache.getTransaction().start()) {
             subnetPortsRepository.deleteSubnetPortIds(portEntity);
             neighborRepository.deleteNeighbors(portEntity);
-            portCache.remove(portEntity.getId());
+            CacheConfiguration cfg = CommonUtil.getCacheConfiguration(portEntity.getVpcId());
+            ICache<String, PortEntity> cache = cacheFactory.getCache(PortEntity.class, cfg);
+            cache.remove(portEntity.getId());
             tx.commit();
         }
     }
