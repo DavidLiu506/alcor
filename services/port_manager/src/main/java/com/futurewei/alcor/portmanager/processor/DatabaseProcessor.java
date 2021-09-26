@@ -20,6 +20,8 @@ import com.futurewei.alcor.web.entity.dataplane.NeighborInfo;
 import com.futurewei.alcor.web.entity.port.PortEntity;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 @AfterProcessor(DataPlaneProcessor.class)
 public class DatabaseProcessor extends AbstractProcessor {
@@ -68,7 +70,17 @@ public class DatabaseProcessor extends AbstractProcessor {
          operation, or wait for CreateNetworkConfig to succeed before writing to the database
          */
         List<PortEntity> portEntities = context.getPortEntities();
-        context.getPortRepository().createPortBulk(portEntities, portNeighbors);
+        CompletableFuture<Integer> future = CompletableFuture
+                .supplyAsync(() -> {
+                    try {
+                        context.getPortRepository().createPortBulk(portEntities, portNeighbors);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                });
+
+        future.get();
     }
 
     @Override
