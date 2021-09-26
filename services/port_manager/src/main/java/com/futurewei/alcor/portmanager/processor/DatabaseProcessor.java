@@ -72,7 +72,7 @@ public class DatabaseProcessor extends AbstractProcessor {
          operation, or wait for CreateNetworkConfig to succeed before writing to the database
          */
         List<PortEntity> portEntities = context.getPortEntities();
-        portEntities.sort(Comparator.comparing(Resource::getId));
+        portEntities.sort(Comparator.comparing(a -> a.getFixedIps().get(0).getSubnetId()));
         CompletableFuture<Integer> future = CompletableFuture
                 .supplyAsync(() -> {
                     try {
@@ -102,9 +102,7 @@ public class DatabaseProcessor extends AbstractProcessor {
     @Override
     void deleteProcess(PortContext context) throws Exception {
         //TODO: support batch deletion
-        List<PortEntity> portEntities = context.getPortEntities();
-        portEntities.sort(Comparator.comparing(Resource::getId));
-        for (PortEntity portEntity : portEntities) {
+        for (PortEntity portEntity : context.getPortEntities()) {
             context.getPortRepository().deletePort(portEntity);
         }
     }
