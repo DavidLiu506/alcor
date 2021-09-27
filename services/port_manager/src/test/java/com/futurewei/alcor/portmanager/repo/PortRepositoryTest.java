@@ -56,28 +56,6 @@ public class PortRepositoryTest {
         Mockito.when(transaction.start())
                 .thenReturn(transaction);
     }
-
-    @Test
-    public void findPortEntityTest() throws CacheException {
-        Mockito.when(portRepository.findPortEntity(UnitTestConfig.portId1))
-                .thenReturn(buildPortEntity(UnitTestConfig.portId1));
-
-        PortEntity portEntity = portRepository.findPortEntity(UnitTestConfig.portId1);
-        assertEquals(portEntity.getId(), UnitTestConfig.portId1);
-    }
-
-    @Test
-    public void findAllPortEntitiesTest() throws CacheException {
-        PortEntity portEntity = buildPortEntity(UnitTestConfig.portId1);
-        Map<String, PortEntity> portEntityMap = new HashMap<>();
-        portEntityMap.put(portEntity.getId(), portEntity);
-        Mockito.when(portRepository.findAllPortEntities())
-                .thenReturn(portEntityMap);
-
-        Map<String, PortEntity> portEntities = portRepository.findAllPortEntities();
-        assertEquals(portEntities.size(), 1);
-    }
-
     @Test
     public void createPortAndNeighborTest1() throws Exception {
         PortEntity portEntity = buildPortEntity(UnitTestConfig.portId1);

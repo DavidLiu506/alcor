@@ -20,9 +20,11 @@ import com.futurewei.alcor.common.db.CacheFactory;
 import com.futurewei.alcor.common.db.ICache;
 import com.futurewei.alcor.common.db.Transaction;
 import com.futurewei.alcor.common.stats.DurationStatistics;
+import com.futurewei.alcor.common.utils.CommonUtil;
 import com.futurewei.alcor.portmanager.entity.PortNeighbors;
 import com.futurewei.alcor.web.entity.dataplane.NeighborInfo;
 import com.futurewei.alcor.web.entity.port.PortEntity;
+import org.apache.ignite.configuration.CacheConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,18 +74,24 @@ public class PortRepository {
     }
 
     @DurationStatistics
-    public PortEntity findPortEntity(String portId) throws CacheException {
-        return portCache.get(portId);
+    public PortEntity findPortEntity(String projectId, String portId) throws CacheException {
+        CacheConfiguration cfg = CommonUtil.getCacheConfiguration(projectId);
+        ICache<String, PortEntity> cache = cacheFactory.getCache(PortEntity.class, cfg);
+        return cache.get(portId);
     }
 
     @DurationStatistics
-    public Map<String, PortEntity> findAllPortEntities() throws CacheException {
-        return portCache.getAll();
+    public Map<String, PortEntity> findAllPortEntities(String projectId) throws CacheException {
+        CacheConfiguration cfg = CommonUtil.getCacheConfiguration(projectId);
+        ICache<String, PortEntity> cache = cacheFactory.getCache(PortEntity.class, cfg);
+        return cache.getAll();
     }
 
     @DurationStatistics
-    public Map<String, PortEntity> findAllPortEntities(Map<String, Object[]> queryParams) throws CacheException {
-        return portCache.getAll(queryParams);
+    public Map<String, PortEntity> findAllPortEntities(String projectId, Map<String, Object[]> queryParams) throws CacheException {
+        CacheConfiguration cfg = CommonUtil.getCacheConfiguration(projectId);
+        ICache<String, PortEntity> cache = cacheFactory.getCache(PortEntity.class, cfg);
+        return cache.getAll(queryParams);
     }
 
     @DurationStatistics
@@ -261,15 +269,19 @@ public class PortRepository {
     }
 
     @DurationStatistics
-    public synchronized void createPortBulk(List<PortEntity> portEntities, Map<String, List<NeighborInfo>> neighbors) throws Exception {
-        try (Transaction tx = portCache.getTransaction().start()) {
-            Map<String, PortEntity> portEntityMap = portEntities
-                    .stream()
-                    .collect(Collectors.toMap(PortEntity::getId, Function.identity()));
+    public void createPortBulk(List<PortEntity> portEntities, Map<String, List<NeighborInfo>> neighbors) throws Exception {
+        CacheConfiguration cfg = CommonUtil.getCacheConfiguration(portEntities.get(0).getProjectId());
+        ICache<String, PortEntity> cache = cacheFactory.getCache(PortEntity.class, cfg);
+        Map<String, PortEntity> portEntityMap = portEntities
+                .stream()
+                .collect(Collectors.toMap(PortEntity::getId, Function.identity()));
+        synchronized (this){
+            try (Transaction tx = portCache.getTransaction().start()) {
                 subnetPortsRepository.addSubnetPortIds(portEntities);
                 neighborRepository.createNeighbors(neighbors);
-                portCache.putAll(portEntityMap);
-            tx.commit();
+                cache.putAll(portEntityMap);
+                tx.commit();
+            }
         }
     }
 
@@ -278,7 +290,9 @@ public class PortRepository {
         try (Transaction tx = portCache.getTransaction().start()) {
             subnetPortsRepository.updateSubnetPortIds(oldPortEntity, newPortEntity);
             neighborRepository.updateNeighbors(oldPortEntity, neighborInfos);
-            portCache.put(newPortEntity.getId(), newPortEntity);
+            CacheConfiguration cfg = CommonUtil.getCacheConfiguration(oldPortEntity.getProjectId());
+            ICache<String, PortEntity> cache = cacheFactory.getCache(PortEntity.class, cfg);
+            cache.put(newPortEntity.getId(), newPortEntity);
             tx.commit();
         }
     }
@@ -288,7 +302,9 @@ public class PortRepository {
         try (Transaction tx = portCache.getTransaction().start()) {
             subnetPortsRepository.deleteSubnetPortIds(portEntity);
             neighborRepository.deleteNeighbors(portEntity);
-            portCache.remove(portEntity.getId());
+            CacheConfiguration cfg = CommonUtil.getCacheConfiguration(portEntity.getProjectId());
+            ICache<String, PortEntity> cache = cacheFactory.getCache(PortEntity.class, cfg);
+            cache.remove(portEntity.getId());
             tx.commit();
         }
     }

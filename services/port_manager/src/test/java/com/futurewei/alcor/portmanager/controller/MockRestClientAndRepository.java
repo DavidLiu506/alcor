@@ -133,16 +133,16 @@ public class MockRestClientAndRepository {
         nodeInfos.add(nodeInfo);
         Mockito.when(nodeManagerRestClient.getNodeInfoByNodeName(anyString())).thenReturn(nodeInfos);
 
-        Mockito.when(portRepository.findPortEntity(UnitTestConfig.portId1))
+        Mockito.when(portRepository.findPortEntity(UnitTestConfig.projectId, UnitTestConfig.portId1))
                 .thenReturn(buildPortWebJson(UnitTestConfig.portId1).getPortEntity());
 
-        Mockito.when(portRepository.findPortEntity(UnitTestConfig.portId2))
+        Mockito.when(portRepository.findPortEntity(UnitTestConfig.projectId, UnitTestConfig.portId2))
                 .thenReturn(buildPortWebJson(UnitTestConfig.portId2).getPortEntity());
 
         Map<String, PortEntity> portStates = new HashMap<>();
         portStates.put(UnitTestConfig.portId1, buildPortWebJson(UnitTestConfig.portId1).getPortEntity());
 
-        Mockito.when(portRepository.findAllPortEntities(anyMap()))
+        Mockito.when(portRepository.findAllPortEntities(anyString(), anyMap()))
                 .thenReturn(portStates);
 
         Mockito.when(portRepository.getPortNeighbors(UnitTestConfig.vpcId))

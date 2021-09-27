@@ -104,7 +104,7 @@ public class PortServiceImpl implements PortService {
         LOG.debug("Update port enter, projectId: {}, portId: {}, PortWebJson: {}",
                 projectId, portId, portWebJson);
 
-        PortEntity portEntity = portRepository.findPortEntity(portId);
+        PortEntity portEntity = portRepository.findPortEntity(projectId, portId);
         if (portEntity == null) {
             throw new PortEntityNotFound();
         }
@@ -138,7 +138,7 @@ public class PortServiceImpl implements PortService {
     public void deletePort(String projectId, String portId) throws Exception {
         LOG.debug("Delete port enter, projectId: {}, portId: {}", projectId, portId);
 
-        PortEntity portEntity = portRepository.findPortEntity(portId);
+        PortEntity portEntity = portRepository.findPortEntity(projectId, portId);
         if (portEntity == null) {
             throw new PortEntityNotFound();
         }
@@ -161,7 +161,7 @@ public class PortServiceImpl implements PortService {
     @Override
     @DurationStatistics
     public PortWebJson getPort(String projectId, String portId) throws Exception {
-        PortEntity portEntity = portRepository.findPortEntity(portId);
+        PortEntity portEntity = portRepository.findPortEntity(projectId, portId);
         if (portEntity == null) {
             throw new PortEntityNotFound();
         }
@@ -176,7 +176,7 @@ public class PortServiceImpl implements PortService {
     public List<PortWebJson> listPort(String projectId) throws Exception {
         List<PortWebJson> result = new ArrayList<>();
 
-        Map<String, PortEntity> portEntityMap = portRepository.findAllPortEntities();
+        Map<String, PortEntity> portEntityMap = portRepository.findAllPortEntities(projectId);
         if (portEntityMap == null) {
             return result;
         }
@@ -196,7 +196,7 @@ public class PortServiceImpl implements PortService {
     public List<PortWebJson> listPort(String projectId, Map<String, Object[]> queryParams) throws Exception {
         List<PortWebJson> result = new ArrayList<>();
 
-        Map<String, PortEntity> portEntityMap = portRepository.findAllPortEntities(queryParams);
+        Map<String, PortEntity> portEntityMap = portRepository.findAllPortEntities(projectId, queryParams);
         if (portEntityMap == null) {
             return result;
         }
@@ -230,7 +230,7 @@ public class PortServiceImpl implements PortService {
         return neighborTable;
     }
 
-    private Map<String, List<NeighborEntry>> updateNeighborTable(RouterUpdateInfo routerUpdateInfo, Map<String, NeighborInfo> neighborInfos) throws CacheException {
+    private Map<String, List<NeighborEntry>> updateNeighborTable(String projectId, RouterUpdateInfo routerUpdateInfo, Map<String, NeighborInfo> neighborInfos) throws CacheException {
         String vpcId = routerUpdateInfo.getVpcId();
         String subnetId = routerUpdateInfo.getSubnetId();
         List<String> gatewayPortIds = routerUpdateInfo.getGatewayPortIds();
@@ -238,7 +238,7 @@ public class PortServiceImpl implements PortService {
 
         Map<String, Object[]> filterParams = new HashMap<>();
         filterParams.put("id", gatewayPortIds.toArray());
-        Map<String, PortEntity> gatewayPortEntities = portRepository.findAllPortEntities(filterParams);
+        Map<String, PortEntity> gatewayPortEntities = portRepository.findAllPortEntities(projectId, filterParams);
         if (gatewayPortEntities != null) {
             for (Map.Entry<String, PortEntity> entry: gatewayPortEntities.entrySet()) {
                 PortEntity portEntity = entry.getValue();
@@ -280,7 +280,7 @@ public class PortServiceImpl implements PortService {
     @DurationStatistics
     public RouterUpdateInfo updateL3Neighbors(String projectId, RouterUpdateInfo routerUpdateInfo) throws Exception {
         Map<String, NeighborInfo> neighborInfos = new HashMap<>();
-        Map<String, List<NeighborEntry>> neighborTable = updateNeighborTable(routerUpdateInfo, neighborInfos);
+        Map<String, List<NeighborEntry>> neighborTable = updateNeighborTable(projectId, routerUpdateInfo, neighborInfos);
         List<InternalRouterInfo> internalRouterInfos = new ArrayList<>();
         internalRouterInfos.add(routerUpdateInfo.getInternalRouterInfo());
 
@@ -331,7 +331,7 @@ public class PortServiceImpl implements PortService {
         for (InternalDPMResult internalDPMResult : result.getResultList()) {
             List<String> failedHosts = internalDPMResult.getFailedHosts();
             for (InternalPortEntity internalPortEntity : internalPortEntities) {
-                PortEntity portEntity = portRepository.findPortEntity(internalPortEntity.getId());
+                PortEntity portEntity = portRepository.findPortEntity(internalPortEntity.getProjectId(), internalPortEntity.getId());
                 if (status != null) {
                     portEntity.setStatus(status);
                 }else if (failedHosts.contains(internalPortEntity.getBindingHostIP())){

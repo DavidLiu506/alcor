@@ -565,7 +565,7 @@ public class PortServiceImpl implements PortService {
         portEntity.setProjectId(projectId);
 
         try {
-            PortEntity oldPortEntity = portRepository.findPortEntity(portId);
+            PortEntity oldPortEntity = portRepository.findPortEntity(projectId, portId);
             if (oldPortEntity == null) {
                 throw new PortEntityNotFound();
             }
@@ -626,7 +626,7 @@ public class PortServiceImpl implements PortService {
         try {
             for (PortEntity portEntity : portWebBulkJson.getPortEntities()) {
                 portEntity.setProjectId(projectId);
-                PortEntity oldPortEntity = portRepository.findPortEntity(portEntity.getId());
+                PortEntity oldPortEntity = portRepository.findPortEntity(projectId, portEntity.getId());
                 if (oldPortEntity == null) {
                     throw new PortEntityNotFound();
                 }
@@ -683,7 +683,7 @@ public class PortServiceImpl implements PortService {
         Stack<Rollback> rollbacks = new Stack<>();
         AsyncExecutor executor = new AsyncExecutor();
 
-        PortEntity portEntity = portRepository.findPortEntity(portId);
+        PortEntity portEntity = portRepository.findPortEntity(projectId, portId);
         if (portEntity == null) {
             throw new PortEntityNotFound();
         }
@@ -738,7 +738,7 @@ public class PortServiceImpl implements PortService {
     @Override
     @DurationStatistics
     public PortWebJson getPort(String projectId, String portId) throws Exception {
-        PortEntity portEntity = portRepository.findPortEntity(portId);
+        PortEntity portEntity = portRepository.findPortEntity(projectId, portId);
         if (portEntity == null) {
             throw new PortEntityNotFound();
         }
@@ -758,7 +758,7 @@ public class PortServiceImpl implements PortService {
     public List<PortWebJson> listPort(String projectId) throws Exception {
         List<PortWebJson> result = new ArrayList<>();
 
-        Map<String, PortEntity> portEntityMap = portRepository.findAllPortEntities();
+        Map<String, PortEntity> portEntityMap = portRepository.findAllPortEntities(projectId);
         if (portEntityMap == null) {
             return result;
         }
@@ -776,7 +776,7 @@ public class PortServiceImpl implements PortService {
     public List<PortWebJson> listPort(String projectId, Map<String, Object[]> queryParams) throws Exception {
         List<PortWebJson> result = new ArrayList<>();
 
-        Map<String, PortEntity> portEntityMap = portRepository.findAllPortEntities(queryParams);
+        Map<String, PortEntity> portEntityMap = portRepository.findAllPortEntities(projectId, queryParams);
         if (portEntityMap == null) {
             return result;
         }
