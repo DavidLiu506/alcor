@@ -73,7 +73,7 @@ public class DatabaseProcessor extends AbstractProcessor {
          */
         List<PortEntity> portEntities = context.getPortEntities();
         portEntities.sort(Comparator.comparing(a -> a.getFixedIps().get(0).getSubnetId()));
-        CompletableFuture<Integer> future = CompletableFuture
+        CompletableFuture<String> future = CompletableFuture
                 .supplyAsync(() -> {
                     try {
                         context.getPortRepository().createPortBulk(portEntities, portNeighbors);
@@ -81,7 +81,12 @@ public class DatabaseProcessor extends AbstractProcessor {
                         e.printStackTrace();
                     }
                     return null;
-                }, AsyncExecutor.executor);
+                }, AsyncExecutor.executor).handle((s, e) -> {
+                    if (e != null) {
+                        throw new CompletionException(e);
+                    }
+                    return s.toString();
+                });
 
         future.join();
     }

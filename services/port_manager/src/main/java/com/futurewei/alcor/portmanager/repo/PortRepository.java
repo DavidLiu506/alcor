@@ -265,7 +265,7 @@ public class PortRepository {
         Map<String, PortEntity> portEntityMap = portEntities
                 .stream()
                 .collect(Collectors.toMap(PortEntity::getId, Function.identity()));
-
+        ;
         try (Transaction tx = portCache.getTransaction().start()) {
             //subnetPortsRepository.addSubnetPortIds(portEntities);
             neighborRepository.createNeighbors(neighbors);
