@@ -261,16 +261,14 @@ public class PortRepository {
     }
 
     @DurationStatistics
-    public void createPortBulk(List<PortEntity> portEntities, Map<String, List<NeighborInfo>> neighbors) throws Exception {
+    public synchronized void createPortBulk(List<PortEntity> portEntities, Map<String, List<NeighborInfo>> neighbors) throws Exception {
         try (Transaction tx = portCache.getTransaction().start()) {
             Map<String, PortEntity> portEntityMap = portEntities
                     .stream()
                     .collect(Collectors.toMap(PortEntity::getId, Function.identity()));
-            synchronized (this) {
                 subnetPortsRepository.addSubnetPortIds(portEntities);
                 neighborRepository.createNeighbors(neighbors);
                 portCache.putAll(portEntityMap);
-            }
             tx.commit();
         }
     }
