@@ -275,10 +275,20 @@ public class PortRepository {
         Map<String, PortEntity> portEntityMap = portEntities
                 .stream()
                 .collect(Collectors.toMap(PortEntity::getId, Function.identity()));
+        Map<String, ICache<String, String>> subnetPortIdCaches = new HashMap<>();
+        portEntities.forEach(item -> item.getFixedIps().forEach(fixedIp -> {
+            CacheConfiguration subnetPortIdcfg = CommonUtil.getCacheConfiguration(fixedIp.getSubnetId());
+            subnetPortIdCaches.put(fixedIp.getSubnetId(), cacheFactory.getCache(String.class, subnetPortIdcfg));
+        }));
+        Map<String, ICache<String, NeighborInfo>> neighborCaches = new HashMap<>();
+        neighbors.entrySet().forEach(item -> {
+            CacheConfiguration neighborCfg = CommonUtil.getCacheConfiguration(item.getKey());
+            neighborCaches.put(item.getKey(), cacheFactory.getCache(NeighborInfo.class, neighborCfg));
+        });
         synchronized (this){
             try (Transaction tx = portCache.getTransaction().start()) {
-                subnetPortsRepository.addSubnetPortIds(portEntities);
-                neighborRepository.createNeighbors(neighbors);
+                subnetPortsRepository.addSubnetPortIds(portEntities, subnetPortIdCaches);
+                neighborRepository.createNeighbors(neighbors, neighborCaches);
                 cache.putAll(portEntityMap);
                 tx.commit();
             }

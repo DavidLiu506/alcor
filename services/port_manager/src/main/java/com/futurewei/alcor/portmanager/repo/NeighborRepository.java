@@ -50,16 +50,13 @@ public class NeighborRepository {
         return NEIGHBOR_CACHE_NAME_PREFIX + suffix;
     }
 
-    public void createNeighbors(Map<String, List<NeighborInfo>> neighbors) throws Exception {
+    public void createNeighbors(Map<String, List<NeighborInfo>> neighbors, Map<String, ICache<String, NeighborInfo>> neighborCaches) throws Exception {
         if (neighbors != null) {
             for (Map.Entry<String, List<NeighborInfo>> entry : neighbors.entrySet()) {
                 Map<String, NeighborInfo> neighborMap = entry.getValue()
                         .stream()
                         .collect(Collectors.toMap(NeighborInfo::getPortIp, Function.identity()));
-
-                CacheConfiguration cfg = CommonUtil.getCacheConfiguration(getNeighborCacheName(entry.getKey()));
-                ICache<String, NeighborInfo> neighborCache = cacheFactory.getCache(NeighborInfo.class, cfg);
-                neighborCache.putAll(neighborMap);
+                neighborCaches.get(entry.getKey()).putAll(neighborMap);
             }
         }
     }

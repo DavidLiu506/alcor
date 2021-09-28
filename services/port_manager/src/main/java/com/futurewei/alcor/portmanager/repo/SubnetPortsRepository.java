@@ -43,7 +43,7 @@ public class SubnetPortsRepository {
     }
 
 
-    public void addSubnetPortIds(List<PortEntity> portEntities) throws Exception {
+    public void addSubnetPortIds(List<PortEntity> portEntities, Map<String, ICache<String, String>> subnetPortIdCaches) throws Exception {
         //Store the mapping between subnet id and port id
         for (PortEntity portEntity: portEntities) {
             if (GATEWAY_PORT_DEVICE_OWNER.equals(portEntity.getDeviceOwner())) {
@@ -58,9 +58,7 @@ public class SubnetPortsRepository {
 
             for (PortEntity.FixedIp fixedIp: fixedIps) {
                 String subnetId = fixedIp.getSubnetId();
-                CacheConfiguration cfg = CommonUtil.getCacheConfiguration(subnetId);
-                ICache<String, String> cache = cacheFactory.getCache(String.class, cfg);
-                cache.put(portEntity.getId(), "1");
+                subnetPortIdCaches.get(subnetId).put(portEntity.getId(), "1");
             }
         }
     }
