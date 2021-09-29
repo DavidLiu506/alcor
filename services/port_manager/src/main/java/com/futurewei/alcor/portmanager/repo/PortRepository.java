@@ -306,9 +306,9 @@ public class PortRepository {
                 throw new CompletionException(e);
             }
             return "";
-        }, AsyncExecutor.executor);
+        });
         vpcFuture.join();
-        
+
         /*
         executorService.setRejectedExecutionHandler(new RejectedExecutionHandler() {
             @Override
