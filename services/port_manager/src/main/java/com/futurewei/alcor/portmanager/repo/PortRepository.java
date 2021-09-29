@@ -292,7 +292,7 @@ public class PortRepository {
             CacheConfiguration neighborCfg = CommonUtil.getCacheConfiguration(item.getKey());
             neighborCaches.put(item.getKey(), cacheFactory.getCache(NeighborInfo.class, neighborCfg));
         });
-        /*
+
         portEntities.sort(Comparator.comparing(Resource::getId));
         CompletableFuture<String> vpcFuture = CompletableFuture.supplyAsync(() -> {
             try {
@@ -308,8 +308,8 @@ public class PortRepository {
             return "";
         }, AsyncExecutor.executor);
         vpcFuture.join();
-         */
-
+        
+        /*
         executorService.setRejectedExecutionHandler(new RejectedExecutionHandler() {
             @Override
             public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
@@ -325,6 +325,8 @@ public class PortRepository {
                 }
             }
         });
+
+         */
     }
 
     @DurationStatistics
