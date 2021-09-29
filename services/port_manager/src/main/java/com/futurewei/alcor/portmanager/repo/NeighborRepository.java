@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -56,7 +57,8 @@ public class NeighborRepository {
                 Map<String, NeighborInfo> neighborMap = entry.getValue()
                         .stream()
                         .collect(Collectors.toMap(NeighborInfo::getPortIp, Function.identity()));
-                neighborCaches.get(entry.getKey()).putAll(neighborMap);
+                TreeMap<String, NeighborInfo> neighborInfoTreeMap = new TreeMap<>(neighborMap);
+                neighborCaches.get(entry.getKey()).putAll(neighborInfoTreeMap);
             }
         }
     }

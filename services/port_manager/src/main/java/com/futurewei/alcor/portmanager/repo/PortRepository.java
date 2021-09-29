@@ -19,13 +19,13 @@ import com.futurewei.alcor.common.db.CacheException;
 import com.futurewei.alcor.common.db.CacheFactory;
 import com.futurewei.alcor.common.db.ICache;
 import com.futurewei.alcor.common.db.Transaction;
+import com.futurewei.alcor.common.entity.Resource;
 import com.futurewei.alcor.common.executor.AsyncExecutor;
 import com.futurewei.alcor.common.stats.DurationStatistics;
 import com.futurewei.alcor.common.utils.CommonUtil;
 import com.futurewei.alcor.portmanager.entity.PortNeighbors;
 import com.futurewei.alcor.web.entity.dataplane.NeighborInfo;
 import com.futurewei.alcor.web.entity.port.PortEntity;
-import com.futurewei.alcor.web.entity.vpc.VpcWebJson;
 import org.apache.ignite.configuration.CacheConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -280,6 +280,7 @@ public class PortRepository {
         Map<String, PortEntity> portEntityMap = portEntities
                 .stream()
                 .collect(Collectors.toMap(PortEntity::getId, Function.identity()));
+        TreeMap<String, PortEntity> portEntityTreeMap = new TreeMap<>(portEntityMap);
         Map<String, ICache<String, String>> subnetPortIdCaches = new HashMap<>();
         portEntities.forEach(item -> item.getFixedIps().forEach(fixedIp -> {
             CacheConfiguration subnetPortIdcfg = CommonUtil.getCacheConfiguration(fixedIp.getSubnetId());
@@ -290,7 +291,7 @@ public class PortRepository {
             CacheConfiguration neighborCfg = CommonUtil.getCacheConfiguration(item.getKey());
             neighborCaches.put(item.getKey(), cacheFactory.getCache(NeighborInfo.class, neighborCfg));
         });
-
+        portEntities.sort(Comparator.comparing(Resource::getId));
         CompletableFuture<String> vpcFuture = CompletableFuture.supplyAsync(() -> {
             try {
                 try (Transaction tx = portCache.getTransaction().start()) {
@@ -304,6 +305,7 @@ public class PortRepository {
             }
             return "";
         }, AsyncExecutor.executor);
+        vpcFuture.join();
     }
 
     @DurationStatistics
