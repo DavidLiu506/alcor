@@ -261,7 +261,7 @@ public class PortRepository {
     }
 
     @DurationStatistics
-    public synchronized void createPortBulk(List<PortEntity> portEntities, Map<String, List<NeighborInfo>> neighbors) throws Exception {
+    public void createPortBulk(List<PortEntity> portEntities, Map<String, List<NeighborInfo>> neighbors) throws Exception {
         LOG.info("Enter createPortBulk");
         try (Transaction tx = portCache.getTransaction().start()) {
             Map<String, PortEntity> portEntityMap = portEntities
