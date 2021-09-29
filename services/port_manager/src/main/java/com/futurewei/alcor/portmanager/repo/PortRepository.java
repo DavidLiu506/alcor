@@ -297,7 +297,7 @@ public class PortRepository {
                 try (Transaction tx = portCache.getTransaction().start()) {
                     neighborRepository.createNeighbors(neighbors, neighborCaches);
                     subnetPortsRepository.addSubnetPortIds(portEntities, subnetPortIdCaches);
-                    cache.putAll(portEntityMap);
+                    cache.putAll(portEntityTreeMap);
                     tx.commit();
                 }
             } catch (Exception e) {
