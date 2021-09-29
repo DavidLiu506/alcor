@@ -294,7 +294,7 @@ public class PortRepository {
         });
 
         portEntities.sort(Comparator.comparing(Resource::getId));
-        CompletableFuture<String> vpcFuture = CompletableFuture.supplyAsync(() -> {
+        CompletableFuture<String> f = CompletableFuture.supplyAsync(() -> {
             try {
                 try (Transaction tx = portCache.getTransaction().start()) {
                     neighborRepository.createNeighbors(neighbors, neighborCaches);
@@ -306,27 +306,8 @@ public class PortRepository {
                 throw new CompletionException(e);
             }
             return "";
-        });
-        vpcFuture.join();
-
-        /*
-        executorService.setRejectedExecutionHandler(new RejectedExecutionHandler() {
-            @Override
-            public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-                try (Transaction tx = portCache.getTransaction().start()) {
-                    neighborRepository.createNeighbors(neighbors, neighborCaches);
-                    subnetPortsRepository.addSubnetPortIds(portEntities, subnetPortIdCaches);
-                    cache.putAll(portEntityTreeMap);
-                    tx.commit();
-                } catch (CacheException e) {
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-         */
+        }, AsyncExecutor.executor);
+        f.join();
     }
 
     @DurationStatistics
