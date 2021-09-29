@@ -277,8 +277,8 @@ public class PortRepository {
     public synchronized void updatePort(PortEntity oldPortEntity, PortEntity newPortEntity, List<NeighborInfo> neighborInfos) throws Exception {
         try (Transaction tx = portCache.getTransaction().start()) {
             portCache.put(newPortEntity.getId(), newPortEntity);
-            neighborRepository.updateNeighbors(oldPortEntity, neighborInfos);
             subnetPortsRepository.updateSubnetPortIds(oldPortEntity, newPortEntity);
+            neighborRepository.updateNeighbors(oldPortEntity, neighborInfos);
             tx.commit();
         }
     }
@@ -287,8 +287,8 @@ public class PortRepository {
     public synchronized void deletePort(PortEntity portEntity) throws Exception {
         try (Transaction tx = portCache.getTransaction().start()) {
             portCache.remove(portEntity.getId());
-            neighborRepository.deleteNeighbors(portEntity);
             subnetPortsRepository.deleteSubnetPortIds(portEntity);
+            neighborRepository.deleteNeighbors(portEntity);
             tx.commit();
         }
     }
