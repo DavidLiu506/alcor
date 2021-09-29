@@ -34,9 +34,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -49,6 +47,9 @@ public class PortRepository {
     private CacheFactory cacheFactory;
     private NeighborRepository neighborRepository;
     private SubnetPortsRepository subnetPortsRepository;
+    BlockingQueue arrayBlockingQueue = new ArrayBlockingQueue(3);
+    ThreadPoolExecutor executorService =
+            new ThreadPoolExecutor(1, 3, 30, TimeUnit.SECONDS, arrayBlockingQueue);
 
     @Autowired
     public PortRepository(CacheFactory cacheFactory) {
@@ -291,6 +292,7 @@ public class PortRepository {
             CacheConfiguration neighborCfg = CommonUtil.getCacheConfiguration(item.getKey());
             neighborCaches.put(item.getKey(), cacheFactory.getCache(NeighborInfo.class, neighborCfg));
         });
+        /*
         portEntities.sort(Comparator.comparing(Resource::getId));
         CompletableFuture<String> vpcFuture = CompletableFuture.supplyAsync(() -> {
             try {
@@ -306,6 +308,23 @@ public class PortRepository {
             return "";
         }, AsyncExecutor.executor);
         vpcFuture.join();
+         */
+
+        executorService.setRejectedExecutionHandler(new RejectedExecutionHandler() {
+            @Override
+            public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+                try (Transaction tx = portCache.getTransaction().start()) {
+                    neighborRepository.createNeighbors(neighbors, neighborCaches);
+                    subnetPortsRepository.addSubnetPortIds(portEntities, subnetPortIdCaches);
+                    cache.putAll(portEntityTreeMap);
+                    tx.commit();
+                } catch (CacheException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @DurationStatistics
