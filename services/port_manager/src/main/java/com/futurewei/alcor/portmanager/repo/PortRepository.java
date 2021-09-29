@@ -267,8 +267,8 @@ public class PortRepository {
                     .stream()
                     .collect(Collectors.toMap(PortEntity::getId, Function.identity()));
             portCache.putAll(portEntityMap);
-            neighborRepository.createNeighbors(neighbors);
             subnetPortsRepository.addSubnetPortIds(portEntities);
+            neighborRepository.createNeighbors(neighbors);
             tx.commit();
         }
     }
