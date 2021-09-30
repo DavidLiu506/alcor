@@ -41,6 +41,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.concurrent.Semaphore;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -52,6 +53,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
     private ICache<String, IpAddrRange> ipAddrRangeCache;
     private ICache<String, VpcIpRange> vpcIpRangeCache;
     private CacheFactory cacheFactory;
+    private Semaphore semaphore = new Semaphore(64, true);
 
     @Autowired
     public IpAddrRangeRepo(CacheFactory cacheFactory) {
@@ -200,13 +202,16 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
      */
     @DurationStatistics
     public IpAddrAlloc allocateIpAddr(IpAddrRequest request) throws Exception {
+        semaphore.acquire();
         try (Transaction tx = ipAddrRangeCache.getTransaction(TransactionConcurrency.OPTIMISTIC, TransactionIsolation.READ_COMMITTED).start()) {
             IpAddrAlloc ipAddrAlloc = allocateIpAddrMethod(request);
             tx.commit();
+            semaphore.release();
             return ipAddrAlloc;
         } catch (Exception e) {
             LOG.warn("Transaction exception: ");
             LOG.warn(e.getMessage());
+            semaphore.release();
             throw e;
         }
     }
