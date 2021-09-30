@@ -32,6 +32,8 @@ import com.futurewei.alcor.web.entity.ip.IpAddrRequest;
 import com.futurewei.alcor.web.entity.ip.IpAddrUpdateRequest;
 import com.futurewei.alcor.web.entity.ip.IpVersion;
 import org.apache.ignite.configuration.CacheConfiguration;
+import org.apache.ignite.transactions.TransactionConcurrency;
+import org.apache.ignite.transactions.TransactionIsolation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -198,7 +200,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
      */
     @DurationStatistics
     public synchronized IpAddrAlloc allocateIpAddr(IpAddrRequest request) throws Exception {
-        try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
+        try (Transaction tx = ipAddrRangeCache.getTransaction(TransactionConcurrency.OPTIMISTIC, TransactionIsolation.REPEATABLE_READ).start()) {
             IpAddrAlloc ipAddrAlloc = allocateIpAddrMethod(request);
             tx.commit();
             return ipAddrAlloc;

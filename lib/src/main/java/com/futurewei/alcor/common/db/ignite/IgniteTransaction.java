@@ -22,9 +22,12 @@ import com.futurewei.alcor.common.logging.Logger;
 import com.futurewei.alcor.common.logging.LoggerFactory;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteException;
+import org.apache.ignite.transactions.TransactionConcurrency;
+import org.apache.ignite.transactions.TransactionIsolation;
 
 import java.util.logging.Level;
 
+import static org.apache.ignite.transactions.TransactionConcurrency.OPTIMISTIC;
 import static org.apache.ignite.transactions.TransactionConcurrency.PESSIMISTIC;
 import static org.apache.ignite.transactions.TransactionIsolation.SERIALIZABLE;
 
@@ -37,10 +40,12 @@ public class IgniteTransaction implements Transaction {
     public IgniteTransaction(Ignite client) {
         this.client = client;
     }
+    private TransactionConcurrency transactionConcurrency = PESSIMISTIC;
+    private TransactionIsolation transactionIsolation = SERIALIZABLE;
 
     @Override
     public Transaction start() throws CacheException {
-        transaction = client.transactions().txStart(PESSIMISTIC, SERIALIZABLE);
+        transaction = client.transactions().txStart(transactionConcurrency, transactionIsolation);
         return this;
     }
 

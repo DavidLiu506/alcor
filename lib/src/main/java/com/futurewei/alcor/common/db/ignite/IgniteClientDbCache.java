@@ -33,6 +33,8 @@ import org.apache.ignite.client.ClientException;
 import org.apache.ignite.client.IgniteClient;
 import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.lang.IgniteBiPredicate;
+import org.apache.ignite.transactions.TransactionConcurrency;
+import org.apache.ignite.transactions.TransactionIsolation;
 import org.springframework.util.Assert;
 
 import javax.cache.Cache;
@@ -220,5 +222,10 @@ public class IgniteClientDbCache<K, V> implements IgniteICache<K, V> {
     @Override
     public Transaction getTransaction() {
         return new IgniteClientTransaction(igniteClient);
+    }
+
+    @Override
+    public Transaction getTransaction(TransactionConcurrency transactionConcurrency, TransactionIsolation transactionIsolation) {
+        return new IgniteClientTransaction(igniteClient, transactionConcurrency, transactionIsolation);
     }
 }

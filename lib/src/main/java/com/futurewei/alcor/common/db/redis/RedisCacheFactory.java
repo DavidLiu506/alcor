@@ -22,6 +22,8 @@ import com.futurewei.alcor.common.db.IDistributedLock;
 import com.futurewei.alcor.common.db.Transaction;
 import com.futurewei.alcor.common.entity.TokenEntity;
 import org.apache.ignite.configuration.CacheConfiguration;
+import org.apache.ignite.transactions.TransactionConcurrency;
+import org.apache.ignite.transactions.TransactionIsolation;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -88,6 +90,13 @@ public class RedisCacheFactory implements ICacheFactory {
 
     @Override
     public Transaction getTransaction() {
+        RedisTemplate<?, ?> template = new RedisTemplate<>();
+        template.setConnectionFactory(lettuceConnectionFactory);
+        return new RedisTransaction(template);
+    }
+
+    @Override
+    public Transaction getTransaction(TransactionConcurrency transactionConcurrency, TransactionIsolation transactionIsolation) {
         RedisTemplate<?, ?> template = new RedisTemplate<>();
         template.setConnectionFactory(lettuceConnectionFactory);
         return new RedisTransaction(template);

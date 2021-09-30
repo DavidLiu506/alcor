@@ -24,6 +24,8 @@ import org.apache.ignite.client.ClientException;
 import org.apache.ignite.client.ClientTransaction;
 import org.apache.ignite.client.IgniteClient;
 import org.apache.ignite.internal.client.thin.ClientServerError;
+import org.apache.ignite.transactions.TransactionConcurrency;
+import org.apache.ignite.transactions.TransactionIsolation;
 import org.springframework.context.annotation.Description;
 
 import java.util.logging.Level;
@@ -36,15 +38,23 @@ public class IgniteClientTransaction implements Transaction {
 
     private final IgniteClient igniteClient;
     private ClientTransaction clientTransaction;
+    private TransactionConcurrency transactionConcurrency = PESSIMISTIC;
+    private TransactionIsolation transactionIsolation = SERIALIZABLE;
 
     public IgniteClientTransaction(IgniteClient igniteClient) {
         this.igniteClient = igniteClient;
     }
 
+    public IgniteClientTransaction(IgniteClient igniteClient, TransactionConcurrency transactionConcurrency, TransactionIsolation transactionIsolation) {
+        this.igniteClient = igniteClient;
+        this.transactionConcurrency = transactionConcurrency;
+        this.transactionIsolation = transactionIsolation;
+    }
+
     @Override
     public Transaction start() throws CacheException {
         try{
-            clientTransaction = igniteClient.transactions().txStart(PESSIMISTIC, SERIALIZABLE);
+            clientTransaction = igniteClient.transactions().txStart(transactionConcurrency, transactionIsolation);
         } catch (ClientServerError | ClientException e) {
             logger.log(Level.WARNING, "IgniteTransaction start error:" + e.getMessage());
             throw new CacheException("IgniteTransaction start error:" + e.getMessage());
@@ -78,5 +88,21 @@ public class IgniteClientTransaction implements Transaction {
         if (clientTransaction != null) {
             clientTransaction.close();
         }
+    }
+
+    public void setTransactionConcurrency(TransactionConcurrency transactionConcurrency) {
+        this.transactionConcurrency = transactionConcurrency;
+    }
+
+    public TransactionConcurrency getTransactionConcurrency() {
+        return transactionConcurrency;
+    }
+
+    public void setTransactionIsolation(TransactionIsolation transactionIsolation) {
+        this.transactionIsolation = transactionIsolation;
+    }
+
+    public TransactionIsolation getTransactionIsolation() {
+        return transactionIsolation;
     }
 }

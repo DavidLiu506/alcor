@@ -23,6 +23,8 @@ import com.futurewei.alcor.common.db.Transaction;
 import org.apache.ignite.client.IgniteClient;
 import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.configuration.ClientConfiguration;
+import org.apache.ignite.transactions.TransactionConcurrency;
+import org.apache.ignite.transactions.TransactionIsolation;
 
 import javax.cache.expiry.CreatedExpiryPolicy;
 import javax.cache.expiry.Duration;
@@ -74,5 +76,10 @@ public class IgniteClientCacheFactory implements ICacheFactory {
     @Override
     public Transaction getTransaction() {
         return new IgniteClientTransaction(igniteClient);
+    }
+
+    @Override
+    public Transaction getTransaction(TransactionConcurrency transactionConcurrency, TransactionIsolation transactionIsolation) {
+        return new IgniteClientTransaction(igniteClient, transactionConcurrency, transactionIsolation);
     }
 }

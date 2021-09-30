@@ -23,6 +23,8 @@ import com.futurewei.alcor.common.db.CacheException;
 import com.futurewei.alcor.common.logging.Logger;
 import com.futurewei.alcor.common.logging.LoggerFactory;
 import org.apache.ignite.lang.IgniteBiPredicate;
+import org.apache.ignite.transactions.TransactionConcurrency;
+import org.apache.ignite.transactions.TransactionIsolation;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 
@@ -141,6 +143,11 @@ public class RedisCache<K, V> implements ICache<K, V> {
 
     @Override
     public Transaction getTransaction() {
+        return transaction;
+    }
+
+    @Override
+    public Transaction getTransaction(TransactionConcurrency transactionConcurrency, TransactionIsolation transactionIsolation) {
         return transaction;
     }
 }

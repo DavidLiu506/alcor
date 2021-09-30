@@ -18,6 +18,8 @@ package com.futurewei.alcor.common.db;
 import com.futurewei.alcor.common.db.ignite.IgniteTransaction;
 import com.futurewei.alcor.common.entity.CustomerResource;
 import org.apache.ignite.lang.IgniteBiPredicate;
+import org.apache.ignite.transactions.TransactionConcurrency;
+import org.apache.ignite.transactions.TransactionIsolation;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
@@ -86,6 +88,11 @@ public class MockCache<K, V> implements ICache<K, V> {
 
     @Override
     public Transaction getTransaction() {
+        return transaction;
+    }
+
+    @Override
+    public Transaction getTransaction(TransactionConcurrency transactionConcurrency, TransactionIsolation transactionIsolation) {
         return transaction;
     }
 

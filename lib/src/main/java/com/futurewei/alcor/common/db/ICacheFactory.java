@@ -17,6 +17,8 @@ Copyright(c) 2020 Futurewei Cloud
 package com.futurewei.alcor.common.db;
 
 import org.apache.ignite.configuration.CacheConfiguration;
+import org.apache.ignite.transactions.TransactionConcurrency;
+import org.apache.ignite.transactions.TransactionIsolation;
 
 import java.util.concurrent.TimeUnit;
 
@@ -50,4 +52,6 @@ public interface ICacheFactory {
     <T> IDistributedLock getDistributedLock(Class<T> t);
 
     Transaction getTransaction();
+
+    Transaction getTransaction(TransactionConcurrency transactionConcurrency, TransactionIsolation transactionIsolation);
 }

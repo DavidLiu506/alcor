@@ -33,7 +33,9 @@ import org.apache.ignite.cache.query.QueryCursor;
 import org.apache.ignite.cache.query.ScanQuery;
 import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.lang.IgniteBiPredicate;
+import org.apache.ignite.transactions.TransactionConcurrency;
 import org.apache.ignite.transactions.TransactionException;
+import org.apache.ignite.transactions.TransactionIsolation;
 import org.springframework.util.Assert;
 
 import javax.cache.Cache;
@@ -229,6 +231,11 @@ public class IgniteDbCache<K, V> implements IgniteICache<K, V> {
 
     @Override
     public Transaction getTransaction() {
+        return transaction;
+    }
+
+    @Override
+    public Transaction getTransaction(TransactionConcurrency transactionConcurrency, TransactionIsolation transactionIsolation) {
         return transaction;
     }
 }

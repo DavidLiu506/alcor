@@ -18,10 +18,10 @@ package com.futurewei.alcor.common.executor;
 
 public class ThreadPoolExecutorConfig {
     //Core thread pool size
-    public static int corePoolSize = 100;
+    public static int corePoolSize = 64;
 
     //Maximum thread pool size
-    public static int maximumPoolSize = 500;
+    public static int maximumPoolSize = 100;
 
     //Maximum idle time of thread
     public static int KeepAliveTime = 5000;

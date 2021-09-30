@@ -16,6 +16,9 @@ Copyright(c) 2020 Futurewei Cloud
 
 package com.futurewei.alcor.common.db;
 
+import org.apache.ignite.transactions.TransactionConcurrency;
+import org.apache.ignite.transactions.TransactionIsolation;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -77,4 +80,6 @@ public interface ICache<K, V> {
     long size();
 
     Transaction getTransaction();
+
+    Transaction getTransaction(TransactionConcurrency transactionConcurrency, TransactionIsolation transactionIsolation);
 }

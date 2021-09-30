@@ -22,6 +22,8 @@ import com.futurewei.alcor.common.db.Transaction;
 import com.futurewei.alcor.common.logging.Logger;
 import com.futurewei.alcor.common.logging.LoggerFactory;
 import org.apache.ignite.lang.IgniteBiPredicate;
+import org.apache.ignite.transactions.TransactionConcurrency;
+import org.apache.ignite.transactions.TransactionIsolation;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
@@ -152,6 +154,11 @@ public class RedisExpireCache<K, V> implements ICache<K, V> {
 
     @Override
     public Transaction getTransaction() {
+        return transaction;
+    }
+
+    @Override
+    public Transaction getTransaction(TransactionConcurrency transactionConcurrency, TransactionIsolation transactionIsolation) {
         return transaction;
     }
 }
