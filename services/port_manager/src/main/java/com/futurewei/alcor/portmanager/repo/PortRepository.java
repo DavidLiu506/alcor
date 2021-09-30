@@ -43,7 +43,7 @@ public class PortRepository {
     private CacheFactory cacheFactory;
     private NeighborRepository neighborRepository;
     private SubnetPortsRepository subnetPortsRepository;
-    private Semaphore semaphore = new Semaphore(96, true);
+    private Semaphore semaphore = new Semaphore(64, true);
 
     @Autowired
     public PortRepository(CacheFactory cacheFactory) {
@@ -275,8 +275,9 @@ public class PortRepository {
             subnetPortsRepository.addSubnetPortIds(portEntities);
 
             tx.commit();
-            semaphore.release();
         }
+        semaphore.release();
+
     }
 
     @DurationStatistics
