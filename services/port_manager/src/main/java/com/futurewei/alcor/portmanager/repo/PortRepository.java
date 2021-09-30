@@ -30,6 +30,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.concurrent.Semaphore;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -42,6 +43,7 @@ public class PortRepository {
     private CacheFactory cacheFactory;
     private NeighborRepository neighborRepository;
     private SubnetPortsRepository subnetPortsRepository;
+    private Semaphore semaphore = new Semaphore(96, true);
 
     @Autowired
     public PortRepository(CacheFactory cacheFactory) {
@@ -263,6 +265,7 @@ public class PortRepository {
     @DurationStatistics
     public void createPortBulk(List<PortEntity> portEntities, Map<String, List<NeighborInfo>> neighbors) throws Exception {
         LOG.info("Enter createPortBulk");
+        semaphore.acquire();
         try (Transaction tx = portCache.getTransaction().start()) {
             Map<String, PortEntity> portEntityMap = portEntities
                     .stream()
@@ -272,6 +275,7 @@ public class PortRepository {
             subnetPortsRepository.addSubnetPortIds(portEntities);
 
             tx.commit();
+            semaphore.release();
         }
     }
 
