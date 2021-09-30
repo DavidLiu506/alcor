@@ -197,7 +197,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
      * @throws Exception Db operation or ip address assignment exception
      */
     @DurationStatistics
-    public IpAddrAlloc allocateIpAddr(IpAddrRequest request) throws Exception {
+    public synchronized IpAddrAlloc allocateIpAddr(IpAddrRequest request) throws Exception {
         try (Transaction tx = ipAddrRangeCache.getTransaction().start()) {
             IpAddrAlloc ipAddrAlloc = allocateIpAddrMethod(request);
             tx.commit();
