@@ -182,8 +182,8 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
             } catch (Exception e) {
                 throw e;
             }
+            ipAddrRangeCache.put(ipAddrRange.getId(), ipAddrRange);
         }
-        ipAddrRangeCache.put(ipAddrRange.getId(), ipAddrRange);
 
         if (ipAddrAlloc == null) {
             throw new IpAddrNotEnoughException();
