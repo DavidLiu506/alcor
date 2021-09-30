@@ -26,7 +26,6 @@ import org.apache.ignite.IgniteException;
 import java.util.logging.Level;
 
 import static org.apache.ignite.transactions.TransactionConcurrency.PESSIMISTIC;
-import static org.apache.ignite.transactions.TransactionIsolation.READ_COMMITTED;
 import static org.apache.ignite.transactions.TransactionIsolation.SERIALIZABLE;
 
 public class IgniteTransaction implements Transaction {
@@ -41,7 +40,7 @@ public class IgniteTransaction implements Transaction {
 
     @Override
     public Transaction start() throws CacheException {
-        transaction = client.transactions().txStart(PESSIMISTIC, READ_COMMITTED);
+        transaction = client.transactions().txStart(PESSIMISTIC, SERIALIZABLE);
         return this;
     }
 

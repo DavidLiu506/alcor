@@ -510,7 +510,8 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
     }
 
     private void releaseIpAddrBulkMethod(Map<String, List<String>> requests) throws Exception{
-        for (Map.Entry<String, List<String>> entry: requests.entrySet()) {
+        SortedMap<String, List<String>> req = new TreeMap<>(requests);
+        for (Map.Entry<String, List<String>> entry: req.entrySet()) {
             IpAddrRange ipAddrRange = ipAddrRangeCache.get(entry.getKey());
             if (ipAddrRange == null) {
                 throw new IpRangeNotFoundException();
