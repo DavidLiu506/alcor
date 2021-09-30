@@ -174,15 +174,15 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
         if (ipAddrRange == null) {
             throw new IpRangeNotFoundException();
         }
-
-        try {
-            CacheConfiguration cfg = CommonUtil.getCacheConfiguration(getIpAddrCacheName(ipAddrRange.getId()));
-            ICache<String, IpAddrAlloc> ipAddrCache = cacheFactory.getCache(IpAddrAlloc.class, cfg);
-            ipAddrAlloc = ipAddrRange.allocate(ipAddrCache, ipAddr);
-        } catch (Exception e) {
-            throw e;
+        synchronized (this) {
+            try {
+                CacheConfiguration cfg = CommonUtil.getCacheConfiguration(getIpAddrCacheName(ipAddrRange.getId()));
+                ICache<String, IpAddrAlloc> ipAddrCache = cacheFactory.getCache(IpAddrAlloc.class, cfg);
+                ipAddrAlloc = ipAddrRange.allocate(ipAddrCache, ipAddr);
+            } catch (Exception e) {
+                throw e;
+            }
         }
-
         ipAddrRangeCache.put(ipAddrRange.getId(), ipAddrRange);
 
         if (ipAddrAlloc == null) {
@@ -199,8 +199,8 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
      * @throws Exception Db operation or ip address assignment exception
      */
     @DurationStatistics
-    public synchronized IpAddrAlloc allocateIpAddr(IpAddrRequest request) throws Exception {
-        try (Transaction tx = ipAddrRangeCache.getTransaction(TransactionConcurrency.OPTIMISTIC, TransactionIsolation.REPEATABLE_READ).start()) {
+    public IpAddrAlloc allocateIpAddr(IpAddrRequest request) throws Exception {
+        try (Transaction tx = ipAddrRangeCache.getTransaction(TransactionConcurrency.OPTIMISTIC, TransactionIsolation.READ_COMMITTED).start()) {
             IpAddrAlloc ipAddrAlloc = allocateIpAddrMethod(request);
             tx.commit();
             return ipAddrAlloc;
