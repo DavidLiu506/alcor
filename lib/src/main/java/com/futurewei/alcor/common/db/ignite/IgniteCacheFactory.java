@@ -75,7 +75,7 @@ public class IgniteCacheFactory implements ICacheFactory {
 
     @Override
     public Transaction getTransaction(TransactionConcurrency transactionConcurrency, TransactionIsolation transactionIsolation) {
-        return new IgniteTransaction(ignite, transactionConcurrency, transactionIsolation);
+        return new IgniteTransaction(ignite);
     }
 
 }
