@@ -118,7 +118,7 @@ public class RequestManager {
         LOG.info("Begin to rollback all requests...");
 
         for (IRestRequest request: requests) {
-            request.rollback();
+            //request.rollback();
         }
     }
 }
