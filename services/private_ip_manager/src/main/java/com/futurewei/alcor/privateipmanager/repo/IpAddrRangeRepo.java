@@ -176,16 +176,16 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
         if (ipAddrRange == null) {
             throw new IpRangeNotFoundException();
         }
-        synchronized (this) {
-            try {
-                CacheConfiguration cfg = CommonUtil.getCacheConfiguration(getIpAddrCacheName(ipAddrRange.getId()));
-                ICache<String, IpAddrAlloc> ipAddrCache = cacheFactory.getCache(IpAddrAlloc.class, cfg);
-                ipAddrAlloc = ipAddrRange.allocate(ipAddrCache, ipAddr);
-            } catch (Exception e) {
-                throw e;
-            }
-            ipAddrRangeCache.put(ipAddrRange.getId(), ipAddrRange);
+
+        try {
+            CacheConfiguration cfg = CommonUtil.getCacheConfiguration(getIpAddrCacheName(ipAddrRange.getId()));
+            ICache<String, IpAddrAlloc> ipAddrCache = cacheFactory.getCache(IpAddrAlloc.class, cfg);
+            ipAddrAlloc = ipAddrRange.allocate(ipAddrCache, ipAddr);
+        } catch (Exception e) {
+            throw e;
         }
+        ipAddrRangeCache.put(ipAddrRange.getId(), ipAddrRange);
+
 
         if (ipAddrAlloc == null) {
             throw new IpAddrNotEnoughException();
@@ -203,7 +203,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
     @DurationStatistics
     public IpAddrAlloc allocateIpAddr(IpAddrRequest request) throws Exception {
         semaphore.acquire();
-        try (Transaction tx = ipAddrRangeCache.getTransaction(TransactionConcurrency.PESSIMISTIC, TransactionIsolation.READ_COMMITTED).start()) {
+        try (Transaction tx = ipAddrRangeCache.getTransaction(TransactionConcurrency.PESSIMISTIC, TransactionIsolation.SERIALIZABLE).start()) {
             IpAddrAlloc ipAddrAlloc = allocateIpAddrMethod(request);
             tx.commit();
             semaphore.release();
