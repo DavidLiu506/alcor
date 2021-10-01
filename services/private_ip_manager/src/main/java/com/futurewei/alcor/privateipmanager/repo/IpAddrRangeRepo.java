@@ -203,7 +203,7 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
     @DurationStatistics
     public IpAddrAlloc allocateIpAddr(IpAddrRequest request) throws Exception {
         semaphore.acquire();
-        try (Transaction tx = ipAddrRangeCache.getTransaction(TransactionConcurrency.OPTIMISTIC, TransactionIsolation.SERIALIZABLE).start()) {
+        try (Transaction tx = ipAddrRangeCache.getTransaction(TransactionConcurrency.PESSIMISTIC, TransactionIsolation.READ_COMMITTED).start()) {
             IpAddrAlloc ipAddrAlloc = allocateIpAddrMethod(request);
             tx.commit();
             semaphore.release();
