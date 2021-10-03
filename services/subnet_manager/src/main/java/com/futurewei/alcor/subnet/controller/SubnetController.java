@@ -213,9 +213,6 @@ public class SubnetController {
             RestPreconditionsUtil.verifyResourceFound(vpcId);
             RestPreconditionsUtil.populateResourceProjectId(inSubnetEntity, projectId);
 
-            // check if cidr overlap
-            this.subnetService.checkIfCidrOverlap(cidr, projectId, vpcId);
-
             // Verify VPC ID
             CompletableFuture<VpcWebJson> vpcFuture = CompletableFuture.supplyAsync(() -> {
                 try {
@@ -244,9 +241,10 @@ public class SubnetController {
             CompletableFuture<Void> allFuture = CompletableFuture.allOf(vpcFuture, ipFuture);
             allFuture.join();
 
-            logger.info("Total processing time:" + (System.currentTimeMillis() - start) + "ms");
+            // check if cidr overlap
+            this.subnetService.checkIfCidrOverlap(cidr, vpcFuture.join());
 
-            this.subnetDatabaseService.addSubnet(inSubnetEntity);
+            logger.info("Total processing time:" + (System.currentTimeMillis() - start) + "ms");
 
             if (gatewayIpIsInAllocatedRange) {
                 PortEntity portEntity = this.subnetService.constructPortEntity(portId, vpcId, subnetId, gatewayIp, ConstantsConfig.DeviceOwner);

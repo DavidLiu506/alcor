@@ -328,10 +328,8 @@ public class SubnetServiceImp implements SubnetService {
 
     @Override
     @DurationStatistics
-    public boolean checkIfCidrOverlap(String cidr,String projectId, String vpcId) throws FallbackException, ResourceNotFoundException, ResourcePersistenceException, CidrNotWithinNetworkCidr, CidrOverlapWithOtherSubnets {
+    public boolean checkIfCidrOverlap(String cidr,VpcWebJson vpcWebJson) throws Exception {
 
-        // get vpc and check with vpc cidr
-        VpcWebJson vpcWebJson = verifyVpcId(projectId, vpcId);
         String vpcCidr = vpcWebJson.getNetwork().getCidr();
 
         if (!(vpcCidr == null || vpcCidr.length() == 0)) {

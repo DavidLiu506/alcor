@@ -75,7 +75,7 @@ public interface SubnetService {
     public boolean checkIfSubnetBindAnyRouter(SubnetEntity subnetEntity);
 
     // check if cidr overlap
-    public boolean checkIfCidrOverlap (String cidr,String projectId, String vpcId) throws FallbackException, ResourceNotFoundException, ResourcePersistenceException, CidrNotWithinNetworkCidr, CidrOverlapWithOtherSubnets;
+    public boolean checkIfCidrOverlap (String cidr, VpcWebJson vpcWebJson) throws Exception;
 
     // update subnet host routes in subnet manager
     public void updateSubnetHostRoutes (String subnetId, NewHostRoutes resource) throws ResourceNotFoundException, ResourcePersistenceException, DatabasePersistenceException, SubnetEntityNotFound, DestinationOrOperationTypeIsNull;
