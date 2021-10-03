@@ -246,6 +246,8 @@ public class SubnetController {
 
             logger.info("Total processing time:" + (System.currentTimeMillis() - start) + "ms");
 
+            this.subnetDatabaseService.addSubnet(inSubnetEntity);
+
             if (gatewayIpIsInAllocatedRange) {
                 PortEntity portEntity = this.subnetService.constructPortEntity(portId, vpcId, subnetId, gatewayIp, ConstantsConfig.DeviceOwner);
                 GatewayPortDetail gatewayPortDetail = this.subnetToPortManagerService.createGatewayPort(projectId, portEntity);
