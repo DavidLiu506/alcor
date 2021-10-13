@@ -107,6 +107,7 @@ public class VpcRepository implements IVpcRepository<VpcEntity> {
     @DurationStatistics
     public Set<String> getSubnetIds(String vpcId) throws CacheException {
         CacheConfiguration cfg = CommonUtil.getCacheConfiguration(vpcId);
+        cfg.setGroupName("alcor");
         cfg.setAtomicityMode(CacheAtomicityMode.TRANSACTIONAL);
         ICache<String, String> subnetCache = cacheFactory.getCache(String.class, cfg);
         return subnetCache.getAll().keySet();
@@ -116,6 +117,7 @@ public class VpcRepository implements IVpcRepository<VpcEntity> {
     @DurationStatistics
     public void addSubnetId(String vpcId, String subnetId) throws CacheException {
         CacheConfiguration cfg = CommonUtil.getCacheConfiguration(vpcId);
+        cfg.setGroupName("alcor");
         ICache<String, String> subnetCache = cacheFactory.getCache(String.class, cfg);
         subnetCache.put(subnetId, vpcId);
     }
@@ -124,6 +126,7 @@ public class VpcRepository implements IVpcRepository<VpcEntity> {
     @DurationStatistics
     public void deleteSubnetId(String vpcId, String subnetId) throws CacheException {
         CacheConfiguration cfg = CommonUtil.getCacheConfiguration(vpcId);
+        cfg.setGroupName("alcor");
         ICache<String, String> subnetCache = cacheFactory.getCache(String.class, cfg);
         subnetCache.remove(subnetId);
 
