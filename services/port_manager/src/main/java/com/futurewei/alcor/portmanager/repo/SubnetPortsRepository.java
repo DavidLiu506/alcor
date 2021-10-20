@@ -18,10 +18,12 @@ package com.futurewei.alcor.portmanager.repo;
 import com.futurewei.alcor.common.db.CacheException;
 import com.futurewei.alcor.common.db.CacheFactory;
 import com.futurewei.alcor.common.db.ICache;
+import com.futurewei.alcor.common.db.ignite.IgniteICache;
 import com.futurewei.alcor.common.stats.DurationStatistics;
 import com.futurewei.alcor.portmanager.entity.SubnetPortIds;
 import com.futurewei.alcor.portmanager.exception.FixedIpsInvalid;
 import com.futurewei.alcor.web.entity.port.PortEntity;
+import org.apache.ignite.lang.IgniteBiPredicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,13 +35,18 @@ public class SubnetPortsRepository {
     private static final String GATEWAY_PORT_DEVICE_OWNER = "network:router_interface";
 
     private CacheFactory cacheFactory;
-    private ICache<String, SubnetPortIds> subnetPortIdsCache;
+    private IgniteICache<String, String> portIdSubnetIdCache;
 
     public SubnetPortsRepository(CacheFactory cacheFactory) {
         this.cacheFactory = cacheFactory;
-        this.subnetPortIdsCache= cacheFactory.getCache(SubnetPortIds.class);
+        this.portIdSubnetIdCache= (IgniteICache)cacheFactory.getCache(String.class);
     }
 
+    /***
+     * Add port entry with their subnetId
+     * @param portEntities
+     * @throws Exception
+     */
     public void addSubnetPortIds(List<PortEntity> portEntities) throws Exception {
         //Store the mapping between subnet id and port id
         for (PortEntity portEntity: portEntities) {
@@ -54,7 +61,7 @@ public class SubnetPortsRepository {
             }
 
             for (PortEntity.FixedIp fixedIp: fixedIps) {
-                subnetPortIdsCache.put(fixedIp.getSubnetId() + "/" + portEntity.getId(), new SubnetPortIds(fixedIp.getSubnetId()));
+                portIdSubnetIdCache.put(fixedIp.getSubnetId() + "/" + portEntity.getId(), fixedIp.getSubnetId());
             }
         }
     }
@@ -73,7 +80,7 @@ public class SubnetPortsRepository {
         oldPortEntity.getFixedIps().forEach( item ->
                 {
                     try {
-                        subnetPortIdsCache.remove(item.getSubnetId() + "/" + oldPortEntity.getId());
+                        portIdSubnetIdCache.remove(item.getSubnetId() + "/" + oldPortEntity.getId());
                     } catch (CacheException e) {
                         e.printStackTrace();
                     }
@@ -83,7 +90,7 @@ public class SubnetPortsRepository {
         newPortEntity.getFixedIps().forEach( item ->
                 {
                     try {
-                        subnetPortIdsCache.put(item.getSubnetId() + "/" + newPortEntity.getId(), new SubnetPortIds(item.getSubnetId()));
+                        portIdSubnetIdCache.put(item.getSubnetId() + "/" + newPortEntity.getId(), item.getSubnetId());
                     } catch (CacheException e) {
                         e.printStackTrace();
                     }
@@ -100,7 +107,7 @@ public class SubnetPortsRepository {
         portEntity.getFixedIps().forEach( item ->
                 {
                     try {
-                        subnetPortIdsCache.remove(item.getSubnetId() + "/" + portEntity.getId());
+                        portIdSubnetIdCache.remove(item.getSubnetId() + "/" + portEntity.getId());
                     } catch (CacheException e) {
                         e.printStackTrace();
                     }
@@ -111,11 +118,7 @@ public class SubnetPortsRepository {
 
     @DurationStatistics
     public int getSubnetPortNumber(String subnetId) throws CacheException {
-        Map<String, Object[]> queryParams = new HashMap<>();
-        Object[] values = new Object[1];
-        values[0] = subnetId;
-        queryParams.put("subnetId", values);
-
-        return subnetPortIdsCache.getAll(queryParams).size();
+        IgniteBiPredicate<String, String> filter = (key, val) -> val.equals(subnetId);
+        return portIdSubnetIdCache.getAll(filter).size();
     }
 }
