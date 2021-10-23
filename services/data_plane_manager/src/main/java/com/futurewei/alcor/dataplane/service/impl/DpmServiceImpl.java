@@ -312,6 +312,7 @@ public class DpmServiceImpl implements DpmService {
             }
 
             boolean fastPath = portEntity.getFastPath() == null ? false : portEntity.getFastPath();
+            System.out.println("FastPath: " + fastPath);
             if (fastPath) {
                 if (!grpcHostPortEntities.containsKey(portEntity.getBindingHostIP())) {
                     grpcHostPortEntities.put(portEntity.getBindingHostIP(), new ArrayList<>());
