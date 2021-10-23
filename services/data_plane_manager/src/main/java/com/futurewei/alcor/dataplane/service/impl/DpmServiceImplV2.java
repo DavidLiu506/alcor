@@ -412,14 +412,14 @@ public class DpmServiceImplV2 implements DpmService {
      */
     private List<String> processRouterConfiguration(NetworkConfiguration networkConfig) throws Exception {
         List<InternalRouterInfo> internalRouterInfos = networkConfig.getInternalRouterInfos();
-        MulticastGoalState multicastGoalState = new MulticastGoalState();
+        MulticastGoalStateV2 multicastGoalState = new MulticastGoalStateV2();
 
         if (internalRouterInfos == null) {
             //throw new RouterInfoInvalid();
             return new ArrayList<>();
         }
 
-        Map<String, UnicastGoalState> unicastGoalStateMap = new HashMap<>();
+        Map<String, UnicastGoalStateV2> unicastGoalStateMap = new HashMap<>();
         for (InternalRouterInfo routerInfo: internalRouterInfos) {
             List<InternalSubnetRoutingTable> subnetRoutingTables =
                     routerInfo.getRouterConfiguration().getSubnetRoutingTables();
@@ -438,9 +438,9 @@ public class DpmServiceImplV2 implements DpmService {
 
                     for (PortHostInfo portHostInfo : subnetPorts.getPorts()) {
                         String hostIp = portHostInfo.getHostIp();
-                        UnicastGoalState unicastGoalState = unicastGoalStateMap.get(hostIp);
+                        UnicastGoalStateV2 unicastGoalState = unicastGoalStateMap.get(hostIp);
                         if (unicastGoalState == null) {
-                            unicastGoalState = new UnicastGoalState();
+                            unicastGoalState = new UnicastGoalStateV2();
                             unicastGoalState.setHostIp(hostIp);
                             unicastGoalStateMap.put(hostIp, unicastGoalState);
                         }
@@ -456,7 +456,7 @@ public class DpmServiceImplV2 implements DpmService {
             return new ArrayList<>();
         }
 
-        List<UnicastGoalState> unicastGoalStates = unicastGoalStateMap.values()
+        List<UnicastGoalStateV2> unicastGoalStates = unicastGoalStateMap.values()
                 .stream().peek(gs -> {
                     gs.setGoalState(gs.getGoalStateBuilder().build());
                     gs.setGoalStateBuilder(null);
