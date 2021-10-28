@@ -17,6 +17,8 @@ package com.futurewei.alcor.privateipmanager.allocator;
 
 import java.util.List;
 
+
+
 public interface IpAddrAllocator {
 
     String allocate(String ipAddr) throws Exception;
@@ -32,4 +34,12 @@ public interface IpAddrAllocator {
     void releaseBulk(List<String> ipAddrList) throws Exception;
 
     boolean validate(String ipAddr);
+
+    boolean isIpAllocated(String ipAddr);
+
+    void setIpStatus(int ordinal, int ip);
+
+    int getIpStatusOrdinal(int ip);
+
+    List<String> getAllIps() throws Exception;
 }

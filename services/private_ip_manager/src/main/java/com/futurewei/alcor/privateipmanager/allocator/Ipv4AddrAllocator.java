@@ -18,20 +18,28 @@ package com.futurewei.alcor.privateipmanager.allocator;
 import com.futurewei.alcor.privateipmanager.exception.IpAddrInvalidException;
 import com.futurewei.alcor.privateipmanager.exception.IpAddrNotEnoughException;
 import com.futurewei.alcor.privateipmanager.utils.Ipv4AddrUtil;
+import com.futurewei.alcor.web.entity.ip.IpAddrState;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
 
 public class Ipv4AddrAllocator implements IpAddrAllocator {
     private BitSet bitSet;
     private long firstIp;
     private long lastIp;
     private long ipAddrNum;
+    private BitSet ipStatusIndex0;
+    private BitSet ipStatusIndex1;
+
 
     public Ipv4AddrAllocator(long firstIp, long lastIp) {
         this.firstIp = firstIp;
         this.lastIp = lastIp;
         ipAddrNum = lastIp - firstIp + 1;
         bitSet = new BitSet();
+        ipStatusIndex0 = new BitSet();
+        ipStatusIndex1 = new BitSet();
     }
 
     @Override
@@ -54,6 +62,7 @@ public class Ipv4AddrAllocator implements IpAddrAllocator {
         }
 
         bitSet.set(freeBit);
+        setIpStatus(IpAddrState.ACTIVATED.ordinal(), freeBit);
 
         return Ipv4AddrUtil.longToIpv4(firstIp + freeBit);
     }
@@ -66,6 +75,17 @@ public class Ipv4AddrAllocator implements IpAddrAllocator {
         }
 
         return (int)(ipLong - firstIp);
+    }
+
+
+    @Override
+    public List<String> getAllIps() throws Exception {
+        List<String> ipAddrs = new ArrayList<>();
+        long[] ips = bitSet.toLongArray();
+        for (long ip : ips) {
+            ipAddrs.add(Ipv4AddrUtil.longToIpv4(ip));
+        }
+        return ipAddrs;
     }
 
     @Override
@@ -92,6 +112,7 @@ public class Ipv4AddrAllocator implements IpAddrAllocator {
             bitSet.set(bit);
             String ipv4Addr = Ipv4AddrUtil.longToIpv4(firstIp + bit);
             ipv4AddrList.add(ipv4Addr);
+            setIpStatus(IpAddrState.ACTIVATED.ordinal(), bit);
         }
 
         return ipv4AddrList;
@@ -104,6 +125,8 @@ public class Ipv4AddrAllocator implements IpAddrAllocator {
         }
 
         bitSet.clear((int)(ipLong - firstIp));
+        ipStatusIndex0.clear((int)(ipLong - firstIp));
+        ipStatusIndex1.clear((int)(ipLong - firstIp));
     }
 
     @Override
@@ -114,10 +137,59 @@ public class Ipv4AddrAllocator implements IpAddrAllocator {
     }
 
     @Override
+    public void setIpStatus(int ordinal, int ip) {
+        switch (ordinal) {
+            case 0:
+                if (ipStatusIndex0.get(ip)) {
+                    ipStatusIndex0.clear(ip);
+                }
+                if (ipStatusIndex1.get(ip)) {
+                    ipStatusIndex1.clear(ip);
+                }
+                break;
+            case 1:
+                ipStatusIndex0.set(ip);
+                if (ipStatusIndex1.get(ip)) {
+                    ipStatusIndex1.clear(ip);
+                }
+                break;
+            case 2:
+                if (ipStatusIndex0.get(ip)) {
+                    ipStatusIndex0.clear(ip);
+                }
+                ipStatusIndex1.set(ip);
+                break;
+            default:
+        }
+    }
+
+    @Override
+    public int getIpStatusOrdinal(int ip) {
+        boolean index0 = ipStatusIndex0.get(ip);
+        boolean index1 = ipStatusIndex1.get(ip);
+        int ordinal = 0;
+        if (index0) {
+            ordinal++;
+        }
+        if (index1) {
+            ordinal += 2;
+        }
+        return ordinal;
+    }
+
+
+    @Override
     public boolean validate(String ipAddr) {
         long ipLong = Ipv4AddrUtil.ipv4ToLong(ipAddr);
 
         return ipLong >= firstIp && ipLong <= lastIp;
+    }
+
+    @Override
+    public boolean isIpAllocated(String ipAddr) {
+        long ipLong = Ipv4AddrUtil.ipv4ToLong(ipAddr);
+
+        return bitSet.get((int)(ipLong - firstIp));
     }
 
     public BitSet getBitSet() {
@@ -151,4 +223,5 @@ public class Ipv4AddrAllocator implements IpAddrAllocator {
     public void setIpAddrNum(long ipAddrNum) {
         this.ipAddrNum = ipAddrNum;
     }
+
 }

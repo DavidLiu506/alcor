@@ -41,7 +41,6 @@ public class IpAddrRange {
     private long usedIps;
     private long totalIps;
     private IpAddrAllocator allocator;
-    private Map<Integer, Byte> ips;    // Using Byte to represent the status of ip address, this can reduce IpAddRange size and improve cache performance.
 
     public IpAddrRange(String id, String vpcId, String subnetId, int ipVersion, String firstIp, String lastIp) {
         this.id = id;
@@ -50,7 +49,6 @@ public class IpAddrRange {
         this.ipVersion = ipVersion;
         this.firstIp = firstIp;
         this.lastIp = lastIp;
-        this.ips = new HashMap<>();
 
         if (ipVersion == IpVersion.IPV4.getVersion()) {
             long firstIpLong = Ipv4AddrUtil.ipv4ToLong(firstIp);
@@ -69,20 +67,13 @@ public class IpAddrRange {
         //allocatedIps = new HashMap<>();
     }
 
-    private void updateUsedIps() {
-        usedIps = ips.size();
-    }
-
     public IpAddrAlloc allocate(String ip) throws Exception {
-        if (ip != null && ips.get(ip) != null) {
+        if (ip != null && allocator.isIpAllocated(ip)) {
             throw new IpAddrConflictException();
         }
 
         String ipAddr = allocator.allocate(ip);
         IpAddrAlloc ipAddrAlloc = new IpAddrAlloc(ipVersion, subnetId, id, ipAddr, IpAddrState.ACTIVATED.getState());
-
-        ips.put(allocator.getIpIndex(ipAddr), (byte)IpAddrState.ACTIVATED.ordinal());
-        updateUsedIps();
 
         return ipAddrAlloc;
     }
@@ -91,24 +82,18 @@ public class IpAddrRange {
     public List<IpAddrAlloc> allocateBulk(int num) throws Exception {
         List<String> ipAddrList = allocator.allocateBulk(num);
         List<IpAddrAlloc> ipAddrAllocs = new ArrayList<>();
-        Map<Integer, Byte> ipAddrAllocMap = new HashMap<>();
 
         for (String ipAddr: ipAddrList) {
             IpAddrAlloc ipAddrAlloc = new IpAddrAlloc(ipVersion, subnetId, id, ipAddr, IpAddrState.ACTIVATED.getState());
 
             ipAddrAllocs.add(ipAddrAlloc);
-            ipAddrAllocMap.put(allocator.getIpIndex(ipAddr), (byte)IpAddrState.ACTIVATED.ordinal());
         }
-
-        ips.putAll(ipAddrAllocMap);
-        updateUsedIps();
 
         return ipAddrAllocs;
     }
 
     public List<IpAddrAlloc> allocateBulk(List<String> ipAddrList) throws Exception {
         List<IpAddrAlloc> ipAddrAllocList = new ArrayList<>();
-        Map<Integer, Byte> ipAddrAllocMap = new HashMap<>();
 
         for (String ip: ipAddrList) {
             String ipAddr;
@@ -122,12 +107,6 @@ public class IpAddrRange {
                     ipAddr, IpAddrState.ACTIVATED.getState());
 
             ipAddrAllocList.add(ipAddrAlloc);
-            ipAddrAllocMap.put(allocator.getIpIndex(ipAddr), (byte)IpAddrState.ACTIVATED.ordinal());
-        }
-
-        if (ipAddrAllocMap.size() > 0) {
-            ips.putAll(ipAddrAllocMap);
-            updateUsedIps();
         }
 
         return ipAddrAllocList;
@@ -135,46 +114,35 @@ public class IpAddrRange {
 
     public void modifyIpAddrState(String ipAddr, String state) throws Exception {
         int index = allocator.getIpIndex(ipAddr);
-        if (!ips.containsKey(index)) {
+        if (!allocator.isIpAllocated(ipAddr)) {
             throw new IpAddrAllocNotFoundException();
         }
 
-        if (!ips.get(index).equals(IpAddrState.valueOf(state).ordinal())) {
-            ips.put(index, (byte)IpAddrState.valueOf(state).ordinal());
-        }
+        allocator.setIpStatus(index, IpAddrState.valueOf(state).ordinal());
     }
 
     public void release(String ipAddr) throws Exception {
         int index = allocator.getIpIndex(ipAddr);
-        if (!ips.containsKey(index)) {
+        if (allocator.isIpAllocated(ipAddr)) {
             throw new IpAddrAllocNotFoundException();
         }
 
         allocator.release(ipAddr);
-        ips.remove(index);
-
-        updateUsedIps();
     }
 
     public void releaseBulk(List<String> ipAddrList) throws Exception {
         allocator.releaseBulk(ipAddrList);
         for (String ipAddr: ipAddrList) {
-            int index = allocator.getIpIndex(ipAddr);
-            if (!ips.containsKey(index)) {
+            if (allocator.isIpAllocated(ipAddr)) {
                 throw new IpAddrAllocNotFoundException();
             }
-
-            //TODO:support remove all
-            ips.remove(index);
         }
-
-        updateUsedIps();
     }
 
     public IpAddrAlloc getIpAddr(String ipAddr) throws Exception {
         int index = allocator.getIpIndex(ipAddr);
-        if (ips.containsKey(index)) {
-            return new IpAddrAlloc(ipVersion, subnetId, id, ipAddr, ((IpAddrState.values())[(int)ips.get(index)]).toString());
+        if (allocator.isIpAllocated(ipAddr)) {
+            return new IpAddrAlloc(ipVersion, subnetId, id, ipAddr, ((IpAddrState.values())[allocator.getIpStatusOrdinal(index)]).toString());
         }
 
         if (allocator.validate(ipAddr)) {
@@ -185,11 +153,12 @@ public class IpAddrRange {
     }
 
     public Collection<IpAddrAlloc> getIpAddrBulk() throws Exception {
-        List<IpAddrAlloc> ipAddrAllocs = new ArrayList<>();
-        for (Map.Entry<Integer, Byte> entry : ips.entrySet()) {
-            ipAddrAllocs.add(new IpAddrAlloc(ipVersion, subnetId, id, allocator.getIp(entry.getKey()), ((IpAddrState.values())[(int)ips.get(entry.getValue())]).toString()));
+        List<String> ipAddrs = allocator.getAllIps();
+        List<IpAddrAlloc> ips = new ArrayList<>();
+        for (String ip : ipAddrs) {
+            ips.add(new IpAddrAlloc(ipVersion, subnetId, id, ip, ((IpAddrState.values())[allocator.getIpIndex(ip)]).toString()));
         }
-        return ipAddrAllocs;
+        return ips;
     }
 
     public int getIpVersion() {
@@ -220,6 +189,15 @@ public class IpAddrRange {
         return subnetId;
     }
 
+    public long getUsedIps() {
+        try {
+            return allocator.getAllIps().size();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     public void setSubnetId(String subnetId) {
         this.subnetId = subnetId;
     }
@@ -246,10 +224,6 @@ public class IpAddrRange {
 
     public void setAllocator(IpAddrAllocator allocator) {
         this.allocator = allocator;
-    }
-
-    public long getUsedIps() {
-        return usedIps;
     }
 
     public void setUsedIps(int usedIps) {

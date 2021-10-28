@@ -126,6 +126,27 @@ public class Ipv6AddrAllocator implements IpAddrAllocator {
         return ipBigInt.compareTo(firstIp) >= 0 && ipBigInt.compareTo(lastIp) <= 0;
     }
 
+    @Override
+    public boolean isIpAllocated(String ipAddr) {
+
+        return false;
+    }
+
+    @Override
+    public void setIpStatus(int ordinal, int ip) {
+
+    }
+
+    @Override
+    public int getIpStatusOrdinal(int ip) {
+        return 100;
+    }
+
+    @Override
+    public List<String> getAllIps() throws Exception {
+        return new ArrayList<>();
+    }
+
     public BitSet getBitSet() {
         return bitSet;
     }
