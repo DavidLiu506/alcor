@@ -41,6 +41,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -49,9 +51,9 @@ public class IgniteClientDbCache<K, V> implements IgniteICache<K, V> {
 
     private static final int RESULT_THRESHOLD_SIZE = 100000;
     private ClientCache<K, V> cache;
-    private final IgniteClientTransaction transaction;
+    private BlockingQueue<IgniteClientTransaction> transactions = new LinkedBlockingDeque<>(10);
 
-    public IgniteClientDbCache(IgniteClient igniteClient, String name) {
+    public IgniteClientDbCache(IgniteClient igniteClient, String name){
         try {
             this.cache = igniteClient.getOrCreateCache(name);
             logger.log(Level.INFO, "Cache " + name + " AtomicityMode is " + this.cache.getConfiguration().getAtomicityMode());
@@ -60,7 +62,14 @@ public class IgniteClientDbCache<K, V> implements IgniteICache<K, V> {
         }
 
         Assert.notNull(this.cache, "Create cache for client " + name + "failed");
-        this.transaction = new IgniteClientTransaction(igniteClient);
+        for (int i =0; i < 10; i++) {
+            try {
+                this.transactions.put(new IgniteClientTransaction(igniteClient));
+            } catch (Exception e) {
+
+            }
+        }
+
     }
 
     public IgniteClientDbCache(IgniteClient igniteClient, CacheConfiguration cacheConfig) {
@@ -76,7 +85,13 @@ public class IgniteClientDbCache<K, V> implements IgniteICache<K, V> {
         }
 
         Assert.notNull(this.cache, "Create cache for client " + cacheConfig.getName() + "failed");
-        this.transaction = new IgniteClientTransaction(igniteClient);
+        for (int i =0; i < 10; i++) {
+            try {
+                this.transactions.put(new IgniteClientTransaction(igniteClient));
+            } catch (Exception e) {
+
+            }
+        }
     }
 
     public IgniteClientDbCache(IgniteClient igniteClient, String name, ExpiryPolicy ep) {
@@ -88,7 +103,13 @@ public class IgniteClientDbCache<K, V> implements IgniteICache<K, V> {
         }
 
         Assert.notNull(this.cache, "Create cache for client " + name + "failed");
-        this.transaction = new IgniteClientTransaction(igniteClient);
+        for (int i =0; i < 10; i++) {
+            try {
+                this.transactions.put(new IgniteClientTransaction(igniteClient));
+            } catch (Exception e) {
+
+            }
+        }
     }
 
     @Override
@@ -214,6 +235,7 @@ public class IgniteClientDbCache<K, V> implements IgniteICache<K, V> {
         return values;
     }
 
+
     @Override
     public long size() {
         return cache.size(CachePeekMode.ALL);
@@ -221,6 +243,21 @@ public class IgniteClientDbCache<K, V> implements IgniteICache<K, V> {
 
     @Override
     public Transaction getTransaction() {
-        return transaction;
+        try {
+            return transactions.take();
+        } catch (Exception e) {
+
+        }
+        return null;
+    }
+
+    @Override
+    public void setTransaction(IgniteClientTransaction igniteClientTransaction) {
+        try {
+            transactions.put(igniteClientTransaction);
+        } catch (Exception e) {
+
+        }
+
     }
 }

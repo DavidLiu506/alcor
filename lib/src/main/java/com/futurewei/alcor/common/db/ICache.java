@@ -16,6 +16,8 @@ Copyright(c) 2020 Futurewei Cloud
 
 package com.futurewei.alcor.common.db;
 
+import com.futurewei.alcor.common.db.ignite.IgniteClientTransaction;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -77,4 +79,6 @@ public interface ICache<K, V> {
     long size();
 
     Transaction getTransaction();
+
+    void setTransaction(IgniteClientTransaction igniteClientTransaction);
 }
