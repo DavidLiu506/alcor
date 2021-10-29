@@ -19,6 +19,7 @@ package com.futurewei.alcor.common.db.redis;
 import com.futurewei.alcor.common.db.CacheException;
 import com.futurewei.alcor.common.db.ICache;
 import com.futurewei.alcor.common.db.Transaction;
+import com.futurewei.alcor.common.db.ignite.IgniteClientTransaction;
 import com.futurewei.alcor.common.logging.Logger;
 import com.futurewei.alcor.common.logging.LoggerFactory;
 import org.apache.ignite.lang.IgniteBiPredicate;
@@ -153,5 +154,10 @@ public class RedisExpireCache<K, V> implements ICache<K, V> {
     @Override
     public Transaction getTransaction() {
         return transaction;
+    }
+
+    @Override
+    public void setTransaction(IgniteClientTransaction igniteClientTransaction) {
+
     }
 }

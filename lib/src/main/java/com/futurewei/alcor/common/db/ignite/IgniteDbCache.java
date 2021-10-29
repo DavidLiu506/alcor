@@ -231,4 +231,9 @@ public class IgniteDbCache<K, V> implements IgniteICache<K, V> {
     public Transaction getTransaction() {
         return transaction;
     }
+
+    @Override
+    public void setTransaction(IgniteClientTransaction igniteClientTransaction) {
+
+    }
 }

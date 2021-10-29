@@ -15,6 +15,7 @@ Copyright(c) 2020 Futurewei Cloud
 */
 package com.futurewei.alcor.common.db;
 
+import com.futurewei.alcor.common.db.ignite.IgniteClientTransaction;
 import com.futurewei.alcor.common.db.ignite.IgniteTransaction;
 import com.futurewei.alcor.common.entity.CustomerResource;
 import org.apache.ignite.lang.IgniteBiPredicate;
@@ -87,6 +88,11 @@ public class MockCache<K, V> implements ICache<K, V> {
     @Override
     public Transaction getTransaction() {
         return transaction;
+    }
+
+    @Override
+    public void setTransaction(IgniteClientTransaction igniteClientTransaction) {
+
     }
 
     @Override

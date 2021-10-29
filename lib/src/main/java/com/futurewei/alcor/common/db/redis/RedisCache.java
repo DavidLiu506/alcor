@@ -16,6 +16,7 @@ Copyright(c) 2020 Futurewei Cloud
 
 package com.futurewei.alcor.common.db.redis;
 
+import com.futurewei.alcor.common.db.ignite.IgniteClientTransaction;
 import com.futurewei.alcor.common.db.query.CachePredicate;
 import com.futurewei.alcor.common.db.ICache;
 import com.futurewei.alcor.common.db.Transaction;
@@ -29,7 +30,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import java.util.*;
 import java.util.logging.Level;
 
-public class RedisCache<K, V> implements ICache<K, V> {
+public
+
+class RedisCache<K, V> implements ICache<K, V> {
     private static final Logger logger = LoggerFactory.getLogger();
 
     private final HashOperations<String, K, V> hashOperations;
@@ -143,4 +146,10 @@ public class RedisCache<K, V> implements ICache<K, V> {
     public Transaction getTransaction() {
         return transaction;
     }
+
+    @Override
+    public void setTransaction(IgniteClientTransaction igniteClientTransaction) {
+
+    }
+
 }
