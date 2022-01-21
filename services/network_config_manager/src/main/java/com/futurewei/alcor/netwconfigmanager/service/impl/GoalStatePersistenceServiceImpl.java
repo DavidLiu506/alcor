@@ -199,7 +199,7 @@ public class GoalStatePersistenceServiceImpl implements GoalStatePersistenceServ
         logger.log(Level.FINE, "populateVpcResourceCache : beginning");
 
         Map<String, Port.PortState> portStatesMap = hostGoalState.getGoalState().getPortStatesMap();
-        HashMap<String, VpcResourceMeta> vniToVpcReourceMetaDataMap = new HashMap<>();
+        SortedMap<String, VpcResourceMeta> vniToVpcReourceMetaDataMap = new TreeMap<>();
 
         // Retrieve all needed VpcResourceMeta from cache to memory
         for (String resourceId : portStatesMap.keySet()){
