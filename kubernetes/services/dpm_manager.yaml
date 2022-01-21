@@ -24,7 +24,7 @@ data:
 
     #logging.file.path=./
     #logging.file.name=data-plane-manager.log
-    logging.level.root=DEBUG
+    logging.level.root=INFO
 
     ignite.kubeNamespace=ignite-alcor
     ignite.kubeServiceName=ignite-alcor-service
