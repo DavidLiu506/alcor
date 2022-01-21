@@ -70,7 +70,8 @@ public class PortServiceImpl implements PortService {
             processChain.createPortBulk(context);
             context.getRequestManager().waitAllRequestsFinish();
         } catch (Exception e) {
-            handleException(context, e);
+            //handleException(context, e);
+            LOG.debug("Create port: " + e.getMessage());
         }
     }
 
@@ -119,7 +120,8 @@ public class PortServiceImpl implements PortService {
             processChain.updatePort(context);
             context.getRequestManager().waitAllRequestsFinish();
         } catch (Exception e) {
-            handleException(context, e);
+            //handleException(context, e);
+            LOG.debug("Update ports: " + e.getMessage());
         }
 
         LOG.info("Update port success, projectId: {}, portId: {}, PortWebJson: {}",
@@ -152,7 +154,8 @@ public class PortServiceImpl implements PortService {
             processChain.deletePort(context);
             context.getRequestManager().waitAllRequestsFinish();
         } catch (Exception e) {
-            handleException(context, e);
+            //handleException(context, e);
+            LOG.debug("Delete port: " + e.getMessage());
         }
 
         LOG.info("Delete port success, projectId: {}, portId: {}", projectId, portId);
