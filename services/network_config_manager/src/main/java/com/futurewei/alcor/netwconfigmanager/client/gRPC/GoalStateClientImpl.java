@@ -312,8 +312,6 @@ public class GoalStateClientImpl implements GoalStateClient {
                 }
             }
             long after_get_goalState = System.currentTimeMillis();
-            logger.log(Level.FINE, "Sending GS with size " + goalState.getSerializedSize() + " to Host " + hostIp + " as follows | " + goalstateBuilder.build());
-
             requestObserver.onNext(goalstateBuilder.build());
             long after_onNext = System.currentTimeMillis();
             logger.log(Level.FINE, "[doSendGoalState] Get goalstatev2 from HostGoalState in milliseconds: " + (after_get_goalState - before_get_goalState));
