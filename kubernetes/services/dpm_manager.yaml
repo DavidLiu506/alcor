@@ -40,7 +40,7 @@ data:
 
     #logging.file.path=./
     #logging.file.name=data-plane-manager.log
-    logging.level.root=INFO
+    logging.level.root=DEBUG
 
 
     ignite.kubeNamespace=ignite-alcor-dpm
