@@ -40,7 +40,7 @@ public class ArionWingService {
         for (InternalSubnetEntity internalSubnetEntity : networkConfiguration.getSubnets()) {
             Gateway.GatewayState.Builder gatewayStateBuilder = Gateway.GatewayState.newBuilder();
             int vni = internalSubnetEntity.getTunnelId().intValue();
-            String subnet = internalSubnetEntity.getCidr();
+            String subnet = internalSubnetEntity.getId();
             String key = String.valueOf(vni) + "-" + subnet;
             getArionWings();
             Optional<SimpleNode> group = ring.locate(key);
@@ -57,6 +57,8 @@ public class ArionWingService {
             }
             gatewayStateBuilder.getConfigurationBuilder().getArionInfoBuilder().setVni(vni);
             gatewayStateBuilder.getConfigurationBuilder().getArionInfoBuilder().setSubnetId(subnet);
+            gatewayStateBuilder.getConfigurationBuilder().getArionInfoBuilder().setVpcId(internalSubnetEntity.getVpcId());
+            gatewayStateBuilder.getConfigurationBuilder().getArionInfoBuilder().setPortInbandOperation(8300);
             gatewayStateBuilder.getConfigurationBuilder().setGatewayType(Gateway.GatewayType.ARION);
             unicastGoalStateV2.getGoalStateBuilder().putGatewayStates(key, gatewayStateBuilder.build());
         }
