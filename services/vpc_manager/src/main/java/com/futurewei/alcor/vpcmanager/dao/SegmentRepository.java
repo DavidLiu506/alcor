@@ -95,5 +95,10 @@ public class SegmentRepository implements ICacheRepository<SegmentEntity> {
         logger.log(Level.INFO, "Delete segment, Segment Id:" + id);
         cache.remove(id);
     }
+
+    @Override
+    public void deleteAllItems() throws CacheException {
+
+    }
 }
 

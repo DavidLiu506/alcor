@@ -183,6 +183,11 @@ public class LocalCacheImpl implements LocalCache {
     }
 
     @Override
+    public void deleteAllNodeInfo() throws Exception {
+        nodeInfoCache.deleteAllNodeInfo();
+    }
+
+    @Override
     public NodeInfo getNodeInfo(String nodeId) throws Exception {
         return nodeInfoCache.getNodeInfo(nodeId);
     }

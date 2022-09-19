@@ -28,5 +28,7 @@ public interface NodeService {
 
     void deleteNodeInfo(NodeInfoJson nodeInfoJson) throws Exception;
 
+    void deleteAllNodeInfo() throws Exception;
+
     void createNodeInfoBulk(BulkNodeInfoJson bulkNodeInfoJson) throws Exception;
 }

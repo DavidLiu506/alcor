@@ -93,5 +93,10 @@ public class RouteWithSubnetMapperRepository implements ICacheRepository<SubnetT
         logger.log(Level.INFO, "Delete routeWithSubnetMapper, mapper Id:" + id);
         cache.remove(id);
     }
+
+    @Override
+    public void deleteAllItems() throws CacheException {
+
+    }
 }
 

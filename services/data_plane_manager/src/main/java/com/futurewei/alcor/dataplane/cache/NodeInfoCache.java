@@ -94,6 +94,11 @@ public class NodeInfoCache {
     }
 
     @DurationStatistics
+    public void deleteAllNodeInfo() throws Exception {
+        nodeInfoCache.removeAll();
+    }
+
+    @DurationStatistics
     public List<NodeInfo> getNodeInfoByNodeIp(String nodeIp) throws Exception {
             List<NodeInfo> result = new ArrayList<>();
 

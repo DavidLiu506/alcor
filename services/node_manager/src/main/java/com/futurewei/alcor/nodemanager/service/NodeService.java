@@ -44,6 +44,8 @@ public interface NodeService {
 
     String deleteNodeInfo(String nodeId) throws ParameterNullOrEmptyException, Exception;
 
+    void deleteAllNodeInfo() throws ParameterNullOrEmptyException, Exception;
+
     /**
      *
      * NMM interface to manage NCM Metadata in NMM.

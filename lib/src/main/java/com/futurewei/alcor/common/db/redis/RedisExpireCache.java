@@ -136,6 +136,11 @@ public class RedisExpireCache<K, V> implements ICache<K, V> {
     }
 
     @Override
+    public void removeAll() throws CacheException {
+
+    }
+
+    @Override
     public V get(Map<String, Object[]> filterParams) throws CacheException {
         return null;
     }

@@ -94,4 +94,10 @@ public class VpcGatewayInfoCache implements ICacheRepository<GatewayInfo> {
         log.debug("Delete GatewayInfo, GatewayInfo resource_id is: {}", id);
         vpcGatewayInfoCache.remove(id);
     }
+
+
+    @Override
+    public void deleteAllItems() throws CacheException {
+        vpcGatewayInfoCache.removeAll();
+    }
 }

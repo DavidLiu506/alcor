@@ -211,6 +211,20 @@ public class NodeController {
         return "{Node(Node) Id: " + nodeid + "}";
     }
 
+
+    @RequestMapping(
+            method = DELETE,
+            value = {"/nodes/bulk", "/v4/nodes/bulk"})
+    @DurationStatistics
+    public String deleteAllNodeInfo() throws Exception {
+        try {
+            service.deleteAllNodeInfo();
+        } catch (ParameterNullOrEmptyException e) {
+            throw e;
+        }
+        return "Nodes deleted";
+    }
+
     /**
      * /ncms end-points: NCM metadata management methods
      */

@@ -126,6 +126,11 @@ public class VxlanRangeRepository implements ICacheRepository<NetworkVxlanRange>
         }
     }
 
+    @Override
+    public void deleteAllItems() throws CacheException {
+
+    }
+
     /**
      * Allocate a key from VxlanRange repository
      * @param rangeId

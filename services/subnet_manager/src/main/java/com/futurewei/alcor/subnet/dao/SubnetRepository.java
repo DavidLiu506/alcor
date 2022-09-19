@@ -96,4 +96,9 @@ public class SubnetRepository implements ICacheRepository<SubnetEntity> {
         logger.log(Level.INFO, "Delete subnet, subnet Id:" + id);
         cache.remove(id);
     }
+
+    @Override
+    public void deleteAllItems() throws CacheException {
+
+    }
 }

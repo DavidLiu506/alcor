@@ -86,7 +86,6 @@ public class DataPlaneClientImplV2 implements DataPlaneClient<UnicastGoalStateV2
         if (arionGatwayEnabled) {
             doSendGoalStateToArionMaster(goalStateBuilder);
         }
-        System.out.println(goalStateBuilder.build());
         doSendGoalState(goalStateBuilder.build(), finishLatch, results);
 
         if (!finishLatch.await(Integer.parseInt(connectTimeout), TimeUnit.SECONDS)) {

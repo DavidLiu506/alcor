@@ -34,4 +34,6 @@ public interface ICacheRepository<T> {
     void addItems(List<T> items) throws CacheException;
 
     void deleteItem(String id) throws CacheException;
+
+    void deleteAllItems() throws CacheException;
 }

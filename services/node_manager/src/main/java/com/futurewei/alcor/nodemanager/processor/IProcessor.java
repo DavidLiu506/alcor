@@ -20,5 +20,6 @@ public interface IProcessor {
     void createNodeBulk(NodeContext context) throws Exception;
     void updateNode(NodeContext context) throws Exception;
     void deleteNode(NodeContext context) throws Exception;
+    void bulkDeleteNode(NodeContext context) throws Exception;
     void setNextProcessor(IProcessor nextProcessor);
 }

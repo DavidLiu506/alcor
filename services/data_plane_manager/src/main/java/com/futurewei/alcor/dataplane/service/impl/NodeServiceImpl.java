@@ -49,6 +49,11 @@ public class NodeServiceImpl implements NodeService {
     }
 
     @Override
+    public void deleteAllNodeInfo() throws Exception {
+        localCache.deleteAllNodeInfo();
+    }
+
+    @Override
     public void createNodeInfoBulk(BulkNodeInfoJson bulkNodeInfoJson) throws Exception {
         List<NodeInfo> nodeInfos = bulkNodeInfoJson.getNodeInfos();
         localCache.addNodeInfoBulk(nodeInfos);

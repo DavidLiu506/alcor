@@ -92,4 +92,9 @@ public class RouteWithVpcMapperRepository implements ICacheRepository<VpcToRoute
         logger.log(Level.INFO, "Delete RouteWithVpcMapper, mapper Id:" + id);
         cache.remove(id);
     }
+
+    @Override
+    public void deleteAllItems() throws CacheException {
+
+    }
 }

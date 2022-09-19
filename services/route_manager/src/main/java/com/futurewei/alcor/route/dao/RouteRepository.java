@@ -92,4 +92,9 @@ public class RouteRepository implements ICacheRepository<RouteEntity> {
         logger.log(Level.INFO, "Delete route, route Id:" + id);
         cache.remove(id);
     }
+
+    @Override
+    public void deleteAllItems() throws CacheException {
+
+    }
 }

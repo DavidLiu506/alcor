@@ -90,4 +90,9 @@ public class RouteTableRepository implements ICacheRepository<RouteTable> {
     public void deleteItem(String id) throws CacheException {
         cache.remove(id);
     }
+
+    @Override
+    public void deleteAllItems() throws CacheException {
+
+    }
 }

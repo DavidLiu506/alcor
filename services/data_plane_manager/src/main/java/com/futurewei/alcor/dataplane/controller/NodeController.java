@@ -91,6 +91,19 @@ public class NodeController {
         }
     }
 
+
+    @DeleteMapping({"/nodes/bulk", "v4/nodes/bulk"})
+    @DurationStatistics
+    public void deleteAllNodeInfo() throws Exception {
+        try {
+            nodeService.deleteAllNodeInfo();
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE,e.getMessage());
+            throw e;
+        }
+    }
+
+
     @PostMapping({"/nodes/bulk","v4/nodes/bulk"})
     @ResponseStatus(HttpStatus.CREATED)
     @DurationStatistics

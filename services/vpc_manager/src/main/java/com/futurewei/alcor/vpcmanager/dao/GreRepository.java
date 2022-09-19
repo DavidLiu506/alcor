@@ -95,4 +95,9 @@ public class GreRepository implements ICacheRepository<NetworkGREType> {
         logger.log(Level.INFO, "Delete Gre, Gre Id:" + id);
         cache.remove(id);
     }
+
+    @Override
+    public void deleteAllItems() throws CacheException {
+
+    }
 }

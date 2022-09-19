@@ -93,4 +93,9 @@ public class VxlanRepository implements ICacheRepository<NetworkVxlanType> {
         logger.log(Level.INFO, "Delete Vxlan, Vxlan Id:" + id);
         cache.remove(id);
     }
+
+    @Override
+    public void deleteAllItems() throws CacheException {
+
+    }
 }

@@ -114,4 +114,9 @@ public class IpAddrRepo implements ICacheRepository<IpAddrAlloc> {
             LOG.error("IpAddrRepo deleteItem() exception:", e);
         }
     }
+
+    @Override
+    public void deleteAllItems() throws CacheException {
+        cache.removeAll();
+    }
 }

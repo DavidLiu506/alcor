@@ -33,6 +33,7 @@ public interface LocalCache {
     void addNodeInfoBulk(List<NodeInfo> nodeInfos) throws Exception;
     void updateNodeInfo(NodeInfo nodeInfo) throws Exception;
     void deleteNodeInfo(String nodeId) throws Exception;
+    void deleteAllNodeInfo() throws Exception;
     NodeInfo getNodeInfo(String nodeId) throws Exception;
     List<NodeInfo> getNodeInfoByNodeIp(String nodeIp) throws Exception;
 }

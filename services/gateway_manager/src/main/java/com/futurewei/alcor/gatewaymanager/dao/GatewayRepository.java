@@ -79,6 +79,11 @@ public class GatewayRepository implements ICacheRepository<GatewayEntity> {
         gatewayEntityCache.remove(id);
     }
 
+    @Override
+    public void deleteAllItems() throws CacheException {
+        gatewayEntityCache.removeAll();
+    }
+
     public void deleteGatewayInfoForZeta(Map<String, GWAttachment> attachmentsMap) throws Exception {
         try (Transaction tx = gatewayEntityCache.getTransaction().start()) {
             for (GWAttachment attachment : attachmentsMap.values()) {

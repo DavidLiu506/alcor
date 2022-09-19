@@ -97,4 +97,9 @@ public abstract class RepoResource<T extends Resource> implements ICacheReposito
             LOG.error(this.getClass().getName() + " deleteItem() exception:", e);
         }
     }
+
+    @Override
+    public void deleteAllItems() throws CacheException {
+        cache.removeAll();
+    }
 }

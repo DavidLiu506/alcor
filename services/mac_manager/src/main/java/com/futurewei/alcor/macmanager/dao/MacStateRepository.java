@@ -115,6 +115,11 @@ public class MacStateRepository implements ICacheRepositoryEx<MacState> {
     }
 
     @Override
+    public void deleteAllItems() throws CacheException {
+        cache.removeAll();
+    }
+
+    @Override
     @DurationStatistics
     public long size() {
         return cache.size();

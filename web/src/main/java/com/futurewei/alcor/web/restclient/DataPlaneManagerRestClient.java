@@ -96,6 +96,15 @@ public class DataPlaneManagerRestClient extends AbstractRestClient {
         restTemplate.exchange(dataPlaneNodeManagerUrl, HttpMethod.DELETE, request, NodeInfoJson.class).getBody();
     }
 
+
+    @DurationStatistics
+    public void deleteAllNodeInfo() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        HttpEntity<NodeInfoJson> request = new HttpEntity<>(new NodeInfoJson(), headers);
+        restTemplate.exchange(dataPlaneNodeManagerUrl + "/bulk", HttpMethod.DELETE, request, NodeInfoJson.class).getBody();
+    }
+
     @DurationStatistics
     public void bulkCreatNodeInfo(BulkNodeInfoJson bulkNodeInfoJson) throws Exception {
         HttpHeaders headers = new HttpHeaders();

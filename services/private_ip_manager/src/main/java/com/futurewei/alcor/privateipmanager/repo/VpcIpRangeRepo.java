@@ -69,4 +69,9 @@ public class VpcIpRangeRepo implements ICacheRepository<VpcIpRange> {
     public void deleteItem(String id) throws CacheException {
 
     }
+
+    @Override
+    public void deleteAllItems() throws CacheException {
+
+    }
 }

@@ -69,6 +69,8 @@ public interface ICache<K, V> {
 
     boolean remove(K var1) throws CacheException;
 
+    void removeAll() throws CacheException;
+
     /**
      * db cache size
      *

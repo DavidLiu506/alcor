@@ -94,4 +94,9 @@ public class VlanRepository implements ICacheRepository<NetworkVlanType> {
         logger.log(Level.INFO, "Delete Vlan, Vlan Id:" + id);
         cache.remove(id);
     }
+
+    @Override
+    public void deleteAllItems() throws CacheException {
+
+    }
 }

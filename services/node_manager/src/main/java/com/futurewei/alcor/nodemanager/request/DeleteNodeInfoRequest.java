@@ -29,6 +29,7 @@ import java.net.NetPermission;
 public class DeleteNodeInfoRequest extends AbstractRequest{
     private static final Logger LOG = LoggerFactory.getLogger(DeleteNodeInfoRequest.class);
 
+    boolean bulkOperation = false;
     private String nodeId;
     private DataPlaneManagerRestClient dataPlaneManagerRestClient;
     private NetworkConfigManagerRestClient ncmRestClient;
@@ -40,10 +41,22 @@ public class DeleteNodeInfoRequest extends AbstractRequest{
         this.ncmRestClient = SpringContextUtil.getBean(NetworkConfigManagerRestClient.class);
     }
 
+    public DeleteNodeInfoRequest(NodeContext context, boolean bulkOperation) {
+        super(context);
+        this.bulkOperation = bulkOperation;
+        this.dataPlaneManagerRestClient = SpringContextUtil.getBean(DataPlaneManagerRestClient.class);
+        this.ncmRestClient = SpringContextUtil.getBean(NetworkConfigManagerRestClient.class);
+    }
+
     @Override
     public void send() throws Exception {
         NodeInfoJson jsonData = new NodeInfoJson(context.getNodeInfo());
-        ncmRestClient.deleteNodeInfo(nodeId, context.getNodeInfo().getNcmUri());
-        dataPlaneManagerRestClient.deleteNodeInfo(jsonData);
+        if (bulkOperation) {
+            dataPlaneManagerRestClient.deleteAllNodeInfo();
+        } else {
+            ncmRestClient.deleteNodeInfo(nodeId, context.getNodeInfo().getNcmUri());
+            dataPlaneManagerRestClient.deleteNodeInfo(jsonData);
+        }
+
     }
 }

@@ -70,9 +70,16 @@ public class MacRangePartitionRepository implements ICacheRepository<MacRangePar
         cache.putAll(macRangePartitionMap);
     }
 
+
     @Override
     @DurationStatistics
     public void deleteItem(String id) throws CacheException {
         cache.remove(id);
+    }
+
+
+    @Override
+    public void deleteAllItems() throws CacheException {
+        cache.removeAll();
     }
 }

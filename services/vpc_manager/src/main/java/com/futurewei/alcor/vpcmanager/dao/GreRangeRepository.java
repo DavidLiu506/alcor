@@ -126,6 +126,11 @@ public class GreRangeRepository implements ICacheRepository<NetworkGRERange> {
         }
     }
 
+    @Override
+    public void deleteAllItems() throws CacheException {
+
+    }
+
     /**
      * Allocate a key from GreRange repository
      * @param rangeId

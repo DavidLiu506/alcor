@@ -105,4 +105,9 @@ public class VpcSubnetsCache implements ICacheRepository<InternalSubnets> {
         log.debug("Delete VPC {}", id);
         vpcSubnetsCache.remove(id);
     }
+
+    @Override
+    public void deleteAllItems() throws CacheException {
+        vpcSubnetsCache.removeAll();
+    }
 }

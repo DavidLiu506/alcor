@@ -92,6 +92,11 @@ public class QuotaUsageRepository implements ICacheRepositoryEx<QuotaUsageEntity
     }
 
     @Override
+    public void deleteAllItems() throws CacheException {
+
+    }
+
+    @Override
     public void addAllItem(Map<String, QuotaUsageEntity> newItems) throws CacheException {
         cache.putAll(newItems);
     }

@@ -98,4 +98,9 @@ public class SegmentRangeRepository implements ICacheRepository<NetworkSegmentRa
         logger.log(Level.INFO, "Delete segment range, Segment Range Id:" + id);
         cache.remove(id);
     }
+
+    @Override
+    public void deleteAllItems() throws CacheException {
+
+    }
 }

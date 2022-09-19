@@ -216,6 +216,16 @@ public class IgniteClientDbCache<K, V> implements IgniteICache<K, V> {
     }
 
     @Override
+    public void removeAll() throws CacheException {
+        try {
+            cache.removeAll();
+        } catch (ClientException e) {
+            logger.log(Level.WARNING, "IgniteCache remove operation error: " + e.getMessage());
+            throw new CacheException(e.getMessage());
+        }
+    }
+
+    @Override
     public V get(Map<String, Object[]> filterParams) throws CacheException {
         if (checkForSqlFieldsQuery(filterParams)) {
             return getBySqlFields(filterParams);

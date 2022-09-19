@@ -88,6 +88,17 @@ public class NodeServiceImpl implements NodeService {
         }
     }
 
+    private void handleDeleteAllNodeRequest() {
+        NodeContext nodeContext = new NodeContext();
+        IProcessor processorChain = ProcessorManager.getProcessChain();
+        try {
+            processorChain.bulkDeleteNode(nodeContext);
+            nodeContext.getRequestManager().waitAllRequestsFinish();
+        } catch (Exception e) {
+            logger.error("Catch exception: ", e);
+        }
+    }
+
     private void handleCreateNodeBulkRequest(List<NodeInfo> nodeInfos) {
             NodeContext nodeContext = new NodeContext(nodeInfos);
             IProcessor processorChain = ProcessorManager.getProcessChain();
@@ -357,6 +368,23 @@ public class NodeServiceImpl implements NodeService {
             throw e;
         }
         return nodeId;
+    }
+
+    @Override
+    @DurationStatistics
+    public void deleteAllNodeInfo() throws ParameterNullOrEmptyException, NodeRepositoryException, Exception {
+        String strMethodName = "deleteNodeInfo";
+        try {
+            this.handleDeleteAllNodeRequest();
+            nodeRepository.deleteAllItems();
+        } catch (CacheException e) {
+            logger.error(strMethodName+e.getMessage());
+            throw new NodeRepositoryException(NodeManagerConstant.NODE_EXCEPTION_REPOSITORY_EXCEPTION, e);
+        }catch (Exception e)
+        {
+            logger.error(strMethodName+e.getMessage());
+            throw e;
+        }
     }
 
 

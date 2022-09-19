@@ -37,6 +37,13 @@ public class NodeProcessor extends AbstractProcessor{
     }
 
     @Override
+    void bulkDeleteProcess(NodeContext context) throws Exception {
+        IRestRequest deleteNodeRequest = new DeleteNodeInfoRequest(context, true);
+        context.getRequestManager().sendRequestAsync(deleteNodeRequest);
+    }
+
+
+    @Override
     void bulkCreateProcess(NodeContext context) throws Exception {
         IRestRequest bulkCreateNodeInfoRequest = new BulkCreateNodeInfoRequest(context, context.getNodeInfos());
         context.getRequestManager().sendRequestAsync(bulkCreateNodeInfoRequest);

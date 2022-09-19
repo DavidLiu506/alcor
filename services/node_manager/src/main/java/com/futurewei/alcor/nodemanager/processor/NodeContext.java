@@ -26,6 +26,10 @@ public class NodeContext {
     private List<NodeInfo> nodeInfos;
     private RequestManager requestManager;
 
+    public NodeContext() {
+        this.requestManager = new RequestManager();
+    }
+
     public NodeContext(String nodeId) {
         this.nodeId = nodeId;
         this.nodeInfo = null;

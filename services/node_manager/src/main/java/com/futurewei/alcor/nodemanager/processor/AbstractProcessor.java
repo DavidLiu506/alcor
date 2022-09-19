@@ -31,6 +31,8 @@ public abstract class AbstractProcessor implements IProcessor {
 
     abstract void bulkCreateProcess(NodeContext context) throws Exception;
 
+    abstract void bulkDeleteProcess(NodeContext context) throws Exception;
+
     public IProcessor getNextProcessor() {
         return nextProcessor;
     }
@@ -77,6 +79,17 @@ public abstract class AbstractProcessor implements IProcessor {
         deleteProcess(context);
         if (getNextProcessor() != null) {
             getNextProcessor().deleteNode(context);
+        }
+    }
+
+
+    @Override
+    public void bulkDeleteNode(NodeContext context) throws Exception {
+        LOG.debug("deleteNode() processor: {}", this);
+
+        bulkDeleteProcess(context);
+        if (getNextProcessor() != null) {
+            getNextProcessor().bulkDeleteNode(context);
         }
     }
 }

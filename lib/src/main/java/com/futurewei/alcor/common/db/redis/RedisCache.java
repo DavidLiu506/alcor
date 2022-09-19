@@ -16,13 +16,11 @@ Copyright(c) 2020 Futurewei Cloud
 
 package com.futurewei.alcor.common.db.redis;
 
-import com.futurewei.alcor.common.db.query.CachePredicate;
 import com.futurewei.alcor.common.db.ICache;
 import com.futurewei.alcor.common.db.Transaction;
 import com.futurewei.alcor.common.db.CacheException;
 import com.futurewei.alcor.common.logging.Logger;
 import com.futurewei.alcor.common.logging.LoggerFactory;
-import org.apache.ignite.lang.IgniteBiPredicate;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 
@@ -122,6 +120,11 @@ public class RedisCache<K, V> implements ICache<K, V> {
             logger.log(Level.WARNING, "RedisCache remove operation error:" + e.getMessage());
             throw new CacheException(e.getMessage());
         }
+    }
+
+    @Override
+    public void removeAll() throws CacheException {
+
     }
 
     @Override

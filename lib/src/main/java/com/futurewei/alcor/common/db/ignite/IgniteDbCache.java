@@ -168,6 +168,11 @@ public class IgniteDbCache<K, V> implements IgniteICache<K, V> {
     }
 
     @Override
+    public void removeAll() throws CacheException {
+        cache.removeAll();
+    }
+
+    @Override
     public V get(Map<String, Object[]> filterParams) throws CacheException {
         IgniteBiPredicate<String, BinaryObject> predicate = MapPredicate.getInstance(filterParams);
         return get(predicate);
