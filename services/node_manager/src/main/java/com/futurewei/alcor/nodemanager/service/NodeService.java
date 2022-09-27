@@ -26,9 +26,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface NodeService {
-    int getNodeInfoFromUpload(MultipartFile file) throws IOException, Exception;
+    List<NodeInfo> getNodeInfoFromUpload(MultipartFile file) throws IOException, Exception;
 
     NodeInfo getNodeInfoById(String nodeId) throws ParameterNullOrEmptyException, Exception;
 
@@ -45,6 +46,8 @@ public interface NodeService {
     String deleteNodeInfo(String nodeId) throws ParameterNullOrEmptyException, Exception;
 
     void deleteAllNodeInfo() throws ParameterNullOrEmptyException, Exception;
+
+    void deleteAllNodeInfo(List<NodeInfo> nodeInfoList) throws ParameterNullOrEmptyException, Exception;
 
     /**
      *

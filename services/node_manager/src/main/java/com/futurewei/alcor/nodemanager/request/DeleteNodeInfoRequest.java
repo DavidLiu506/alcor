@@ -19,6 +19,7 @@ import com.futurewei.alcor.common.utils.SpringContextUtil;
 import com.futurewei.alcor.nodemanager.processor.NodeContext;
 import com.futurewei.alcor.web.entity.node.NodeInfo;
 import com.futurewei.alcor.web.entity.node.NodeInfoJson;
+import com.futurewei.alcor.web.entity.node.NodesWebJson;
 import com.futurewei.alcor.web.restclient.DataPlaneManagerRestClient;
 import com.futurewei.alcor.web.restclient.NetworkConfigManagerRestClient;
 import org.slf4j.Logger;
@@ -52,7 +53,13 @@ public class DeleteNodeInfoRequest extends AbstractRequest{
     public void send() throws Exception {
         NodeInfoJson jsonData = new NodeInfoJson(context.getNodeInfo());
         if (bulkOperation) {
-            dataPlaneManagerRestClient.deleteAllNodeInfo();
+            if (context.getNodeInfos() == null || context.getNodeInfos().size() == 0) {
+                dataPlaneManagerRestClient.deleteAllNodeInfo();
+            } else {
+                var nodeInfos = new NodesWebJson(context.getNodeInfos());
+                dataPlaneManagerRestClient.deleteAllNodeInfo(nodeInfos);
+            }
+
         } else {
             ncmRestClient.deleteNodeInfo(nodeId, context.getNodeInfo().getNcmUri());
             dataPlaneManagerRestClient.deleteNodeInfo(jsonData);

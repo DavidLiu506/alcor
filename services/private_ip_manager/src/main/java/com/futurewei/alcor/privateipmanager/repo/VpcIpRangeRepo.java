@@ -27,6 +27,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Repository
 public class VpcIpRangeRepo implements ICacheRepository<VpcIpRange> {
@@ -72,6 +73,11 @@ public class VpcIpRangeRepo implements ICacheRepository<VpcIpRange> {
 
     @Override
     public void deleteAllItems() throws CacheException {
+
+    }
+
+    @Override
+    public void deleteAllItems(Set<String> keySet) throws CacheException {
 
     }
 }

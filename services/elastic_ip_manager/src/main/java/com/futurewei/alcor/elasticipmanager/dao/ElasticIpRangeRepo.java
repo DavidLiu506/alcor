@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public class ElasticIpRangeRepo extends RepoResource<ElasticIpRange> {
@@ -42,6 +43,11 @@ public class ElasticIpRangeRepo extends RepoResource<ElasticIpRange> {
 
     @Override
     public void addItems(List<ElasticIpRange> items) throws CacheException {
+
+    }
+
+    @Override
+    public void deleteAllItems(Set<String> keySet) throws CacheException {
 
     }
 

@@ -21,6 +21,7 @@ import com.futurewei.alcor.web.entity.dataplane.InternalPortEntity;
 import com.futurewei.alcor.web.entity.dataplane.InternalSubnetEntity;
 import com.futurewei.alcor.web.entity.dataplane.v2.NetworkConfiguration;
 import com.futurewei.alcor.web.entity.node.NodeInfo;
+import com.futurewei.alcor.web.entity.node.NodesWebJson;
 import com.futurewei.alcor.web.entity.port.PortEntity;
 import com.futurewei.alcor.web.entity.port.PortHostInfo;
 import com.futurewei.alcor.web.entity.route.InternalRouterInfo;
@@ -180,6 +181,11 @@ public class LocalCacheImpl implements LocalCache {
     @Override
     public void deleteNodeInfo(String nodeId) throws Exception {
         nodeInfoCache.deleteNodeInfo(nodeId);
+    }
+
+    @Override
+    public void deleteAllNodeInfo(NodesWebJson nodesWebJson) throws Exception {
+        nodeInfoCache.deleteAllNodeInfo(nodesWebJson);
     }
 
     @Override

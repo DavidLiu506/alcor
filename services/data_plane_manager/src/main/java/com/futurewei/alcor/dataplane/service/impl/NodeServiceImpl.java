@@ -22,6 +22,7 @@ import com.futurewei.alcor.dataplane.service.NodeService;
 import com.futurewei.alcor.web.entity.node.BulkNodeInfoJson;
 import com.futurewei.alcor.web.entity.node.NodeInfo;
 import com.futurewei.alcor.web.entity.node.NodeInfoJson;
+import com.futurewei.alcor.web.entity.node.NodesWebJson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +52,11 @@ public class NodeServiceImpl implements NodeService {
     @Override
     public void deleteAllNodeInfo() throws Exception {
         localCache.deleteAllNodeInfo();
+    }
+
+    @Override
+    public void deleteAllNodeInfo(NodesWebJson nodesWebJson) throws Exception {
+        localCache.deleteAllNodeInfo(nodesWebJson);
     }
 
     @Override

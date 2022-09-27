@@ -27,6 +27,7 @@ import com.futurewei.alcor.dataplane.utils.DatePlaneManagerConstant;
 import com.futurewei.alcor.web.entity.node.BulkNodeInfoJson;
 import com.futurewei.alcor.web.entity.node.NodeInfo;
 import com.futurewei.alcor.web.entity.node.NodeInfoJson;
+import com.futurewei.alcor.web.entity.node.NodesWebJson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
@@ -97,6 +98,17 @@ public class NodeController {
     public void deleteAllNodeInfo() throws Exception {
         try {
             nodeService.deleteAllNodeInfo();
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE,e.getMessage());
+            throw e;
+        }
+    }
+
+    @DeleteMapping({"/nodes/bulk", "v4/nodes/bulk"})
+    @DurationStatistics
+    public void deleteAllNodeInfo(NodesWebJson nodesWebJson) throws Exception {
+        try {
+            nodeService.deleteAllNodeInfo(nodesWebJson);
         } catch (Exception e) {
             LOG.log(Level.SEVERE,e.getMessage());
             throw e;

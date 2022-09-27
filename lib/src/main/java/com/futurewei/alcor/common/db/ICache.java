@@ -71,6 +71,8 @@ public interface ICache<K, V> {
 
     void removeAll() throws CacheException;
 
+    void removeAll(Set<K> keySet) throws CacheException;
+
     /**
      * db cache size
      *

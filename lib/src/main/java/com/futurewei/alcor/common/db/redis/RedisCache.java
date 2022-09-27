@@ -128,6 +128,11 @@ public class RedisCache<K, V> implements ICache<K, V> {
     }
 
     @Override
+    public void removeAll(Set<String> keySet) throws CacheException {
+
+    }
+
+    @Override
     public V get(Map<String, Object[]> filterParams) throws CacheException {
         return null;
     }

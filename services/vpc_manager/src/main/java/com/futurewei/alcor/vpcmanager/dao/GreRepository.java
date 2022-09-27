@@ -100,4 +100,9 @@ public class GreRepository implements ICacheRepository<NetworkGREType> {
     public void deleteAllItems() throws CacheException {
 
     }
+
+    @Override
+    public void deleteAllItems(Set<String> keySet) throws CacheException {
+
+    }
 }

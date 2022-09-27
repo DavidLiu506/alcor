@@ -71,6 +71,11 @@ public class MockCache<K, V> implements ICache<K, V> {
     }
 
     @Override
+    public void removeAll(Set<String> keySet) throws CacheException {
+
+    }
+
+    @Override
     public Boolean putIfAbsent(K var1, V var2) throws CacheException {
         return cache.putIfAbsent(var1, var2).equals(var2);
     }

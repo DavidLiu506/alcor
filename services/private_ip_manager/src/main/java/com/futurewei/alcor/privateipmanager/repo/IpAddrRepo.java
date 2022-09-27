@@ -30,6 +30,7 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Repository
@@ -118,5 +119,10 @@ public class IpAddrRepo implements ICacheRepository<IpAddrAlloc> {
     @Override
     public void deleteAllItems() throws CacheException {
         cache.removeAll();
+    }
+
+    @Override
+    public void deleteAllItems(Set<String> keySet) throws CacheException {
+
     }
 }

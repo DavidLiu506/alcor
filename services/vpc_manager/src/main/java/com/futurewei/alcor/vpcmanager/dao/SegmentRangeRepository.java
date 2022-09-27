@@ -103,4 +103,9 @@ public class SegmentRangeRepository implements ICacheRepository<NetworkSegmentRa
     public void deleteAllItems() throws CacheException {
 
     }
+
+    @Override
+    public void deleteAllItems(Set<String> keySet) throws CacheException {
+
+    }
 }

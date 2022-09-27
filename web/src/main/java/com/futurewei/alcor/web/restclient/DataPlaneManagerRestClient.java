@@ -23,6 +23,7 @@ import com.futurewei.alcor.web.entity.gateway.GatewayInfo;
 import com.futurewei.alcor.web.entity.gateway.ZetaPortsWebJson;
 import com.futurewei.alcor.web.entity.node.BulkNodeInfoJson;
 import com.futurewei.alcor.web.entity.node.NodeInfoJson;
+import com.futurewei.alcor.web.entity.node.NodesWebJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -96,6 +97,14 @@ public class DataPlaneManagerRestClient extends AbstractRestClient {
         restTemplate.exchange(dataPlaneNodeManagerUrl, HttpMethod.DELETE, request, NodeInfoJson.class).getBody();
     }
 
+
+    @DurationStatistics
+    public void deleteAllNodeInfo(NodesWebJson nodesWebJson) throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        HttpEntity<NodeInfoJson> request = new HttpEntity<>(new NodeInfoJson(), headers);
+        restTemplate.exchange(dataPlaneNodeManagerUrl + "/bulk", HttpMethod.DELETE, request, NodeInfoJson.class).getBody();
+    }
 
     @DurationStatistics
     public void deleteAllNodeInfo() throws Exception {

@@ -99,6 +99,12 @@ public class NodeInfoCache {
     }
 
     @DurationStatistics
+    public void deleteAllNodeInfo(NodesWebJson nodesWebJson) throws Exception {
+        var nodesInfoSet = nodesWebJson.getNodeInfos().stream().map(item -> item.getId()).collect(Collectors.toSet());
+        nodeInfoCache.removeAll(nodesInfoSet);
+    }
+
+    @DurationStatistics
     public List<NodeInfo> getNodeInfoByNodeIp(String nodeIp) throws Exception {
             List<NodeInfo> result = new ArrayList<>();
 

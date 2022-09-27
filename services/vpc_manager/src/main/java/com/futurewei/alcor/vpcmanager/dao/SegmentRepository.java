@@ -100,5 +100,10 @@ public class SegmentRepository implements ICacheRepository<SegmentEntity> {
     public void deleteAllItems() throws CacheException {
 
     }
+
+    @Override
+    public void deleteAllItems(Set<String> keySet) throws CacheException {
+
+    }
 }
 

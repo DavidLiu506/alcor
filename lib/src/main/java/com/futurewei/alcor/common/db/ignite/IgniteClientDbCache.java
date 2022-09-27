@@ -226,6 +226,11 @@ public class IgniteClientDbCache<K, V> implements IgniteICache<K, V> {
     }
 
     @Override
+    public void removeAll(Set<K> keySet) throws CacheException {
+        cache.removeAll(keySet);
+    }
+
+    @Override
     public V get(Map<String, Object[]> filterParams) throws CacheException {
         if (checkForSqlFieldsQuery(filterParams)) {
             return getBySqlFields(filterParams);

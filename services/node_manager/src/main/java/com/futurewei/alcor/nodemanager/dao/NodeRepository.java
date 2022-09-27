@@ -33,6 +33,7 @@ import org.springframework.stereotype.Repository;
 import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -165,6 +166,19 @@ public class NodeRepository implements ICacheRepository<NodeInfo> {
         logger.info("Delete nodes");
         try (Transaction tx = cache.getTransaction().start()) {
             cache.removeAll();
+            tx.commit();
+        } catch (CacheException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("delete a node error: "+e.getMessage());
+        }
+    }
+
+    @Override
+    public void deleteAllItems(Set<String> nodeInfoSet) throws CacheException{
+        logger.info("Delete nodes");
+        try (Transaction tx = cache.getTransaction().start()) {
+            cache.removeAll(nodeInfoSet);
             tx.commit();
         } catch (CacheException e) {
             throw e;

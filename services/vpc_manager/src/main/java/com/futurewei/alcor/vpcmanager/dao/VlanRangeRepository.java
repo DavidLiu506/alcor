@@ -130,6 +130,11 @@ public class VlanRangeRepository implements ICacheRepository<NetworkVlanRange> {
 
     }
 
+    @Override
+    public void deleteAllItems(Set<String> keySet) throws CacheException {
+
+    }
+
     /**
      * Allocate a key from VlanRange repository
      * @param rangeId

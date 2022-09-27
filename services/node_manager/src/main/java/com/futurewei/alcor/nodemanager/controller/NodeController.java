@@ -36,9 +36,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -73,16 +75,17 @@ public class NodeController {
             value = {"/nodes/upload", "/v4/nodes/upload"})
     @DurationStatistics
     public String uploadFile(@RequestParam("file") MultipartFile file) throws Exception {
-        int nNode = 0;
+        List<NodeInfo> nNode = new ArrayList<>();
         if (file == null) {
             throw new ParameterNullOrEmptyException(NodeManagerConstant.NODE_EXCEPTION_FILE_EMPTY);
         }
         try {
             nNode = service.getNodeInfoFromUpload(file);
+            service.createNodeInfoBulk(nNode);
         } catch (Exception e) {
             throw e;
         }
-        return "{Total nodes: " + nNode + "}";
+        return "{Total nodes: " + nNode.size() + "}";
     }
 
     @RequestMapping(
@@ -217,8 +220,23 @@ public class NodeController {
             value = {"/nodes/bulk", "/v4/nodes/bulk"})
     @DurationStatistics
     public String deleteAllNodeInfo() throws Exception {
+        List<NodeInfo> nodeInfoList = new ArrayList<>();
         try {
             service.deleteAllNodeInfo();
+        } catch (ParameterNullOrEmptyException e) {
+            throw e;
+        }
+        return "Nodes deleted";
+    }
+
+    @RequestMapping(
+            method = DELETE,
+            value = {"/nodes/bulk", "/v4/nodes/bulk"})
+    @DurationStatistics
+    public String deleteAllNodeInfo(@RequestParam("file") MultipartFile file) throws Exception {
+        try {
+            var nodeInfoList = service.getNodeInfoFromUpload(file);
+            service.deleteAllNodeInfo(nodeInfoList);
         } catch (ParameterNullOrEmptyException e) {
             throw e;
         }

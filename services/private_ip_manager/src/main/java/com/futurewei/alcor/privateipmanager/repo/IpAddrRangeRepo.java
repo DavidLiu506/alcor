@@ -147,6 +147,11 @@ public class IpAddrRangeRepo implements ICacheRepository<IpAddrRange> {
         ipAddrRangeCache.removeAll();
     }
 
+    @Override
+    public void deleteAllItems(Set<String> keySet) throws CacheException {
+
+    }
+
 
     private IpAddrAlloc doAllocateIpAddr(String vpcId, int ipVersion, String ipAddr) throws Exception {
         VpcIpRange vpcIpRange = vpcIpRangeCache.get(vpcId);

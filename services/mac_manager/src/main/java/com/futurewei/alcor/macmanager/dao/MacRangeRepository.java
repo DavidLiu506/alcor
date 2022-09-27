@@ -151,6 +151,11 @@ public class MacRangeRepository implements ICacheRepositoryEx<MacRange> {
     }
 
     @Override
+    public void deleteAllItems(Set<String> keySet) throws CacheException {
+
+    }
+
+    @Override
     @DurationStatistics
     public long size() {
         return cache.size();

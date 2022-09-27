@@ -42,6 +42,8 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @ComponentScan(value = "com.futurewei.alcor.common.utils")
@@ -99,6 +101,17 @@ public class NodeServiceImpl implements NodeService {
         }
     }
 
+    private void handleDeleteAllNodeRequest(List<NodeInfo> nodeInfoList) {
+        NodeContext nodeContext = new NodeContext(nodeInfoList);
+        IProcessor processorChain = ProcessorManager.getProcessChain();
+        try {
+            processorChain.bulkDeleteNode(nodeContext);
+            nodeContext.getRequestManager().waitAllRequestsFinish();
+        } catch (Exception e) {
+            logger.error("Catch exception: ", e);
+        }
+    }
+
     private void handleCreateNodeBulkRequest(List<NodeInfo> nodeInfos) {
             NodeContext nodeContext = new NodeContext(nodeInfos);
             IProcessor processorChain = ProcessorManager.getProcessChain();
@@ -146,16 +159,15 @@ public class NodeServiceImpl implements NodeService {
      * @throws IOException file read exception, NodeRepositoryException exception caused by Repository
      */
     @DurationStatistics
-    public int getNodeInfoFromUpload(MultipartFile file) throws IOException, NodeRepositoryException, Exception {
+    public List<NodeInfo> getNodeInfoFromUpload(MultipartFile file) throws IOException, NodeRepositoryException, Exception {
         String strMethodName = "getNodeInfoFromUpload";
-        int nReturn = 0;
+        var  nReturn = 0;
         List<NodeInfo> nodeList = new ArrayList<NodeInfo>();
         try {
             Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
             NodeFileLoader dataCenterConfigLoader = new NodeFileLoader();
             nodeList = dataCenterConfigLoader.getHostNodeListFromUpload(reader);
             augmentNodeInfosWithNcmUri(nodeList);
-            nodeRepository.addItemBulkTransaction(nodeList);
             nReturn = nodeList.size();
         } catch (IOException e) {
             logger.error(strMethodName+e.getMessage());
@@ -165,7 +177,7 @@ public class NodeServiceImpl implements NodeService {
             logger.error(strMethodName+e.getMessage());
             throw new NodeRepositoryException(NodeManagerConstant.NODE_EXCEPTION_REPOSITORY_EXCEPTION, e);
         }
-        return nReturn;
+        return nodeList;
     }
 
     /**
@@ -377,6 +389,24 @@ public class NodeServiceImpl implements NodeService {
         try {
             this.handleDeleteAllNodeRequest();
             nodeRepository.deleteAllItems();
+        } catch (CacheException e) {
+            logger.error(strMethodName+e.getMessage());
+            throw new NodeRepositoryException(NodeManagerConstant.NODE_EXCEPTION_REPOSITORY_EXCEPTION, e);
+        }catch (Exception e)
+        {
+            logger.error(strMethodName+e.getMessage());
+            throw e;
+        }
+    }
+
+    @Override
+    @DurationStatistics
+    public void deleteAllNodeInfo(List<NodeInfo> nodeInfoList) throws ParameterNullOrEmptyException, NodeRepositoryException, Exception {
+        String strMethodName = "deleteNodeInfo";
+        try {
+            var nodeInfoSet = nodeInfoList.stream().map(item -> item.getId()).collect(Collectors.toSet());
+            this.handleDeleteAllNodeRequest(nodeInfoList);
+            nodeRepository.deleteAllItems(nodeInfoSet);
         } catch (CacheException e) {
             logger.error(strMethodName+e.getMessage());
             throw new NodeRepositoryException(NodeManagerConstant.NODE_EXCEPTION_REPOSITORY_EXCEPTION, e);

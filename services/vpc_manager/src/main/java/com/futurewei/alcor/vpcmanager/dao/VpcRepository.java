@@ -113,6 +113,11 @@ public class VpcRepository implements IVpcRepository<VpcEntity> {
     }
 
     @Override
+    public void deleteAllItems(Set<String> keySet) throws CacheException {
+
+    }
+
+    @Override
     @DurationStatistics
     public Set<String> getSubnetIds(String projectId, String vpcId) throws CacheException {
         ICache<String, String> subnetCache = cacheFactory.getCache(String.class, getVpcSubnetIdsCache(projectId));
