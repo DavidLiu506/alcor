@@ -54,7 +54,7 @@ public class PortServiceImpl implements PortService {
 
     private void handleException(PortContext context, Exception e) throws Exception {
         LOG.error("Catch exception: ", e);
-        context.getRequestManager().rollbackAllRequests();
+        //context.getRequestManager().rollbackAllRequests();
         throw e;
     }
 
