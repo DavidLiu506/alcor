@@ -217,7 +217,7 @@ public class NodeController {
 
     @RequestMapping(
             method = DELETE,
-            value = {"/nodes/bulk", "/v4/nodes/bulk"})
+            value = {"/nodes/allnodes", "/v4/nodes/allnodes"})
     @DurationStatistics
     public String deleteAllNodeInfo() throws Exception {
         List<NodeInfo> nodeInfoList = new ArrayList<>();
