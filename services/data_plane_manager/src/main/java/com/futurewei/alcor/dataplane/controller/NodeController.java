@@ -104,7 +104,7 @@ public class NodeController {
         }
     }
 
-    @DeleteMapping({"/nodes/bulk", "v4/nodes/bulk"})
+    @DeleteMapping({"/nodes/allnodes", "v4/nodes/allnodes"})
     @DurationStatistics
     public void deleteAllNodeInfo(NodesWebJson nodesWebJson) throws Exception {
         try {
