@@ -128,7 +128,7 @@ public class RedisCache<K, V> implements ICache<K, V> {
     }
 
     @Override
-    public void removeAll(Set<String> keySet) throws CacheException {
+    public void removeAll(Set<K> keySet) throws CacheException {
 
     }
 
