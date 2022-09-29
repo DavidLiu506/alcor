@@ -173,7 +173,7 @@ public class IgniteDbCache<K, V> implements IgniteICache<K, V> {
     }
 
     @Override
-    public void removeAll(Set<String> keySet) throws CacheException {
+    public void removeAll(Set<K> keySet) throws CacheException {
 
     }
 
