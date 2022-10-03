@@ -21,7 +21,7 @@ public class ThreadPoolExecutorConfig {
     public static int corePoolSize = 3000;
 
     //Maximum thread pool size
-    public static int maximumPoolSize = 128;
+    public static int maximumPoolSize = 10000;
 
     //Maximum idle time of thread
     public static int KeepAliveTime = 5000;
