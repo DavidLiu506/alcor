@@ -25,6 +25,7 @@ import org.springframework.core.io.Resource;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class NetworkConfigManagerUtil {
 
@@ -43,6 +44,7 @@ public class NetworkConfigManagerUtil {
             Goalstate.HostResources hostResourceMetadata = hostResourcesMap.get(hostId);
             HostGoalState hostGoalState = new HostGoalState();
             hostGoalState.getGoalStateBuilder().putHostResources(hostId, hostResourceMetadata);
+            hostGoalState.getGoalStateBuilder().setRequestId(UUID.randomUUID().toString());
 
             for (Goalstate.ResourceIdType resource : hostResourceMetadata.getResourcesList()) {
                 String resourceId = resource.getId();
