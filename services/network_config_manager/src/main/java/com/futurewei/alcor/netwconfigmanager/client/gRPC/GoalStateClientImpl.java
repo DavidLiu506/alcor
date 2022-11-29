@@ -99,8 +99,8 @@ public class GoalStateClientImpl implements GoalStateClient {
         this.hostAgentPort = 50001;
 
         this.executor = new ThreadPoolExecutor(100,
-                200,
-                50,
+                10000,
+                500,
                 TimeUnit.SECONDS,
                 new LinkedBlockingDeque<>(),
                 new DefaultThreadFactory("grpc-thread-pool"));
@@ -287,6 +287,9 @@ public class GoalStateClientImpl implements GoalStateClient {
             @Override
             public void onError(Throwable t) {
                 logger.log(Level.WARNING, "Receive error from ACA@" + hostIp + " |  " + t.getMessage());
+                while (finishLatch.getCount() > 0) {
+                    finishLatch.countDown();
+                }
             }
 
             @Override
