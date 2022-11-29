@@ -67,5 +67,4 @@ message GoalStateV2 {
     map<string /*resource id*/, SecurityGroupState> security_group_states = 8;
     map<string /*resource id*/, RouterState> router_states = 9;
     map<string /*resource id*/, GatewayState> gateway_states = 10;
-    string request_id = 11;
 }
