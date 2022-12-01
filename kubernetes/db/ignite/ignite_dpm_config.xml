@@ -47,6 +47,7 @@ Copyright(c) 2020 Futurewei Cloud
                <property name="atomicityMode" value="TRANSACTIONAL"/>
                <!-- Other cache parameters. -->
                <property name="cacheMode" value="PARTITIONED"/>
+               <property name="backups" value="2"/>
             </bean>
 
             <bean class="org.apache.ignite.configuration.CacheConfiguration">
@@ -56,6 +57,7 @@ Copyright(c) 2020 Futurewei Cloud
                <property name="atomicityMode" value="TRANSACTIONAL"/>
                <!-- Other cache parameters. -->
                <property name="cacheMode" value="PARTITIONED"/>
+               <property name="backups" value="2"/>
             </bean>
          </list>
       </property>
