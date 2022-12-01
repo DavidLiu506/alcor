@@ -67,7 +67,7 @@ public class PortHostInfoCache {
         portHostInfoCache.putAll(portHostInfoMap);
     }
 
-    public synchronized Collection<PortHostInfo> getPortHostInfos(String subnetId) throws CacheException {
+    public Collection<PortHostInfo> getPortHostInfos(String subnetId) throws CacheException {
         Map<String, Object[]> queryParams = new HashMap<>();
         Object[] values = new Object[1];
         values[0] = subnetId;
