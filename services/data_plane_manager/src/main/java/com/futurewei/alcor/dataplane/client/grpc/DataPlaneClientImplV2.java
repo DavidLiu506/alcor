@@ -17,6 +17,7 @@
  */
 
 package com.futurewei.alcor.dataplane.client.grpc;
+import com.futurewei.alcor.common.stats.DurationStatistics;
 import com.futurewei.alcor.dataplane.client.DataPlaneClient;
 import com.futurewei.alcor.dataplane.config.Config;
 import com.futurewei.alcor.dataplane.entity.ArionGroup;
@@ -76,6 +77,7 @@ public class DataPlaneClientImplV2 implements DataPlaneClient<UnicastGoalStateV2
     private ConcurrentHashMap<String, ArrayList<GrpcChannelStub>> hostIpGrpcChannelStubMap;
 
     @Override
+    @DurationStatistics
     public List<String> sendGoalStates(List<UnicastGoalStateV2> unicastGoalStates) throws Exception {
         Goalstate.GoalStateV2.Builder goalStateBuilder = Goalstate.GoalStateV2.newBuilder();
         final CountDownLatch finishLatch = new CountDownLatch(1);
@@ -138,7 +140,12 @@ public class DataPlaneClientImplV2 implements DataPlaneClient<UnicastGoalStateV2
         LOG.info("This instance has "+ numberOfGrpcChannelPerHost+" channels, and "+ numberOfWarmupsPerChannel+" warmups");
     }
 
+
+
+
+
     @Override
+    @DurationStatistics
     public List<String> sendGoalStates(List<UnicastGoalStateV2> unicastGoalStates, MulticastGoalStateV2 multicastGoalState) throws Exception {
         if (unicastGoalStates == null) {
             unicastGoalStates = new ArrayList<>();
@@ -271,6 +278,9 @@ public class DataPlaneClientImplV2 implements DataPlaneClient<UnicastGoalStateV2
         return null;
     }
 
+
+
+    @DurationStatistics
     private String doSendGoalState(Goalstate.GoalStateV2 goalStateV2, CountDownLatch finishLatch, List<String> replies) {
         String hostIp = netwconfigmanagerGrpcServiceUrl;
         long start = System.currentTimeMillis();
@@ -338,6 +348,7 @@ public class DataPlaneClientImplV2 implements DataPlaneClient<UnicastGoalStateV2
         }
     }
 
+    @DurationStatistics
     private Goalstate.GoalStateV2.Builder getGoalState(Goalstate.GoalStateV2.Builder goalStateBuilder,  UnicastGoalStateV2 unicastGoalStateV2) {
         Goalstate.GoalStateV2 goalStateV2 = unicastGoalStateV2.getGoalState();
         Goalstate.HostResources.Builder hostResourceBuilder = Goalstate.HostResources.newBuilder();

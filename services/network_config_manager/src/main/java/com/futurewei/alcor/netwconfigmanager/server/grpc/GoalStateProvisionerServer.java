@@ -190,11 +190,11 @@ public class GoalStateProvisionerServer implements NetworkConfigServer {
         }
 
         @Override
-        @DurationStatistics
         public StreamObserver<Goalstate.GoalStateV2> pushGoalStatesStream(final StreamObserver<Goalstateprovisioner.GoalStateOperationReply> responseObserver) {
 
             return new StreamObserver<Goalstate.GoalStateV2>() {
                 @Override
+                @DurationStatistics
                 public void onNext(Goalstate.GoalStateV2 value) {
                     Span pSpan = tracer.activeSpan();
                     Span span;

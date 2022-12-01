@@ -15,6 +15,7 @@ Copyright(c) 2020 Futurewei Cloud
 */
 package com.futurewei.alcor.dataplane.cache;
 
+import com.futurewei.alcor.common.stats.DurationStatistics;
 import com.futurewei.alcor.dataplane.exception.SubnetEntityNotFound;
 import com.futurewei.alcor.schema.Common.OperationType;
 import com.futurewei.alcor.web.entity.dataplane.InternalPortEntity;
@@ -148,6 +149,7 @@ public class LocalCacheImpl implements LocalCache {
     }
 
     @Override
+    @DurationStatistics
     public void updateLocalCache(NetworkConfiguration networkConfig) throws Exception {
         OperationType opType = networkConfig.getOpType();
         switch (opType) {

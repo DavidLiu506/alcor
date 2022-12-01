@@ -16,6 +16,7 @@ Copyright(c) 2020 Futurewei Cloud
 package com.futurewei.alcor.dataplane.service.impl;
 
 import com.futurewei.alcor.common.db.Transaction;
+import com.futurewei.alcor.common.stats.DurationStatistics;
 import com.futurewei.alcor.dataplane.cache.*;
 import com.futurewei.alcor.dataplane.client.DataPlaneClient;
 import com.futurewei.alcor.dataplane.client.ZetaGatewayClient;
@@ -163,6 +164,7 @@ public class DpmServiceImplV2 implements DpmService {
         }
     }
 
+    @DurationStatistics
     private List<String> doCreatePortConfiguration(NetworkConfiguration networkConfig,
                                                    Map<String, List<InternalPortEntity>> hostPortEntities,
                                                    DataPlaneClient dataPlaneClient) throws Exception {
@@ -210,6 +212,9 @@ public class DpmServiceImplV2 implements DpmService {
      * @return Hosts that failed to send GoalState
      * @throws Exception Process exceptions and send exceptions
      */
+
+
+    @DurationStatistics
     private List<String> processPortConfiguration(NetworkConfiguration networkConfig) throws Exception {
         Map<String, List<InternalPortEntity>> grpcHostPortEntities = new HashMap<>();
         Map<String, List<InternalPortEntity>> pulsarHostPortEntities = new HashMap<>();
@@ -404,6 +409,7 @@ public class DpmServiceImplV2 implements DpmService {
         return result;
     }
 
+    @DurationStatistics
     private InternalDPMResultList processNetworkConfiguration(NetworkConfiguration networkConfig) throws Exception {
         long startTime = System.currentTimeMillis();
         List<String> failedHosts = new ArrayList<>();
