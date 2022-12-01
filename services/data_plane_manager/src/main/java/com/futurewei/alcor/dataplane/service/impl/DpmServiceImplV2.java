@@ -116,6 +116,7 @@ public class DpmServiceImplV2 implements DpmService {
         this.goalStateMessageVersion = globalConfig.goalStateMessageVersion;
     }
 
+    @DurationStatistics
     private UnicastGoalStateV2 buildUnicastGoalState(NetworkConfiguration networkConfig, String hostIp,
                                                    List<InternalPortEntity> portEntities,
                                                    MulticastGoalStateV2 multicastGoalState) throws Exception {
