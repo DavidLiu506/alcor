@@ -253,7 +253,7 @@ public class GoalStateProvisionerServer implements NetworkConfigServer {
                                     .build();
                     responseObserver.onNext(reply);
                     long end1 = System.currentTimeMillis();
-                    logger.log(Level.FINE, "pushGoalStatesStream : Replied to DPM, from received to replied, elapsed time in milliseconds: " + + (end1-end));
+                    logger.log(Level.INFO, "pushGoalStatesStream : Replied to DPM, from received to replied, elapsed time in milliseconds: " + + (end1-end));
                     replyDPMSpan.finish();
                     span.finish();
                     logger.log(Level.INFO, "[pushGoalStatesStream] Child span after finish: "+span.toString());
