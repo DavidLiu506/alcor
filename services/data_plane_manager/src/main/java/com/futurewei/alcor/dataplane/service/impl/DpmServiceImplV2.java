@@ -112,7 +112,7 @@ public class DpmServiceImplV2 implements DpmService {
     private ArionWingService arionWingService;
 
     @Autowired
-    private DpmServiceImplV2(Config globalConfig) {
+    public DpmServiceImplV2(Config globalConfig) {
         this.goalStateMessageVersion = globalConfig.goalStateMessageVersion;
     }
 
